@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String
+  role       String   @default("USER")
+  supabaseId String   @unique
+  createdAt  DateTime @default(now())
+
+  questions    Question[]
+  submissions  Submission[]
+  approvedBy   Approval[]     @relation("ApprovedBy")
+  submittedFor Approval[]     @relation("SubmittedFor")
+  banks        QuestionBank[]
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  title        String
+  content      String
+  difficulty   String
+  topic        String
+  constraints  String?
+  sampleInput  String?
+  sampleOutput String?
+  timeLimit    Int      @default(2000)
+  memoryLimit  Int      @default(256)
+  approved     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  bankId String?
+  bank   QuestionBank? @relation(fields: [bankId], references: [id])
+
+  submissions Submission[]
+  approvals   Approval[]
+}
+
+model QuestionBank {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+
+  createdById String
+  createdBy   User       @relation(fields: [createdById], references: [id])
+
+  questions   Question[]
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  code      String
+  language  String
+  status    String   @default("PENDING")
+  output    String?
+  createdAt DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model Approval {
+  id        String   @id @default(cuid())
+  status    String   @default("PENDING")
+  feedback  String?
+  createdAt DateTime @default(now())
+
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id])
+
+  submittedById String
+  submittedBy   User     @relation("SubmittedFor", fields: [submittedById], references: [id])
+
+  reviewedById  String?
+  reviewedBy    User?    @relation("ApprovedBy", fields: [reviewedById], references: [id])
+}
