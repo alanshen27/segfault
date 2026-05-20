@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { type Prisma } from "@/generated/prisma/client";
+
+interface SubmissionCreateBody {
+  questionId: string;
+  code: string;
+  language: string;
+}
 
 export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
@@ -8,7 +15,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const body: SubmissionCreateBody = await request.json();
   const { questionId, code, language } = body;
 
   const submission = await prisma.submission.create({
@@ -33,7 +40,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const questionId = url.searchParams.get("questionId");
 
-  const where: Record<string, unknown> = { userId: user.id };
+  const where: Prisma.SubmissionWhereInput = { userId: user.id };
   if (questionId) where.questionId = questionId;
 
   const submissions = await prisma.submission.findMany({

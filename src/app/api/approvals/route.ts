@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+interface ApprovalPatchBody {
+  approvalId: string;
+  status: string;
+  feedback?: string;
+}
+
 export async function GET() {
   await requireAdmin();
 
@@ -23,7 +29,7 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   const admin = await requireAdmin();
-  const body = await request.json();
+  const body: ApprovalPatchBody = await request.json();
   const { approvalId, status, feedback } = body;
 
   const approval = await prisma.approval.update({

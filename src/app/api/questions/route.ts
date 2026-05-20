@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { type Prisma } from "@/generated/prisma/client";
+
+interface QuestionCreateBody {
+  title: string;
+  content: string;
+  difficulty: string;
+  topic: string;
+  constraints?: string | null;
+  sampleInput?: string | null;
+  sampleOutput?: string | null;
+  timeLimit?: number;
+  memoryLimit?: number;
+  bankId?: string | null;
+}
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -15,7 +29,7 @@ export async function GET(request: NextRequest) {
   const search = url.searchParams.get("search");
   const pending = url.searchParams.get("pending");
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.QuestionWhereInput = {};
 
   if (pending === "true") {
     where.approved = false;
@@ -51,7 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const body: QuestionCreateBody = await request.json();
   const { title, content, difficulty, topic, constraints, sampleInput, sampleOutput, timeLimit, memoryLimit, bankId } = body;
 
   const question = await prisma.question.create({
@@ -60,9 +74,9 @@ export async function POST(request: NextRequest) {
       content,
       difficulty: difficulty.toUpperCase(),
       topic,
-      constraints,
-      sampleInput,
-      sampleOutput,
+      constraints: constraints ?? null,
+      sampleInput: sampleInput ?? null,
+      sampleOutput: sampleOutput ?? null,
       timeLimit: timeLimit ?? 2000,
       memoryLimit: memoryLimit ?? 256,
       authorId: user.id,

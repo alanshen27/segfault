@@ -1,27 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PISTON_LANGUAGE_MAP } from "@/lib/types";
 
 const PISTON_URL = "https://emkc.org/api/v2/piston";
 
+interface CompileRequestBody {
+  code: string;
+  language: string;
+  stdin?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: CompileRequestBody = await request.json();
     const { code, language } = body;
 
-    const languageMap: Record<string, string> = {
-      python: "python3",
-      python3: "python3",
-      javascript: "javascript",
-      js: "javascript",
-      typescript: "typescript",
-      ts: "typescript",
-      cpp: "cpp",
-      c: "c",
-      java: "java",
-      rust: "rust",
-      go: "go",
-    };
-
-    const pistonLang = languageMap[language?.toLowerCase()] || language;
+    const pistonLang = PISTON_LANGUAGE_MAP[language?.toLowerCase()] || language;
 
     const res = await fetch(`${PISTON_URL}/execute`, {
       method: "POST",
@@ -38,7 +31,7 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    const data = await res.json();
+    const data: unknown = await res.json();
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(

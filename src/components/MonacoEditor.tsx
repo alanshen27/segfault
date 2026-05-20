@@ -1,7 +1,8 @@
 "use client";
 
-import Editor, { OnMount } from "@monaco-editor/react";
+import Editor, { type OnMount } from "@monaco-editor/react";
 import { useRef, useState } from "react";
+import { LANGUAGE_MAP } from "@/lib/types";
 
 interface MonacoEditorProps {
   code: string;
@@ -9,20 +10,6 @@ interface MonacoEditorProps {
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
 }
-
-const languageMap: Record<string, string> = {
-  python: "python",
-  python3: "python",
-  javascript: "javascript",
-  js: "javascript",
-  typescript: "typescript",
-  ts: "typescript",
-  cpp: "cpp",
-  c: "c",
-  java: "java",
-  rust: "rust",
-  go: "go",
-};
 
 export default function MonacoEditor({
   code,
@@ -38,13 +25,19 @@ export default function MonacoEditor({
     setMounted(true);
   };
 
-  const mappedLang = languageMap[language?.toLowerCase()] || "plaintext";
+  const mappedLang = LANGUAGE_MAP[language?.toLowerCase()] || "plaintext";
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+    <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden">
       {!mounted && (
         <div className="h-16 bg-neutral-50 dark:bg-neutral-900 flex items-center px-4 border-b border-neutral-200 dark:border-neutral-700">
-          <span className="text-xs text-neutral-500">Loading editor...</span>
+          <div className="flex items-center gap-2 text-xs text-neutral-500">
+            <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Loading editor...
+          </div>
         </div>
       )}
       <Editor
@@ -64,6 +57,9 @@ export default function MonacoEditor({
           tabSize: 2,
           wordWrap: "on",
           padding: { top: 12 },
+          renderLineHighlight: "gutter",
+          cursorBlinking: "smooth",
+          smoothScrolling: true,
         }}
       />
     </div>
