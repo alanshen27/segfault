@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+interface BankCreateBody {
+  name: string;
+  description: string;
+}
+
 export async function GET() {
   const banks = await prisma.questionBank.findMany({
     include: {
@@ -19,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const body: BankCreateBody = await request.json();
   const { name, description } = body;
 
   const bank = await prisma.questionBank.create({

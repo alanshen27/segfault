@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import MonacoEditor from "@/components/MonacoEditor";
 import { useRouter } from "next/navigation";
-
-const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"];
+import { type Difficulty, DIFFICULTIES } from "@/lib/types";
 
 export default function SubmitPage() {
   const [title, setTitle] = useState("");
   const [topic, setTopic] = useState("");
-  const [difficulty, setDifficulty] = useState("MEDIUM");
+  const [difficulty, setDifficulty] = useState<Difficulty>("MEDIUM");
   const [content, setContent] = useState("");
   const [constraints, setConstraints] = useState("");
   const [sampleInput, setSampleInput] = useState("");
@@ -39,7 +37,7 @@ export default function SubmitPage() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
+      const data: { error?: string } = await res.json();
       setError(data.error || "Failed to submit");
       setSubmitting(false);
       return;
@@ -52,9 +50,12 @@ export default function SubmitPage() {
   if (success) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-        <div className="text-2xl font-bold text-green-600 mb-2">
-          Submitted!
+        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
+        <div className="text-2xl font-bold mb-2">Submitted!</div>
         <p className="text-neutral-500">
           Your question has been submitted for review. Redirecting...
         </p>
@@ -64,45 +65,50 @@ export default function SubmitPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Submit a Problem</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Submit a Problem</h1>
+        <p className="text-sm text-neutral-500 mt-1">
+          Create a new problem for the community. It will be reviewed by an admin before appearing publicly.
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-md">
+          <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg border border-red-200 dark:border-red-900">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
+          <label className="block text-sm font-medium mb-1.5">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
             placeholder="e.g., Two Sum"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Topic</label>
+            <label className="block text-sm font-medium mb-1.5">Topic</label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               required
-              className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
               placeholder="e.g., Dynamic Programming"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Difficulty</label>
+            <label className="block text-sm font-medium mb-1.5">Difficulty</label>
             <select
               value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
             >
               {DIFFICULTIES.map((d) => (
                 <option key={d} value={d}>
@@ -114,54 +120,52 @@ export default function SubmitPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Problem Statement (Markdown + LaTeX)
+          <label className="block text-sm font-medium mb-1.5">
+            Problem Statement
+            <span className="font-normal text-neutral-400 ml-1">(Markdown + LaTeX)</span>
           </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
             rows={10}
-            className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400 font-mono text-sm"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
             placeholder={`## Problem Statement\n\nWrite your problem here. Use:\n- **bold** for emphasis\n- $$formulas$$ for LaTeX\n- \`\`\` for code blocks`}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Constraints (optional)
+          <label className="block text-sm font-medium mb-1.5">
+            Constraints
+            <span className="font-normal text-neutral-400 ml-1">(optional)</span>
           </label>
           <textarea
             value={constraints}
             onChange={(e) => setConstraints(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400 font-mono text-sm"
-            placeholder="e.g., $$1 \\leq n \\leq 10^5$$"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
+            placeholder="e.g., $$1 \leq n \leq 10^5$$"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Sample Input
-            </label>
+            <label className="block text-sm font-medium mb-1.5">Sample Input</label>
             <textarea
               value={sampleInput}
               onChange={(e) => setSampleInput(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400 font-mono text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
               placeholder="nums = [2,7,11,15], target = 9"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Sample Output
-            </label>
+            <label className="block text-sm font-medium mb-1.5">Sample Output</label>
             <textarea
               value={sampleOutput}
               onChange={(e) => setSampleOutput(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-400 font-mono text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
               placeholder="[0,1]"
             />
           </div>
@@ -170,14 +174,13 @@ export default function SubmitPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-2.5 rounded-md bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="w-full py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
         >
           {submitting ? "Submitting for review..." : "Submit for Review"}
         </button>
 
         <p className="text-xs text-neutral-500 text-center">
-          Your submission will be reviewed by an admin before it appears
-          publicly.
+          Your submission will be reviewed by an admin before it appears publicly.
         </p>
       </form>
     </div>
