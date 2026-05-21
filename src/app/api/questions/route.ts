@@ -27,10 +27,6 @@ const MAX_TEST_CASES = 50;
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const url = new URL(request.url);
   const difficulty = url.searchParams.get("difficulty");
   const topic = url.searchParams.get("topic");
@@ -44,6 +40,9 @@ export async function GET(request: NextRequest) {
   const where: Prisma.QuestionWhereInput = {};
 
   if (pending === "true") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "MODERATOR")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     where.approved = false;
   } else {
     where.approved = true;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import EmptyState from "@/components/EmptyState";
 import CommunityIcon from "@/components/CommunityIcon";
 import Avatar from "@/components/Avatar";
@@ -27,6 +27,7 @@ function canManageCommunity(
 
 export default function CommunityPage() {
   const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
   const [community, setCommunity] = useState<SubredditSummary | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<ForumPostSummary[]>([]);
@@ -83,6 +84,10 @@ export default function CommunityPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ value }),
     });
+    if (res.status === 401) {
+      router.push("/login");
+      return;
+    }
     if (res.ok) {
       const data: { vote: number | null } = await res.json();
       setPosts((prev) =>
@@ -127,6 +132,9 @@ export default function CommunityPage() {
   }
 
   const canManage = user ? canManageCommunity(user, community) : false;
+  const createPostHref = user
+    ? `/forum/new?subredditId=${community.id}`
+    : "/login";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -170,10 +178,10 @@ export default function CommunityPage() {
               </Link>
             )}
             <Link
-              href={`/forum/new?subredditId=${community.id}`}
+              href={createPostHref}
               className="px-5 py-2 rounded-full bg-primary text-white font-semibold hover:bg-primary-hover transition-colors text-sm text-center"
             >
-              Create Post
+              {user ? "Create Post" : "Sign in to Post"}
             </Link>
           </div>
         </div>
@@ -197,8 +205,8 @@ export default function CommunityPage() {
           <EmptyState
             title="No posts in this community yet"
             description={`Be the first to share something with s/${community.name}.`}
-            actionLabel="Create first post"
-            actionHref={`/forum/new?subredditId=${community.id}`}
+            actionLabel={user ? "Create first post" : "Sign in to Post"}
+            actionHref={createPostHref}
           />
         ) : (
           <div className="space-y-3">

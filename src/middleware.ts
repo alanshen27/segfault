@@ -38,10 +38,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const protectedPaths = ["/submit", "/admin"];
-  const isProtected = protectedPaths.some((p) =>
-    request.nextUrl.pathname.startsWith(p),
-  );
+  const pathname = request.nextUrl.pathname;
+  const protectedPaths = [
+    "/submit",
+    "/admin",
+    "/forum/new",
+    "/profile",
+    "/moderate",
+  ];
+  const isProtected =
+    protectedPaths.some((p) => pathname.startsWith(p))
+    || /\/forum\/communities\/[^/]+\/settings/.test(pathname);
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();

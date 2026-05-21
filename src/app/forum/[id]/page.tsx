@@ -12,6 +12,7 @@ import ForumSuggestedPosts from "@/components/forum/ForumSuggestedPosts";
 import PostAttachmentGallery from "@/components/forum/PostAttachmentGallery";
 import PostCommunitySidebar from "@/components/forum/PostCommunitySidebar";
 import { timeAgo } from "@/lib/forum-utils";
+import { useCurrentUser } from "@/lib/use-current-user";
 import {
   type ForumPostDetail,
   type ForumPostSummary,
@@ -23,6 +24,7 @@ export default function ForumPostPage() {
   const params = useParams();
   const router = useRouter();
   const postId = params.id as string;
+  const { user } = useCurrentUser();
 
   const [post, setPost] = useState<ForumPostDetail | null>(null);
   const [community, setCommunity] = useState<SubredditSummary | null>(null);
@@ -85,6 +87,10 @@ export default function ForumPostPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ value }),
     });
+    if (res.status === 401) {
+      router.push("/login");
+      return;
+    }
     if (res.ok && post) {
       const data: { vote: number | null } = await res.json();
       const oldVote = post.userVote ?? 0;
@@ -151,6 +157,12 @@ export default function ForumPostPage() {
     );
   }
 
+  const canDelete = !!user && (
+    post.author.id === user.id
+    || user.role === "ADMIN"
+    || user.role === "MODERATOR"
+  );
+
   return (
     <div className="min-h-screen bg-neutral-950">
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -208,13 +220,15 @@ export default function ForumPostPage() {
                     <p className="text-sm font-semibold text-neutral-200">u/{post.author.name}</p>
                     <p className="text-xs text-neutral-500">{timeAgo(post.createdAt)}</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
-                  >
-                    Delete
-                  </button>
+                  {canDelete && (
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
 
                 <div className="text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap text-neutral-300 max-w-none">
@@ -230,6 +244,7 @@ export default function ForumPostPage() {
                 comments={post.comments}
                 onSubmitReply={handleReply}
                 submitting={submittingReply}
+                canReply={!!user}
               />
             </div>
 

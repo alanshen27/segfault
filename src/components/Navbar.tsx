@@ -18,7 +18,7 @@ const NAV_LINKS = [
   { href: "/questions", label: "Problems" },
   { href: "/banks", label: "Banks" },
   { href: "/forum", label: "Forum" },
-  { href: "/submit", label: "Submit" },
+  { href: "/submit", label: "Submit", authRequired: true },
 ] as const;
 
 export default function Navbar() {
@@ -142,7 +142,11 @@ export default function Navbar() {
           </Link>
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className={linkClass(link.href)}>
+              <Link
+                key={link.href}
+                href={"authRequired" in link && link.authRequired && !user ? "/login" : link.href}
+                className={linkClass(link.href)}
+              >
                 {link.label}
               </Link>
             ))}
@@ -182,7 +186,7 @@ export default function Navbar() {
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
-              href={link.href}
+              href={"authRequired" in link && link.authRequired && !user ? "/login" : link.href}
               onClick={closeMobileMenu}
               className={`block py-1 ${linkClass(link.href)}`}
             >

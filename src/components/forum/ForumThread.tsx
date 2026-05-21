@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import Avatar from "@/components/Avatar";
 import { timeAgo } from "@/lib/forum-utils";
@@ -36,10 +37,12 @@ function ThreadNode({
   comment,
   depth,
   onSubmitReply,
+  canReply,
 }: {
   comment: ForumCommentData;
   depth: number;
   onSubmitReply: (content: string, parentId: string) => Promise<void>;
+  canReply: boolean;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [showReply, setShowReply] = useState(false);
@@ -97,13 +100,22 @@ function ThreadNode({
                     {comment.content}
                   </p>
                   <div className="flex items-center gap-3 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowReply((s) => !s)}
-                      className="text-xs font-semibold text-neutral-500 hover:text-neutral-200 transition-colors"
-                    >
-                      Reply
-                    </button>
+                    {canReply ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowReply((s) => !s)}
+                        className="text-xs font-semibold text-neutral-500 hover:text-neutral-200 transition-colors"
+                      >
+                        Reply
+                      </button>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="text-xs font-semibold text-primary hover:underline"
+                      >
+                        Sign in to reply
+                      </Link>
+                    )}
                     {replyCount > 0 && (
                       <span className="text-xs text-neutral-500">
                         {replyCount} {replyCount === 1 ? "reply" : "replies"}
@@ -111,7 +123,7 @@ function ThreadNode({
                     )}
                   </div>
 
-                  {showReply && (
+                  {showReply && canReply && (
                     <form onSubmit={handleReply} className="mt-3">
                       <textarea
                         value={replyText}
@@ -165,6 +177,7 @@ function ThreadNode({
                   comment={reply}
                   depth={depth + 1}
                   onSubmitReply={onSubmitReply}
+                  canReply={canReply}
                 />
               ))}
             </div>
@@ -179,12 +192,14 @@ interface ForumThreadProps {
   comments: ForumCommentData[];
   onSubmitReply: (content: string, parentId: string | null) => Promise<void>;
   submitting: boolean;
+  canReply?: boolean;
 }
 
 export default function ForumThread({
   comments,
   onSubmitReply,
   submitting,
+  canReply = true,
 }: ForumThreadProps) {
   const tree = buildCommentTree(comments);
   const [draft, setDraft] = useState("");
@@ -207,24 +222,33 @@ export default function ForumThread({
         </h2>
       </div>
 
-      <form onSubmit={handleTopLevel} className="mb-6">
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={4}
-          placeholder="Share your thoughts..."
-          className="w-full px-4 py-3 rounded-xl bg-neutral-900 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
-        />
-        <div className="flex justify-end mt-2">
-          <button
-            type="submit"
-            disabled={submitting || !draft.trim()}
-            className="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
-          >
-            {submitting ? "Posting..." : "Reply to post"}
-          </button>
+      {canReply ? (
+        <form onSubmit={handleTopLevel} className="mb-6">
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={4}
+            placeholder="Share your thoughts..."
+            className="w-full px-4 py-3 rounded-xl bg-neutral-900 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+          />
+          <div className="flex justify-end mt-2">
+            <button
+              type="submit"
+              disabled={submitting || !draft.trim()}
+              className="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
+            >
+              {submitting ? "Posting..." : "Reply to post"}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="mb-6 rounded-xl bg-neutral-900 px-4 py-3 text-sm text-neutral-400">
+          <Link href="/login" className="text-primary font-semibold hover:underline">
+            Sign in
+          </Link>
+          {" "}to join the discussion.
         </div>
-      </form>
+      )}
 
       {tree.length === 0 ? (
         <p className="text-sm text-neutral-500 py-6 text-center">
@@ -238,6 +262,7 @@ export default function ForumThread({
               comment={c}
               depth={0}
               onSubmitReply={onSubmitReply}
+              canReply={canReply}
             />
           ))}
         </div>

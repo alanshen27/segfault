@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EmptyState from "@/components/EmptyState";
 import ForumPostCard from "@/components/forum/ForumPostCard";
 import ForumSidebar from "@/components/forum/ForumSidebar";
 import TagPicker from "@/components/TagPicker";
+import { useCurrentUser } from "@/lib/use-current-user";
 import {
   type ForumPostSummary,
   type ForumTagSummary,
@@ -19,6 +20,8 @@ type SortMode = "new" | "top";
 
 export default function ForumPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useCurrentUser();
   const [posts, setPosts] = useState<ForumPostSummary[]>([]);
   const [subreddits, setSubreddits] = useState<SubredditSummary[]>([]);
   const [tags, setTags] = useState<ForumTagSummary[]>([]);
@@ -112,6 +115,10 @@ export default function ForumPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ value }),
     });
+    if (res.status === 401) {
+      router.push("/login");
+      return;
+    }
     if (res.ok) {
       const data: { vote: number | null } = await res.json();
       setPosts((prev) =>
@@ -130,6 +137,9 @@ export default function ForumPage() {
   };
 
   const activeSubreddit = subreddits.find((s) => s.id === subredditId);
+  const newPostHref = activeSubreddit
+    ? `/forum/new?subredditId=${activeSubreddit.id}`
+    : "/forum/new";
 
   return (
     <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
@@ -161,12 +171,21 @@ export default function ForumPage() {
               >
                 Communities
               </Link>
-              <Link
-                href={activeSubreddit ? `/forum/new?subredditId=${activeSubreddit.id}` : "/forum/new"}
-                className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
-              >
-                New Post
-              </Link>
+              {user ? (
+                <Link
+                  href={newPostHref}
+                  className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+                >
+                  New Post
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+                >
+                  Sign in to Post
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -237,7 +256,7 @@ export default function ForumPage() {
                   </button>
                   );
                 })}
-                {subredditId && (
+                {subredditId && user && (
                   <button
                     type="button"
                     onClick={() => setShowTagCreate((s) => !s)}
@@ -257,7 +276,7 @@ export default function ForumPage() {
                 )}
               </div>
 
-              {showTagCreate && subredditId && (
+              {showTagCreate && subredditId && user && (
                 <div className="px-4 pb-4 border-t border-neutral-100 dark:border-neutral-800 pt-3">
                   <TagPicker
                     subredditId={subredditId}
@@ -287,12 +306,8 @@ export default function ForumPage() {
                     ? `No discussions in s/${activeSubreddit.name} yet.`
                     : "Be the first to start a discussion!"
                 }
-                actionLabel="New Post"
-                actionHref={
-                  activeSubreddit
-                    ? `/forum/new?subredditId=${activeSubreddit.id}`
-                    : "/forum/new"
-                }
+                actionLabel={user ? "New Post" : "Sign in to Post"}
+                actionHref={user ? newPostHref : "/login"}
               />
             ) : (
               <div className="space-y-3">

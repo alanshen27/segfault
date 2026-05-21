@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const user = await getCurrentUser();
   const question = await prisma.question.findUnique({
     where: { id },
     include: {
@@ -17,6 +18,16 @@ export async function GET(
   });
 
   if (!question) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (
+    !question.approved
+    && (!user
+      || (question.authorId !== user.id
+        && user.role !== "ADMIN"
+        && user.role !== "MODERATOR"))
+  ) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
