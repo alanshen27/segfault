@@ -13,6 +13,7 @@ export async function GET(
     where: { id },
     include: {
       author: { select: { id: true, name: true } },
+      subreddit: { select: { id: true, name: true, slug: true, color: true } },
       _count: { select: { comments: true, votes: true } },
       votes: true,
       comments: {
@@ -40,6 +41,7 @@ export async function GET(
     tag: post.tag,
     createdAt: post.createdAt.toISOString(),
     author: post.author,
+    subreddit: post.subreddit,
     _count: post._count,
     voteScore,
     userVote,

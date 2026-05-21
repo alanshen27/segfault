@@ -1,32 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { type ForumTag, FORUM_TAGS } from "@/lib/types";
+import Link from "next/link";
+import { type SubredditSummary, FORUM_TAGS, FORUM_TAG_COLORS } from "@/lib/types";
 
-export default function NewPostPage() {
+export default function NewForumPostPage() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [tag, setTag] = useState<ForumTag>("GENERAL");
-  const [submitting, setSubmitting] = useState(false);
+  const [tag, setTag] = useState("GENERAL");
+  const [subredditId, setSubredditId] = useState("");
+  const [subreddits, setSubreddits] = useState<SubredditSummary[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/subreddits")
+      .then((r) => r.json())
+      .then((data: SubredditSummary[]) => { if (active) setSubreddits(data); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+    setLoading(true);
     setError("");
 
     const res = await fetch("/api/forum/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content, tag }),
+      body: JSON.stringify({
+        title,
+        content,
+        tag,
+        subredditId: subredditId || null,
+      }),
     });
 
     if (!res.ok) {
       const data: { error?: string } = await res.json();
-      setError(data.error ?? "Failed to create post");
-      setSubmitting(false);
+      setError(data.error ?? "Something went wrong");
+      setLoading(false);
       return;
     }
 
@@ -36,18 +53,61 @@ export default function NewPostPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-1">New Discussion</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        Share a question, editorial, or start a meta discussion.
-      </p>
+      <div className="flex items-center gap-2 mb-1 text-sm text-neutral-500">
+        <Link href="/forum" className="hover:text-primary transition-colors">
+          Forum
+        </Link>
+        <span className="text-neutral-300">/</span>
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">New Post</span>
+      </div>
+      <h1 className="text-2xl font-bold tracking-tight mb-6">Create a Post</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg border border-red-200 dark:border-red-900">
+          <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 rounded-lg">
             {error}
           </div>
         )}
 
+        {/* Community */}
+        <div>
+          <label className="block text-sm font-medium mb-1.5">Community</label>
+          <select
+            value={subredditId}
+            onChange={(e) => setSubredditId(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+          >
+            <option value="">No specific community</option>
+            {subreddits.map((s) => (
+              <option key={s.id} value={s.id}>
+                s/{s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Tag */}
+        <div>
+          <label className="block text-sm font-medium mb-1.5">Tag</label>
+          <div className="flex flex-wrap gap-2">
+            {FORUM_TAGS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTag(t)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  tag === t
+                    ? "ring-2 ring-primary ring-offset-1"
+                    : ""
+                } ${FORUM_TAG_COLORS[t]}`}
+              >
+                {t.charAt(0) + t.slice(1).toLowerCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Title */}
         <div>
           <label className="block text-sm font-medium mb-1.5">Title</label>
           <input
@@ -55,45 +115,39 @@ export default function NewPostPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
-            placeholder="What's on your mind?"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+            placeholder="An interesting title..."
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1.5">Tag</label>
-          <select
-            value={tag}
-            onChange={(e) => setTag(e.target.value as ForumTag)}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
-          >
-            {FORUM_TAGS.map((t) => (
-              <option key={t} value={t}>
-                {t.charAt(0) + t.slice(1).toLowerCase()}
-              </option>
-            ))}
-          </select>
-        </div>
-
+        {/* Content */}
         <div>
           <label className="block text-sm font-medium mb-1.5">Content</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
-            rows={12}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
-            placeholder="Write your post... Markdown is supported."
+            rows={8}
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm font-mono"
+            placeholder="Write your post here..."
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
-        >
-          {submitting ? "Publishing..." : "Publish Post"}
-        </button>
+        <div className="flex items-center gap-2 pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
+          >
+            {loading ? "Posting..." : "Post"}
+          </button>
+          <Link
+            href="/forum"
+            className="px-5 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          >
+            Cancel
+          </Link>
+        </div>
       </form>
     </div>
   );

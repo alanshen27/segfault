@@ -6,6 +6,7 @@ interface PostCreateBody {
   title: string;
   content: string;
   tag?: string;
+  subredditId?: string | null;
 }
 
 export async function GET(request: NextRequest) {
@@ -13,9 +14,13 @@ export async function GET(request: NextRequest) {
   const tag = url.searchParams.get("tag");
   const search = url.searchParams.get("search");
   const sort = url.searchParams.get("sort") ?? "new";
+  const subredditId = url.searchParams.get("subredditId");
+  const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
+  const pageSize = Math.min(50, Math.max(1, parseInt(url.searchParams.get("pageSize") ?? "20", 10)));
 
   const where: Record<string, unknown> = {};
   if (tag && tag !== "ALL") where.tag = tag;
+  if (subredditId) where.subredditId = subredditId;
   if (search) {
     where.OR = [
       { title: { contains: search } },
@@ -25,17 +30,23 @@ export async function GET(request: NextRequest) {
 
   const currentUser = await getCurrentUser();
 
-  const posts = await prisma.forumPost.findMany({
-    where,
-    include: {
-      author: { select: { id: true, name: true } },
-      _count: { select: { comments: true, votes: true } },
-      votes: true,
-    },
-    orderBy: sort === "top"
-      ? { votes: { _count: "desc" } }
-      : { createdAt: "desc" },
-  });
+  const [posts, total] = await Promise.all([
+    prisma.forumPost.findMany({
+      where,
+      include: {
+        author: { select: { id: true, name: true } },
+        subreddit: { select: { id: true, name: true, slug: true, color: true } },
+        _count: { select: { comments: true, votes: true } },
+        votes: true,
+      },
+      orderBy: sort === "top"
+        ? { votes: { _count: "desc" } }
+        : { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.forumPost.count({ where }),
+  ]);
 
   const result = posts.map((post) => {
     const voteScore = post.votes.reduce((sum, v) => sum + v.value, 0);
@@ -49,13 +60,20 @@ export async function GET(request: NextRequest) {
       tag: post.tag,
       createdAt: post.createdAt.toISOString(),
       author: post.author,
+      subreddit: post.subreddit,
       _count: post._count,
       voteScore,
       userVote,
     };
   });
 
-  return NextResponse.json(result);
+  return NextResponse.json({
+    data: result,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -65,7 +83,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body: PostCreateBody = await request.json();
-  const { title, content, tag } = body;
+  const { title, content, tag, subredditId } = body;
 
   if (!title?.trim() || !content?.trim()) {
     return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
@@ -77,9 +95,11 @@ export async function POST(request: NextRequest) {
       content: content.trim(),
       tag: tag ?? "GENERAL",
       authorId: user.id,
+      subredditId: subredditId ?? null,
     },
     include: {
       author: { select: { id: true, name: true } },
+      subreddit: { select: { id: true, name: true, slug: true, color: true } },
     },
   });
 
