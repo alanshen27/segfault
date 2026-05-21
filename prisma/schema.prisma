@@ -23,6 +23,7 @@ model User {
   posts        ForumPost[]
   comments     ForumComment[]
   votes        ForumVote[]
+  subreddits   Subreddit[]
 }
 
 model Question {
@@ -92,6 +93,20 @@ model Approval {
   reviewedBy    User?    @relation("ApprovedBy", fields: [reviewedById], references: [id])
 }
 
+model Subreddit {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String
+  color       String   @default("#D35959")
+  createdAt   DateTime @default(now())
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  posts ForumPost[]
+}
+
 model ForumPost {
   id        String   @id @default(cuid())
   title     String
@@ -102,6 +117,9 @@ model ForumPost {
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
+
+  subredditId String?
+  subreddit   Subreddit? @relation(fields: [subredditId], references: [id])
 
   comments ForumComment[]
   votes    ForumVote[]

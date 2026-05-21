@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
   const bankId = url.searchParams.get("bankId");
   const search = url.searchParams.get("search");
   const pending = url.searchParams.get("pending");
+  const sort = url.searchParams.get("sort") ?? "newest";
+  const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
+  const pageSize = Math.min(50, Math.max(1, parseInt(url.searchParams.get("pageSize") ?? "20", 10)));
 
   const where: Prisma.QuestionWhereInput = {};
 
@@ -47,16 +50,32 @@ export async function GET(request: NextRequest) {
     ];
   }
 
-  const questions = await prisma.question.findMany({
-    where,
-    include: {
-      author: { select: { name: true } },
-      bank: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  type QuestionOrderBy = Prisma.QuestionOrderByWithRelationInput;
+  let orderBy: QuestionOrderBy = { createdAt: "desc" };
+  if (sort === "oldest") orderBy = { createdAt: "asc" };
+  else if (sort === "title") orderBy = { title: "asc" };
 
-  return NextResponse.json(questions);
+  const [questions, total] = await Promise.all([
+    prisma.question.findMany({
+      where,
+      include: {
+        author: { select: { name: true } },
+        bank: { select: { name: true } },
+      },
+      orderBy,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.question.count({ where }),
+  ]);
+
+  return NextResponse.json({
+    data: questions,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  });
 }
 
 export async function POST(request: NextRequest) {

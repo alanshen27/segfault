@@ -174,6 +174,24 @@ export const FORUM_TAG_COLORS: Record<ForumTag, string> = {
   META: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400",
 };
 
+export interface SubredditSummary {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  color: string;
+  _count: { posts: number };
+  createdBy: { name: string };
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export interface ForumPostSummary {
   id: string;
   title: string;
@@ -181,6 +199,7 @@ export interface ForumPostSummary {
   tag: ForumTag;
   createdAt: string;
   author: { id: string; name: string };
+  subreddit?: { id: string; name: string; slug: string; color: string } | null;
   _count: { comments: number; votes: number };
   voteScore: number;
   userVote?: number | null;

@@ -214,6 +214,15 @@ export default function ForumPostPage() {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
+            {post.subreddit && (
+              <Link
+                href={`/forum?subredditId=${post.subreddit.id}`}
+                className="text-xs font-medium px-2 py-0.5 rounded-full text-white"
+                style={{ backgroundColor: post.subreddit.color }}
+              >
+                s/{post.subreddit.name}
+              </Link>
+            )}
             <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${tagColor}`}>{post.tag}</span>
           </div>
           <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
