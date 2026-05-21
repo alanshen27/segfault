@@ -18,6 +18,9 @@ export default function Footer() {
             <Link href="/banks" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
               Banks
             </Link>
+            <Link href="/forum" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
+              Forum
+            </Link>
             <Link href="/submit" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
               Submit
             </Link>

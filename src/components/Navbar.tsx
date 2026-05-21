@@ -7,11 +7,13 @@ import { createClient } from "@/lib/supabase-client";
 
 interface NavUser {
   email?: string;
+  role?: string;
 }
 
 const NAV_LINKS = [
   { href: "/questions", label: "Problems" },
   { href: "/banks", label: "Banks" },
+  { href: "/forum", label: "Forum" },
   { href: "/submit", label: "Submit" },
 ] as const;
 
@@ -34,6 +36,14 @@ export default function Navbar() {
           }
         },
       );
+      fetch("/api/me").then((r) => {
+        if (r.ok) return r.json();
+        return null;
+      }).then((me: { role?: string } | null) => {
+        if (active && me?.role) {
+          setUser((prev) => prev ? { ...prev, role: me.role } : prev);
+        }
+      }).catch(() => {});
     } else {
       Promise.resolve().then(() => {
         if (active) setMounted(true);
@@ -126,6 +136,11 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {user && (user.role === "MODERATOR" || user.role === "ADMIN") && (
+              <Link href="/moderate" className={linkClass("/moderate")}>
+                Moderate
+              </Link>
+            )}
           </div>
         </div>
 
@@ -164,6 +179,11 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {user && (user.role === "MODERATOR" || user.role === "ADMIN") && (
+            <Link href="/moderate" onClick={closeMobileMenu} className={`block py-1 ${linkClass("/moderate")}`}>
+              Moderate
+            </Link>
+          )}
           <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-3">
             {renderAuth()}
           </div>

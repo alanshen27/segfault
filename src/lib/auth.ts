@@ -43,6 +43,14 @@ export async function requireAuth() {
   return user;
 }
 
+export async function requireModerator() {
+  const user = await getCurrentUser();
+  if (!user || (user.role !== "MODERATOR" && user.role !== "ADMIN")) {
+    throw new Error("Unauthorized: moderator access required");
+  }
+  return user;
+}
+
 export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") {
