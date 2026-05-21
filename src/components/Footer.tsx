@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -6,7 +7,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-neutral-500">
-            <span className="text-primary font-bold">&gt;_</span>
+            <Image height={20} width={20} src="/logo.png" alt="segfault logo" />
             <span>segfault</span>
             <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
             <span>Competitive Programming Trainer</span>

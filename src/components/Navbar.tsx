@@ -137,7 +137,7 @@ export default function Navbar() {
             href="/"
             className="font-bold text-lg tracking-tight flex items-center gap-2"
           >
-            <Image height={20} width={20} src="/logo.png" alt=">_ segfault logo" />
+            <Image height={20} width={20} src="/logo.png" alt="segfault logo" />
             <span className="text-neutral-900 dark:text-white mb-0.5">segfault</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
