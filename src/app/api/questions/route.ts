@@ -81,11 +81,11 @@ export async function POST(request: NextRequest) {
       memoryLimit: memoryLimit ?? 256,
       authorId: user.id,
       bankId: bankId || null,
-      approved: user.role === "ADMIN",
+      approved: user.role === "ADMIN" || user.role === "MODERATOR",
     },
   });
 
-  if (user.role !== "ADMIN") {
+  if (user.role !== "ADMIN" && user.role !== "MODERATOR") {
     await prisma.approval.create({
       data: {
         questionId: question.id,

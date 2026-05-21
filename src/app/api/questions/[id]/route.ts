@@ -38,7 +38,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (question.authorId !== user.id && user.role !== "ADMIN") {
+  if (question.authorId !== user.id && user.role !== "ADMIN" && user.role !== "MODERATOR") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -67,7 +67,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (question.authorId !== user.id && user.role !== "ADMIN") {
+  if (question.authorId !== user.id && user.role !== "ADMIN" && user.role !== "MODERATOR") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

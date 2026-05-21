@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const questionCount = await prisma.question.count({ where: { approved: true } });
   const bankCount = await prisma.questionBank.count();
+  const postCount = await prisma.forumPost.count();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-24">
@@ -40,7 +41,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 text-center hover:border-primary/40 transition-colors group">
           <div className="text-3xl font-bold text-primary">{questionCount}</div>
           <div className="text-sm text-neutral-500 mt-1">Problems</div>
@@ -48,6 +49,10 @@ export default async function HomePage() {
         <div className="p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 text-center hover:border-primary/40 transition-colors group">
           <div className="text-3xl font-bold text-primary">{bankCount}</div>
           <div className="text-sm text-neutral-500 mt-1">Question Banks</div>
+        </div>
+        <div className="p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 text-center hover:border-primary/40 transition-colors group">
+          <div className="text-3xl font-bold text-primary">{postCount}</div>
+          <div className="text-sm text-neutral-500 mt-1">Discussions</div>
         </div>
         <div className="p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 text-center hover:border-primary/40 transition-colors group">
           <div className="text-3xl font-bold text-primary">8+</div>

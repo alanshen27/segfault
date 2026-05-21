@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
+import { requireModerator } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 interface ApprovalPatchBody {
@@ -9,7 +9,7 @@ interface ApprovalPatchBody {
 }
 
 export async function GET() {
-  await requireAdmin();
+  await requireModerator();
 
   const approvals = await prisma.approval.findMany({
     where: { status: "PENDING" },
@@ -28,7 +28,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-  const admin = await requireAdmin();
+  const admin = await requireModerator();
   const body: ApprovalPatchBody = await request.json();
   const { approvalId, status, feedback } = body;
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { type Difficulty, DIFFICULTIES } from "@/lib/types";
+import { type Difficulty, type BankSummary, DIFFICULTIES } from "@/lib/types";
 
 export default function SubmitPage() {
   const [title, setTitle] = useState("");
@@ -12,10 +12,23 @@ export default function SubmitPage() {
   const [constraints, setConstraints] = useState("");
   const [sampleInput, setSampleInput] = useState("");
   const [sampleOutput, setSampleOutput] = useState("");
+  const [bankId, setBankId] = useState("");
+  const [banks, setBanks] = useState<BankSummary[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/banks")
+      .then((r) => r.json())
+      .then((data: BankSummary[]) => {
+        if (active) setBanks(data);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +46,7 @@ export default function SubmitPage() {
         constraints: constraints || null,
         sampleInput: sampleInput || null,
         sampleOutput: sampleOutput || null,
+        bankId: bankId || null,
       }),
     });
 
@@ -68,7 +82,7 @@ export default function SubmitPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Submit a Problem</h1>
         <p className="text-sm text-neutral-500 mt-1">
-          Create a new problem for the community. It will be reviewed by an admin before appearing publicly.
+          Create a new problem for the community. It will be reviewed by a moderator before appearing publicly.
         </p>
       </div>
 
@@ -117,6 +131,25 @@ export default function SubmitPage() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5">
+            Question Bank
+            <span className="font-normal text-neutral-400 ml-1">(optional)</span>
+          </label>
+          <select
+            value={bankId}
+            onChange={(e) => setBankId(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+          >
+            <option value="">No bank (standalone problem)</option>
+            {banks.map((bank) => (
+              <option key={bank.id} value={bank.id}>
+                {bank.name} ({bank._count.questions} problems)
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -180,7 +213,7 @@ export default function SubmitPage() {
         </button>
 
         <p className="text-xs text-neutral-500 text-center">
-          Your submission will be reviewed by an admin before it appears publicly.
+          Your submission will be reviewed by a moderator before it appears publicly.
         </p>
       </form>
     </div>

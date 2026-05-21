@@ -34,6 +34,7 @@ export type SubmissionStatus =
 
 export const USER_ROLE = {
   USER: "USER",
+  MODERATOR: "MODERATOR",
   ADMIN: "ADMIN",
 } as const;
 
@@ -149,3 +150,51 @@ export const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   MEDIUM: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   HARD: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
+
+export const FORUM_TAG = {
+  GENERAL: "GENERAL",
+  QUESTION: "QUESTION",
+  EDITORIAL: "EDITORIAL",
+  META: "META",
+} as const;
+
+export type ForumTag = (typeof FORUM_TAG)[keyof typeof FORUM_TAG];
+
+export const FORUM_TAGS: readonly ForumTag[] = [
+  FORUM_TAG.GENERAL,
+  FORUM_TAG.QUESTION,
+  FORUM_TAG.EDITORIAL,
+  FORUM_TAG.META,
+];
+
+export const FORUM_TAG_COLORS: Record<ForumTag, string> = {
+  GENERAL: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  QUESTION: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  EDITORIAL: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  META: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400",
+};
+
+export interface ForumPostSummary {
+  id: string;
+  title: string;
+  content: string;
+  tag: ForumTag;
+  createdAt: string;
+  author: { id: string; name: string };
+  _count: { comments: number; votes: number };
+  voteScore: number;
+  userVote?: number | null;
+}
+
+export interface ForumPostDetail extends ForumPostSummary {
+  comments: ForumCommentData[];
+}
+
+export interface ForumCommentData {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: { id: string; name: string };
+  parentId: string | null;
+  replies?: ForumCommentData[];
+}
