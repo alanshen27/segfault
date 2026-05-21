@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { attachmentInclude, serializeAttachments } from "@/lib/forum-attachments";
 
 export async function GET(
   _request: NextRequest,
@@ -12,13 +13,15 @@ export async function GET(
   const post = await prisma.forumPost.findUnique({
     where: { id },
     include: {
-      author: { select: { id: true, name: true } },
-      subreddit: { select: { id: true, name: true, slug: true, color: true } },
+      author: { select: { id: true, name: true, avatarUrl: true } },
+      subreddit: { select: { id: true, name: true, slug: true, color: true, iconUrl: true } },
+      forumTag: { select: { slug: true, name: true, color: true } },
+      attachments: attachmentInclude,
       _count: { select: { comments: true, votes: true } },
       votes: true,
       comments: {
         include: {
-          author: { select: { id: true, name: true } },
+          author: { select: { id: true, name: true, avatarUrl: true } },
         },
         orderBy: { createdAt: "asc" },
       },
@@ -38,7 +41,10 @@ export async function GET(
     id: post.id,
     title: post.title,
     content: post.content,
-    tag: post.tag,
+    tag: post.forumTag
+      ? { slug: post.forumTag.slug, name: post.forumTag.name, color: post.forumTag.color }
+      : null,
+    attachments: serializeAttachments(post.attachments),
     createdAt: post.createdAt.toISOString(),
     author: post.author,
     subreddit: post.subreddit,

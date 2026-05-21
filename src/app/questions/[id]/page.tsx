@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import Link from "next/link";
 import MonacoEditor from "@/components/MonacoEditor";
 import {
   type QuestionDetail,
@@ -9,6 +10,8 @@ import {
   BOILERPLATES,
   DIFFICULTY_COLORS,
 } from "@/lib/types";
+
+type Panel = "problem" | "code";
 
 export default function QuestionDetailPage({
   params,
@@ -22,6 +25,7 @@ export default function QuestionDetailPage({
   const [language, setLanguage] = useState("python");
   const [running, setRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const [panel, setPanel] = useState<Panel>("problem");
 
   useEffect(() => {
     fetch(`/api/questions/${id}`)
@@ -39,15 +43,16 @@ export default function QuestionDetailPage({
     setOutput(null);
   };
 
-  const handleRun = async () => {
+  const runCode = async (stdin?: string) => {
     setRunning(true);
     setOutput(null);
+    setPanel("code");
 
     try {
       const res = await fetch("/api/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language }),
+        body: JSON.stringify({ code, language, stdin }),
       });
       const data: PistonRunResult = await res.json();
 
@@ -57,7 +62,7 @@ export default function QuestionDetailPage({
           data.run.stderr && `STDERR:\n${data.run.stderr}`,
           data.run.output && `OUTPUT:\n${data.run.output}`,
           data.run.signal && `Signal: ${data.run.signal}`,
-          `Exit Code: ${data.run.code}`,
+          `Exit code: ${data.run.code}`,
         ]
           .filter(Boolean)
           .join("\n\n");
@@ -75,15 +80,8 @@ export default function QuestionDetailPage({
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded w-1/3" />
-          <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-            <div className="h-64 bg-neutral-200 dark:bg-neutral-800 rounded-xl" />
-            <div className="h-64 bg-neutral-200 dark:bg-neutral-800 rounded-xl" />
-          </div>
-        </div>
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="animate-pulse text-sm text-neutral-500">Loading problem...</div>
       </div>
     );
   }
@@ -91,8 +89,10 @@ export default function QuestionDetailPage({
   if (!question) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <div className="text-4xl mb-3">404</div>
         <p className="text-neutral-500">Question not found.</p>
+        <Link href="/questions" className="text-primary text-sm mt-2 inline-block hover:underline">
+          Back to problems
+        </Link>
       </div>
     );
   }
@@ -100,133 +100,159 @@ export default function QuestionDetailPage({
   const difficultyColor =
     DIFFICULTY_COLORS[question.difficulty] ?? "bg-neutral-100 text-neutral-600";
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-2xl font-bold">{question.title}</h1>
-          <span
-            className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor}`}
-          >
-            {question.difficulty}
-          </span>
+  const problemPanel = (
+    <div className="h-full overflow-y-auto px-5 py-6 sm:px-6">
+      <div
+        className="prose prose-sm dark:prose-invert max-w-none"
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(question.content) }}
+      />
+      {question.constraints && (
+        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+          <h3 className="font-semibold text-sm mb-2 text-primary">Constraints</h3>
+          <div
+            className="text-sm text-neutral-600 dark:text-neutral-400"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(question.constraints) }}
+          />
         </div>
-        <div className="flex items-center gap-2 text-sm text-neutral-500 flex-wrap">
-          <span className="inline-flex items-center gap-1">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            {question.topic}
-          </span>
-          {question.bank && (
-            <>
-              <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
-              <span>{question.bank.name}</span>
-            </>
+      )}
+      {(question.sampleInput || question.sampleOutput) && (
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {question.sampleInput && (
+            <div className="p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900">
+              <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Sample Input</div>
+              <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{question.sampleInput}</pre>
+            </div>
           )}
-          <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
-          <span>by {question.author.name}</span>
-          <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-            {question.timeLimit}ms / {question.memoryLimit}MB
-          </span>
+          {question.sampleOutput && (
+            <div className="p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900">
+              <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Expected Output</div>
+              <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{question.sampleOutput}</pre>
+            </div>
+          )}
         </div>
+      )}
+    </div>
+  );
+
+  const codePanel = (
+    <div className="h-full flex flex-col min-h-0">
+      <div className="shrink-0 flex flex-wrap items-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-900/80">
+        <select
+          value={language}
+          onChange={(e) => handleLanguageChange(e.target.value)}
+          className="px-3 py-1.5 rounded-lg bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          {LANGUAGES.map((l) => (
+            <option key={l.value} value={l.value}>{l.label}</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={() => runCode()}
+          disabled={running}
+          className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 inline-flex items-center gap-1.5"
+        >
+          {running ? "Running..." : "Run"}
+        </button>
+        {question.sampleInput && (
+          <button
+            type="button"
+            onClick={() => runCode(question.sampleInput ?? undefined)}
+            disabled={running}
+            className="px-4 py-1.5 rounded-lg bg-neutral-200 dark:bg-neutral-800 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-700 disabled:opacity-50"
+          >
+            Run with sample
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => { setCode(BOILERPLATES[language] || ""); setOutput(null); }}
+          className="px-3 py-1.5 rounded-lg text-sm text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
+        >
+          Reset
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          <div className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-auto max-h-[70vh]">
-            <div
-              className="prose prose-sm dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(question.content) }}
-            />
-            {question.constraints && (
-              <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                <h3 className="font-medium text-sm mb-2 text-primary">Constraints</h3>
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderMarkdown(question.constraints),
-                  }}
-                />
-              </div>
-            )}
-          </div>
+      <div className="flex-1 min-h-[320px] p-4 pb-0">
+        <MonacoEditor
+          code={code}
+          language={language}
+          onChange={(v) => setCode(v || "")}
+          height="calc(100vh - 280px)"
+          className="h-full min-h-[320px]"
+        />
+      </div>
 
-          {(question.sampleInput || question.sampleOutput) && (
-            <div className="grid grid-cols-2 gap-3">
-              {question.sampleInput && (
-                <div className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-                  <div className="text-xs font-medium text-neutral-500 mb-1.5">Sample Input</div>
-                  <pre className="text-sm font-mono whitespace-pre-wrap">{question.sampleInput}</pre>
-                </div>
+      {output !== null && (
+        <div className="shrink-0 mx-4 mb-4 mt-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900 max-h-48 overflow-y-auto">
+          <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Output</div>
+          <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{output}</pre>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="h-[calc(100vh-4rem)] flex flex-col min-h-0">
+      <header className="shrink-0 px-4 sm:px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <Link
+              href="/questions"
+              className="text-xs text-neutral-500 hover:text-primary transition-colors"
+            >
+              ← Back to problems
+            </Link>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">{question.title}</h1>
+              <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${difficultyColor}`}>
+                {question.difficulty}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 mt-1">
+              <span>{question.topic}</span>
+              {question.bank && (
+                <>
+                  <span>·</span>
+                  <Link href={`/questions?bankId=${question.bank.id}`} className="hover:text-primary">{question.bank.name}</Link>
+                </>
               )}
-              {question.sampleOutput && (
-                <div className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-                  <div className="text-xs font-medium text-neutral-500 mb-1.5">Expected Output</div>
-                  <pre className="text-sm font-mono whitespace-pre-wrap">{question.sampleOutput}</pre>
-                </div>
+              <span>·</span>
+              <span>{question.timeLimit}ms / {question.memoryLimit}MB</span>
+              {question.testCaseCount != null && question.testCaseCount > 0 && (
+                <>
+                  <span>·</span>
+                  <span>{question.testCaseCount} hidden test{question.testCaseCount !== 1 ? "s" : ""}</span>
+                </>
               )}
             </div>
-          )}
+          </div>
         </div>
 
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <select
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
-            >
-              {LANGUAGES.map((l) => (
-                <option key={l.value} value={l.value}>
-                  {l.label}
-                </option>
-              ))}
-            </select>
+        <div className="flex lg:hidden mt-3 gap-1 p-1 rounded-lg bg-neutral-100 dark:bg-neutral-900">
+          {(["problem", "code"] as const).map((p) => (
             <button
-              onClick={handleRun}
-              disabled={running}
-              className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+              key={p}
+              type="button"
+              onClick={() => setPanel(p)}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+                panel === p
+                  ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-500"
+              }`}
             >
-              {running ? (
-                <>
-                  <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Running...
-                </>
-              ) : (
-                <>
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                  </svg>
-                  Run Code
-                </>
-              )}
+              {p === "problem" ? "Problem" : "Code"}
             </button>
-          </div>
+          ))}
+        </div>
+      </header>
 
-          <MonacoEditor
-            code={code}
-            language={language}
-            onChange={(v) => setCode(v || "")}
-          />
-
-          {output !== null && (
-            <div className="p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-              <div className="text-xs font-medium text-neutral-500 mb-1.5 flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Output
-              </div>
-              <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-900 dark:text-neutral-100">
-                {output}
-              </pre>
-            </div>
-          )}
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2">
+        <div className={`min-h-0 border-r border-neutral-200 dark:border-neutral-800 ${panel === "problem" ? "block" : "hidden lg:block"}`}>
+          {problemPanel}
+        </div>
+        <div className={`min-h-0 ${panel === "code" ? "block" : "hidden lg:block"}`}>
+          {codePanel}
         </div>
       </div>
     </div>

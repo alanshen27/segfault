@@ -37,7 +37,7 @@ export async function POST(
       parentId: parentId ?? null,
     },
     include: {
-      author: { select: { id: true, name: true } },
+      author: { select: { id: true, name: true, avatarUrl: true } },
     },
   });
 

@@ -4,10 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase-client";
+import Avatar from "@/components/Avatar";
+import Image from "next/image"
 
 interface NavUser {
   email?: string;
+  name?: string;
   role?: string;
+  avatarUrl?: string | null;
 }
 
 const NAV_LINKS = [
@@ -39,9 +43,9 @@ export default function Navbar() {
       fetch("/api/me").then((r) => {
         if (r.ok) return r.json();
         return null;
-      }).then((me: { role?: string } | null) => {
-        if (active && me?.role) {
-          setUser((prev) => prev ? { ...prev, role: me.role } : prev);
+      }).then((me: { role?: string; name?: string; avatarUrl?: string | null } | null) => {
+        if (active && me) {
+          setUser((prev) => prev ? { ...prev, ...me } : prev);
         }
       }).catch(() => {});
     } else {
@@ -73,6 +77,8 @@ export default function Navbar() {
         : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
     }`;
 
+  const displayName = user?.name ?? user?.email?.split("@")[0] ?? "User";
+
   const renderAuth = () => {
     if (!mounted) {
       return (
@@ -92,9 +98,13 @@ export default function Navbar() {
     if (user) {
       return (
         <>
-          <span className="text-sm text-neutral-500 truncate max-w-[160px]">
-            {user.email}
-          </span>
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          >
+            <Avatar src={user.avatarUrl} name={displayName} size="sm" />
+            <span className="hidden sm:inline truncate max-w-[120px]">{displayName}</span>
+          </Link>
           <button
             onClick={handleSignOut}
             className="text-sm px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -127,8 +137,8 @@ export default function Navbar() {
             href="/"
             className="font-bold text-lg tracking-tight flex items-center gap-2"
           >
-            <span className="text-primary">&gt;_</span>
-            <span className="text-neutral-900 dark:text-white">segfault</span>
+            <Image height={20} width={20} src="/logo.png" alt=">_ segfault logo" />
+            <span className="text-neutral-900 dark:text-white mb-0.5">segfault</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
@@ -182,6 +192,11 @@ export default function Navbar() {
           {user && (user.role === "MODERATOR" || user.role === "ADMIN") && (
             <Link href="/moderate" onClick={closeMobileMenu} className={`block py-1 ${linkClass("/moderate")}`}>
               Moderate
+            </Link>
+          )}
+          {user && (
+            <Link href="/profile" onClick={closeMobileMenu} className={`block py-1 ${linkClass("/profile")}`}>
+              Profile
             </Link>
           )}
           <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-3">

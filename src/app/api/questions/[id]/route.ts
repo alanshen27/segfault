@@ -11,7 +11,8 @@ export async function GET(
     where: { id },
     include: {
       author: { select: { name: true } },
-      bank: { select: { name: true } },
+      bank: { select: { id: true, name: true } },
+      _count: { select: { testCases: true } },
     },
   });
 
@@ -19,7 +20,11 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(question);
+  const { _count, ...rest } = question;
+  return NextResponse.json({
+    ...rest,
+    testCaseCount: _count.testCases,
+  });
 }
 
 export async function PATCH(

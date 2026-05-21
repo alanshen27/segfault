@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import TestCaseUploader from "@/components/TestCaseUploader";
+import { type TestCaseDraft } from "@/lib/question-test-cases";
 import { type Difficulty, type BankSummary, DIFFICULTIES } from "@/lib/types";
 
 export default function SubmitPage() {
@@ -13,6 +15,7 @@ export default function SubmitPage() {
   const [sampleInput, setSampleInput] = useState("");
   const [sampleOutput, setSampleOutput] = useState("");
   const [bankId, setBankId] = useState("");
+  const [testCases, setTestCases] = useState<TestCaseDraft[]>([]);
   const [banks, setBanks] = useState<BankSummary[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -47,6 +50,7 @@ export default function SubmitPage() {
         sampleInput: sampleInput || null,
         sampleOutput: sampleOutput || null,
         bankId: bankId || null,
+        testCases: testCases.map(({ input, output }) => ({ input, output })),
       }),
     });
 
@@ -203,6 +207,12 @@ export default function SubmitPage() {
             />
           </div>
         </div>
+
+        <TestCaseUploader
+          testCases={testCases}
+          onChange={setTestCases}
+          disabled={submitting}
+        />
 
         <button
           type="submit"

@@ -3,77 +3,21 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Avatar from "@/components/Avatar";
+import CommunityIcon from "@/components/CommunityIcon";
+import TagBadge from "@/components/TagBadge";
+import ForumVoteRail from "@/components/forum/ForumVoteRail";
+import ForumThread from "@/components/forum/ForumThread";
+import ForumSuggestedPosts from "@/components/forum/ForumSuggestedPosts";
+import PostAttachmentGallery from "@/components/forum/PostAttachmentGallery";
+import PostCommunitySidebar from "@/components/forum/PostCommunitySidebar";
+import { timeAgo } from "@/lib/forum-utils";
 import {
   type ForumPostDetail,
-  type ForumCommentData,
-  FORUM_TAG_COLORS,
+  type ForumPostSummary,
+  type PaginatedResponse,
+  type SubredditSummary,
 } from "@/lib/types";
-
-function timeAgo(dateStr: string): string {
-  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}
-
-function buildCommentTree(comments: ForumCommentData[]): ForumCommentData[] {
-  const map = new Map<string, ForumCommentData & { replies: ForumCommentData[] }>();
-  const roots: ForumCommentData[] = [];
-
-  for (const c of comments) {
-    map.set(c.id, { ...c, replies: [] });
-  }
-
-  for (const c of comments) {
-    const node = map.get(c.id)!;
-    if (c.parentId && map.has(c.parentId)) {
-      map.get(c.parentId)!.replies.push(node);
-    } else {
-      roots.push(node);
-    }
-  }
-
-  return roots;
-}
-
-function CommentNode({
-  comment,
-  depth,
-  onReply,
-}: {
-  comment: ForumCommentData;
-  depth: number;
-  onReply: (parentId: string) => void;
-}) {
-  return (
-    <div className={depth > 0 ? "ml-6 border-l-2 border-neutral-200 dark:border-neutral-800 pl-4" : ""}>
-      <div className="py-3">
-        <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
-          <span className="font-medium text-neutral-600 dark:text-neutral-300">{comment.author.name}</span>
-          <span>&middot;</span>
-          <span>{timeAgo(comment.createdAt)}</span>
-        </div>
-        <p className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">
-          {comment.content}
-        </p>
-        <button
-          onClick={() => onReply(comment.id)}
-          className="mt-1 text-xs text-neutral-400 hover:text-primary transition-colors"
-        >
-          Reply
-        </button>
-      </div>
-      {comment.replies && comment.replies.map((reply) => (
-        <CommentNode key={reply.id} comment={reply} depth={depth + 1} onReply={onReply} />
-      ))}
-    </div>
-  );
-}
 
 export default function ForumPostPage() {
   const params = useParams();
@@ -81,10 +25,10 @@ export default function ForumPostPage() {
   const postId = params.id as string;
 
   const [post, setPost] = useState<ForumPostDetail | null>(null);
+  const [community, setCommunity] = useState<SubredditSummary | null>(null);
+  const [suggested, setSuggested] = useState<ForumPostSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [comment, setComment] = useState("");
-  const [replyTo, setReplyTo] = useState<string | null>(null);
-  const [submittingComment, setSubmittingComment] = useState(false);
+  const [submittingReply, setSubmittingReply] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -93,15 +37,45 @@ export default function ForumPostPage() {
         if (!r.ok) throw new Error("Not found");
         return r.json() as Promise<ForumPostDetail>;
       })
-      .then((data) => {
-        if (active) {
-          setPost(data);
-          setLoading(false);
+      .then(async (data) => {
+        if (!active) return;
+        setPost(data);
+        setLoading(false);
+
+        const suggestedParams = new URLSearchParams({
+          sort: "top",
+          pageSize: "8",
+        });
+        if (data.subreddit?.id) {
+          suggestedParams.set("subredditId", data.subreddit.id);
         }
+
+        const fetches: Promise<void>[] = [
+          fetch(`/api/forum/posts?${suggestedParams.toString()}`)
+            .then((r) => r.json() as Promise<PaginatedResponse<ForumPostSummary>>)
+            .then((res) => {
+              if (active) {
+                setSuggested(res.data.filter((p) => p.id !== data.id).slice(0, 5));
+              }
+            }),
+        ];
+
+        if (data.subreddit?.slug) {
+          fetches.push(
+            fetch(`/api/subreddits/${data.subreddit.slug}`)
+              .then((r) => (r.ok ? r.json() : null))
+              .then((sub: SubredditSummary | null) => {
+                if (active && sub) setCommunity(sub);
+              }),
+          );
+        }
+
+        await Promise.all(fetches);
       })
       .catch(() => {
         if (active) setLoading(false);
       });
+
     return () => { active = false; };
   }, [postId]);
 
@@ -123,46 +97,52 @@ export default function ForumPostPage() {
     }
   };
 
-  const handleComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!comment.trim()) return;
-    setSubmittingComment(true);
-
-    const res = await fetch(`/api/forum/posts/${postId}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: comment,
-        parentId: replyTo,
-      }),
-    });
-
-    if (res.ok) {
-      const newComment: ForumCommentData = await res.json();
-      setPost((prev) => prev ? { ...prev, comments: [...prev.comments, newComment] } : prev);
-      setComment("");
-      setReplyTo(null);
+  const handleReply = async (content: string, parentId: string | null) => {
+    setSubmittingReply(true);
+    try {
+      const res = await fetch(`/api/forum/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, parentId }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setPost((prev) =>
+          prev
+            ? {
+                ...prev,
+                comments: [...prev.comments, newComment],
+                _count: { ...prev._count, comments: prev._count.comments + 1 },
+              }
+            : prev,
+        );
+      }
+    } finally {
+      setSubmittingReply(false);
     }
-    setSubmittingComment(false);
   };
 
   const handleDelete = async () => {
+    if (!confirm("Delete this post?")) return;
     const res = await fetch(`/api/forum/posts/${postId}`, { method: "DELETE" });
     if (res.ok) router.push("/forum");
   };
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="h-8 w-48 bg-neutral-200 dark:bg-neutral-800 rounded animate-pulse mb-4" />
-        <div className="h-48 bg-neutral-100 dark:bg-neutral-900 rounded-xl animate-pulse" />
+      <div className="min-h-screen bg-neutral-950">
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-4">
+          <div className="h-6 w-32 bg-neutral-900 rounded animate-pulse" />
+          <div className="h-72 rounded-xl bg-neutral-900 animate-pulse" />
+          <div className="h-96 rounded-xl bg-neutral-900 animate-pulse" />
+        </div>
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center">
+      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
         <p className="text-neutral-500">Post not found.</p>
         <Link href="/forum" className="text-primary text-sm mt-2 inline-block hover:underline">
           Back to Forum
@@ -171,118 +151,100 @@ export default function ForumPostPage() {
     );
   }
 
-  const tagColor = FORUM_TAG_COLORS[post.tag] ?? "bg-neutral-100 text-neutral-600";
-  const commentTree = buildCommentTree(post.comments);
-
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <Link href="/forum" className="text-sm text-neutral-500 hover:text-primary transition-colors mb-4 inline-flex items-center gap-1">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Forum
-      </Link>
+    <div className="min-h-screen bg-neutral-950">
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <Link
+          href={post.subreddit ? `/forum/communities/${post.subreddit.slug}` : "/forum"}
+          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-primary transition-colors mb-6"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          {post.subreddit ? `Back to s/${post.subreddit.name}` : "Back to Forum"}
+        </Link>
 
-      <div className="flex gap-4 mt-4">
-        <div className="flex flex-col items-center gap-0.5 shrink-0 pt-1">
-          <button
-            onClick={() => handleVote(1)}
-            className={`p-1 rounded transition-colors ${
-              post.userVote === 1 ? "text-primary" : "text-neutral-400 hover:text-primary"
-            }`}
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-            </svg>
-          </button>
-          <span className={`text-lg font-bold ${
-            post.voteScore > 0 ? "text-primary" : post.voteScore < 0 ? "text-red-500" : "text-neutral-400"
-          }`}>
-            {post.voteScore}
-          </span>
-          <button
-            onClick={() => handleVote(-1)}
-            className={`p-1 rounded transition-colors ${
-              post.userVote === -1 ? "text-red-500" : "text-neutral-400 hover:text-red-500"
-            }`}
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
+        <div className="flex gap-6 lg:gap-8">
+          <div className="flex-1 min-w-0">
+            <article className="mb-6 overflow-hidden">
+              <div className="p-5 sm:p-6 min-w-0">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {post.subreddit && (
+                    <Link
+                      href={`/forum/communities/${post.subreddit.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full text-white hover:opacity-90 transition-opacity"
+                      style={{ backgroundColor: post.subreddit.color }}
+                    >
+                      <CommunityIcon
+                        name={post.subreddit.name}
+                        iconUrl={post.subreddit.iconUrl}
+                        color={post.subreddit.color}
+                        size="sm"
+                        className="!w-4 !h-4 !text-[8px] ring-0"
+                      />
+                      s/{post.subreddit.name}
+                    </Link>
+                  )}
+                  <TagBadge tag={post.tag} size="md" />
+                </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
-            {post.subreddit && (
-              <Link
-                href={`/forum?subredditId=${post.subreddit.id}`}
-                className="text-xs font-medium px-2 py-0.5 rounded-full text-white"
-                style={{ backgroundColor: post.subreddit.color }}
-              >
-                s/{post.subreddit.name}
-              </Link>
-            )}
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${tagColor}`}>{post.tag}</span>
-          </div>
-          <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
-          <div className="flex items-center gap-3 text-sm text-neutral-500 mb-4">
-            <span>{post.author.name}</span>
-            <span>&middot;</span>
-            <span>{timeAgo(post.createdAt)}</span>
-            <button onClick={handleDelete} className="text-red-400 hover:text-red-600 text-xs ml-auto transition-colors">
-              Delete
-            </button>
-          </div>
-          <div className="prose prose-neutral dark:prose-invert max-w-none text-sm whitespace-pre-wrap">
-            {post.content}
-          </div>
-        </div>
-      </div>
+                <div className="flex items-start gap-4 mb-4">
+                  <ForumVoteRail
+                    size="md"
+                    plain
+                    orientation="horizontal"
+                    score={post.voteScore}
+                    userVote={post.userVote}
+                    onVote={handleVote}
+                  />
+                  <h1 className="flex-1 min-w-0 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-neutral-50 pt-0.5">
+                    {post.title}
+                  </h1>
+                </div>
 
-      <hr className="my-8 border-neutral-200 dark:border-neutral-800" />
+                <div className="flex items-center gap-3 pb-4 mb-4">
+                  <Avatar src={post.author.avatarUrl} name={post.author.name} size="md" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-neutral-200">u/{post.author.name}</p>
+                    <p className="text-xs text-neutral-500">{timeAgo(post.createdAt)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
 
-      <div>
-        <h2 className="text-lg font-semibold mb-4">
-          Comments ({post.comments.length})
-        </h2>
+                <div className="text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap text-neutral-300 max-w-none">
+                  {post.content}
+                </div>
 
-        <form onSubmit={handleComment} className="mb-6">
-          {replyTo && (
-            <div className="text-xs text-neutral-500 mb-2 flex items-center gap-2">
-              Replying to a comment
-              <button type="button" onClick={() => setReplyTo(null)} className="text-primary hover:underline">
-                Cancel
-              </button>
+                <PostAttachmentGallery attachments={post.attachments ?? []} />
+              </div>
+            </article>
+
+            <div className="p-5 sm:p-6">
+              <ForumThread
+                comments={post.comments}
+                onSubmitReply={handleReply}
+                submitting={submittingReply}
+              />
             </div>
-          )}
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            rows={3}
-            placeholder={replyTo ? "Write a reply..." : "Add a comment..."}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={submittingComment || !comment.trim()}
-            className="mt-2 px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
-          >
-            {submittingComment ? "Posting..." : replyTo ? "Reply" : "Comment"}
-          </button>
-        </form>
 
-        {commentTree.length === 0 ? (
-          <p className="text-sm text-neutral-400 text-center py-8">
-            No comments yet. Be the first to chime in!
-          </p>
-        ) : (
-          <div className="space-y-1">
-            {commentTree.map((c) => (
-              <CommentNode key={c.id} comment={c} depth={0} onReply={setReplyTo} />
-            ))}
+            <ForumSuggestedPosts
+              posts={suggested}
+              communityName={post.subreddit?.name}
+            />
           </div>
-        )}
+
+          {community && (
+            <aside className="hidden lg:block w-72 shrink-0">
+              <PostCommunitySidebar community={community} />
+            </aside>
+          )}
+        </div>
       </div>
     </div>
   );

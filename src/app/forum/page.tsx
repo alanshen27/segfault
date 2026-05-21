@@ -2,33 +2,26 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import EmptyState from "@/components/EmptyState";
+import ForumPostCard from "@/components/forum/ForumPostCard";
+import ForumSidebar from "@/components/forum/ForumSidebar";
+import TagPicker from "@/components/TagPicker";
 import {
   type ForumPostSummary,
-  type ForumTag,
+  type ForumTagSummary,
   type SubredditSummary,
   type PaginatedResponse,
-  FORUM_TAGS,
-  FORUM_TAG_COLORS,
 } from "@/lib/types";
 
-type TagFilter = ForumTag | "ALL";
+type TagFilter = string | "ALL";
 type SortMode = "new" | "top";
 
-function timeAgo(dateStr: string): string {
-  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}
-
 export default function ForumPage() {
+  const searchParams = useSearchParams();
   const [posts, setPosts] = useState<ForumPostSummary[]>([]);
   const [subreddits, setSubreddits] = useState<SubredditSummary[]>([]);
+  const [tags, setTags] = useState<ForumTagSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [tag, setTag] = useState<TagFilter>("ALL");
   const [sort, setSort] = useState<SortMode>("new");
@@ -37,20 +30,59 @@ export default function ForumPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [showTagCreate, setShowTagCreate] = useState(false);
+
+  const reloadTags = () => {
+    const url = subredditId
+      ? `/api/forum/tags?subredditId=${subredditId}`
+      : "/api/forum/tags";
+    return fetch(url)
+      .then((r) => r.json() as Promise<ForumTagSummary[]>)
+      .then((data) => { if (Array.isArray(data)) setTags(data); });
+  };
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("subredditId");
+    if (fromUrl) setSubredditId(fromUrl);
+  }, [searchParams]);
+
+  useEffect(() => {
+    setTag("ALL");
+    setPage(1);
+    setShowTagCreate(false);
+  }, [subredditId]);
 
   useEffect(() => {
     let active = true;
     fetch("/api/subreddits")
-      .then((r) => r.json())
-      .then((data: SubredditSummary[]) => { if (active) setSubreddits(data); })
+      .then((r) => r.json() as Promise<SubredditSummary[]>)
+      .then((subs) => { if (active) setSubreddits(subs); })
       .catch(() => {});
     return () => { active = false; };
   }, []);
 
   useEffect(() => {
     let active = true;
+    const url = subredditId
+      ? `/api/forum/tags?subredditId=${subredditId}`
+      : "/api/forum/tags";
+    fetch(url)
+      .then((r) => r.json())
+      .then((data: ForumTagSummary[] | { error: string }) => {
+        if (active && Array.isArray(data)) setTags(data);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [subredditId]);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
     const params = new URLSearchParams();
-    if (tag !== "ALL") params.set("tag", tag);
+    if (tag !== "ALL") {
+      if (subredditId) params.set("tag", tag);
+      else params.set("tagId", tag);
+    }
     if (search) params.set("search", search);
     if (subredditId) params.set("subredditId", subredditId);
     params.set("sort", sort);
@@ -100,296 +132,212 @@ export default function ForumPage() {
   const activeSubreddit = subreddits.find((s) => s.id === subredditId);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="flex gap-6">
-        {/* Main Feed */}
-        <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
+      {/* Hero */}
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+        <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                {activeSubreddit ? `s/${activeSubreddit.name}` : "Forum"}
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">
+                Community
+              </p>
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                {activeSubreddit ? (
+                  <>s/{activeSubreddit.name}</>
+                ) : (
+                  <>Forum</>
+                )}
               </h1>
-              {activeSubreddit ? (
-                <p className="text-sm text-neutral-500 mt-0.5">{activeSubreddit.description}</p>
-              ) : (
-                <p className="text-sm text-neutral-500 mt-0.5">{total} discussions</p>
-              )}
+              <p className="text-neutral-500 mt-2 max-w-xl text-sm sm:text-base">
+                {activeSubreddit
+                  ? activeSubreddit.description
+                  : "Discuss problems, share editorials, and connect with other competitive programmers."}
+              </p>
             </div>
-            <Link
-              href="/forum/new"
-              className="px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm"
-            >
-              New Post
-            </Link>
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
-            <div className="flex items-center gap-1 flex-wrap">
-              <button
-                onClick={() => { setTag("ALL"); setPage(1); }}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                  tag === "ALL"
-                    ? "bg-primary text-white"
-                    : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                }`}
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/forum/communities"
+                className="px-4 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
               >
-                All
-              </button>
-              {FORUM_TAGS.map((t) => (
+                Communities
+              </Link>
+              <Link
+                href={activeSubreddit ? `/forum/new?subredditId=${activeSubreddit.id}` : "/forum/new"}
+                className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+              >
+                New Post
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          <div className="flex-1 min-w-0 space-y-4">
+            {/* Toolbar */}
+            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-1 p-1.5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-900/50">
+                {(["new", "top"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => { setSort(mode); setPage(1); }}
+                    className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                      sort === mode
+                        ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
+                        : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
+                    }`}
+                  >
+                    {mode === "new" ? "New" : "Top"}
+                  </button>
+                ))}
+                <div className="flex-1 hidden sm:block" />
+                <div className="relative flex-1 sm:max-w-xs">
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    placeholder="Search discussions..."
+                    className="w-full pl-9 pr-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 flex items-center gap-2 overflow-x-auto">
                 <button
-                  key={t}
-                  onClick={() => { setTag(t); setPage(1); }}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                    tag === t
-                      ? "bg-primary text-white"
-                      : `${FORUM_TAG_COLORS[t]} hover:opacity-80`
+                  type="button"
+                  onClick={() => { setTag("ALL"); setPage(1); }}
+                  className={`shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition-colors ${
+                    tag === "ALL"
+                      ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
+                      : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                   }`}
                 >
-                  {t.charAt(0) + t.slice(1).toLowerCase()}
+                  All
                 </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 ml-auto">
-              <select
-                value={sort}
-                onChange={(e) => { setSort(e.target.value as SortMode); setPage(1); }}
-                className="px-2.5 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs focus:outline-none"
-              >
-                <option value="new">Newest</option>
-                <option value="top">Top Voted</option>
-              </select>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Search..."
-                className="px-2.5 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-xs focus:outline-none focus:ring-1 focus:ring-primary/40 w-36"
-              />
-              {subredditId && (
-                <button
-                  onClick={() => { setSubredditId(""); setPage(1); }}
-                  className="text-xs text-primary hover:underline"
-                >
-                  All communities
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Posts */}
-          {loading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-20 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
-              ))}
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-4xl mb-3 opacity-40">💬</div>
-              <p className="text-neutral-500 font-medium">No posts yet</p>
-              <p className="text-sm text-neutral-400 mt-1">Be the first to start a discussion!</p>
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              {posts.map((post) => {
-                const tagColor = FORUM_TAG_COLORS[post.tag] ?? "bg-neutral-100 text-neutral-600";
-                return (
-                  <div
-                    key={post.id}
-                    className="flex gap-3 p-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:border-primary/30 transition-colors"
-                  >
-                    {/* Vote column */}
-                    <div className="flex flex-col items-center gap-0 shrink-0 w-8">
-                      <button
-                        onClick={() => handleVote(post.id, 1)}
-                        className={`p-0.5 rounded transition-colors ${
-                          post.userVote === 1 ? "text-primary" : "text-neutral-300 dark:text-neutral-600 hover:text-primary"
-                        }`}
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                      </button>
-                      <span className={`text-xs font-bold ${
-                        post.voteScore > 0 ? "text-primary" : post.voteScore < 0 ? "text-red-500" : "text-neutral-400"
-                      }`}>
-                        {post.voteScore}
-                      </span>
-                      <button
-                        onClick={() => handleVote(post.id, -1)}
-                        className={`p-0.5 rounded transition-colors ${
-                          post.userVote === -1 ? "text-red-500" : "text-neutral-300 dark:text-neutral-600 hover:text-red-500"
-                        }`}
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 mb-0.5 text-xs text-neutral-400">
-                        {post.subreddit && (
-                          <>
-                            <button
-                              onClick={() => { setSubredditId(post.subreddit!.id); setPage(1); }}
-                              className="font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors"
-                            >
-                              s/{post.subreddit.name}
-                            </button>
-                            <span>&middot;</span>
-                          </>
-                        )}
-                        <span>{post.author.name}</span>
-                        <span>&middot;</span>
-                        <span>{timeAgo(post.createdAt)}</span>
-                        <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${tagColor}`}>
-                          {post.tag}
-                        </span>
-                      </div>
-                      <Link
-                        href={`/forum/${post.id}`}
-                        className="font-medium text-sm hover:text-primary transition-colors block leading-snug"
-                      >
-                        {post.title}
-                      </Link>
-                      <p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">{post.content}</p>
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-neutral-400">
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                          {post._count.comments} comments
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-              <span className="text-xs text-neutral-500">
-                Page {page} of {totalPages}
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-2.5 py-1 text-xs rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  Prev
-                </button>
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                  let p: number;
-                  if (totalPages <= 5) {
-                    p = i + 1;
-                  } else if (page <= 3) {
-                    p = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    p = totalPages - 4 + i;
-                  } else {
-                    p = page - 2 + i;
-                  }
+                {tags.map((t) => {
+                  const tagKey = subredditId ? t.slug : t.id;
                   return (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`px-2.5 py-1 text-xs rounded border transition-colors ${
-                        p === page
-                          ? "bg-primary text-white border-primary"
-                          : "border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
-                    >
-                      {p}
-                    </button>
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => { setTag(tagKey!); setPage(1); }}
+                    className={`shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition-colors ${
+                      tag === tagKey ? "ring-2 ring-primary ring-offset-1" : ""
+                    } ${t.color}`}
+                  >
+                    {t.name}
+                    {!subredditId && t.subreddit && (
+                      <span className="opacity-60 font-normal ml-1">· s/{t.subreddit.name}</span>
+                    )}
+                  </button>
                   );
                 })}
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-2.5 py-1 text-xs rounded border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="hidden lg:block w-72 shrink-0">
-          <div className="sticky top-20 space-y-4">
-            {/* Communities */}
-            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden">
-              <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
-                <h3 className="text-sm font-semibold">Communities</h3>
-              </div>
-              <div className="p-2">
-                <button
-                  onClick={() => { setSubredditId(""); setPage(1); }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    !subredditId
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
-                  }`}
-                >
-                  🏠 All Posts
-                </button>
-                {subreddits.length === 0 ? (
-                  <p className="px-3 py-2 text-xs text-neutral-400">No communities yet</p>
-                ) : (
-                  subreddits.map((sub) => (
-                    <button
-                      key={sub.id}
-                      onClick={() => { setSubredditId(sub.id); setPage(1); }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-                        subredditId === sub.id
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
-                      }`}
-                    >
-                      <span
-                        className="w-3 h-3 rounded-full shrink-0"
-                        style={{ backgroundColor: sub.color }}
-                      />
-                      <span className="truncate">s/{sub.name}</span>
-                      <span className="ml-auto text-xs text-neutral-400">{sub._count.posts}</span>
-                    </button>
-                  ))
+                {subredditId && (
+                  <button
+                    type="button"
+                    onClick={() => setShowTagCreate((s) => !s)}
+                    className="shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 hover:border-primary hover:text-primary transition-colors"
+                  >
+                    + Tag
+                  </button>
+                )}
+                {subredditId && (
+                  <button
+                    type="button"
+                    onClick={() => { setSubredditId(""); setPage(1); }}
+                    className="shrink-0 ml-auto text-xs text-primary font-medium hover:underline"
+                  >
+                    Clear community filter
+                  </button>
                 )}
               </div>
-              <div className="p-2 border-t border-neutral-200 dark:border-neutral-800">
-                <Link
-                  href="/forum/communities"
-                  className="block text-center text-xs text-primary hover:underline py-1"
-                >
-                  Create Community
-                </Link>
-              </div>
+
+              {showTagCreate && subredditId && (
+                <div className="px-4 pb-4 border-t border-neutral-100 dark:border-neutral-800 pt-3">
+                  <TagPicker
+                    subredditId={subredditId}
+                    value={tag === "ALL" ? "GENERAL" : tag}
+                    onChange={(slug) => {
+                      setTag(slug);
+                      reloadTags();
+                      setShowTagCreate(false);
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Forum Stats */}
-            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4">
-              <h3 className="text-sm font-semibold mb-3">Stats</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Posts</span>
-                  <span className="font-medium">{total}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Communities</span>
-                  <span className="font-medium">{subreddits.length}</span>
+            {/* Feed */}
+            {loading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-32 rounded-xl bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <EmptyState
+                title="No posts yet"
+                description={
+                  activeSubreddit
+                    ? `No discussions in s/${activeSubreddit.name} yet.`
+                    : "Be the first to start a discussion!"
+                }
+                actionLabel="New Post"
+                actionHref={
+                  activeSubreddit
+                    ? `/forum/new?subredditId=${activeSubreddit.id}`
+                    : "/forum/new"
+                }
+              />
+            ) : (
+              <div className="space-y-3">
+                {posts.map((post) => (
+                  <ForumPostCard key={post.id} post={post} onVote={handleVote} />
+                ))}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-xs text-neutral-500 tabular-nums">
+                  Page {page} of {totalPages} · {total} posts
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-white dark:hover:bg-neutral-900 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-white dark:hover:bg-neutral-900 transition-colors"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
+
+          <aside className="hidden lg:block w-72 shrink-0">
+            <ForumSidebar
+              subreddits={subreddits}
+              subredditId={subredditId}
+              totalPosts={total}
+              tagCount={tags.length}
+              onSelectAll={() => { setSubredditId(""); setPage(1); }}
+            />
+          </aside>
         </div>
       </div>
     </div>

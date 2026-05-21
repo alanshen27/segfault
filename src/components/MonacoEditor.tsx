@@ -9,6 +9,8 @@ interface MonacoEditorProps {
   language: string;
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
+  height?: string;
+  className?: string;
 }
 
 export default function MonacoEditor({
@@ -16,6 +18,8 @@ export default function MonacoEditor({
   language,
   onChange,
   readOnly = false,
+  height = "400px",
+  className = "",
 }: MonacoEditorProps) {
   const [mounted, setMounted] = useState(false);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
@@ -28,9 +32,9 @@ export default function MonacoEditor({
   const mappedLang = LANGUAGE_MAP[language?.toLowerCase()] || "plaintext";
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden">
+    <div className={`rounded-xl overflow-hidden bg-[#1e1e1e] ${className}`}>
       {!mounted && (
-        <div className="h-16 bg-neutral-50 dark:bg-neutral-900 flex items-center px-4 border-b border-neutral-200 dark:border-neutral-700">
+        <div className="h-12 bg-[#252526] flex items-center px-4 border-b border-neutral-800">
           <div className="flex items-center gap-2 text-xs text-neutral-500">
             <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -41,7 +45,7 @@ export default function MonacoEditor({
         </div>
       )}
       <Editor
-        height="400px"
+        height={height}
         language={mappedLang}
         value={code}
         onChange={onChange}

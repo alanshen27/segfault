@@ -1,33 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser, requireModerator } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ensureDefaultTags } from "@/lib/forum-tags";
 
 interface SubredditCreateBody {
   name: string;
   description: string;
   color?: string;
+  iconUrl?: string | null;
 }
 
-export async function GET() {
+function serializeSubreddit(s: {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  iconUrl: string | null;
+  bannerUrl: string | null;
+  color: string;
+  createdAt: Date;
+  createdById: string;
+  _count: { posts: number };
+  createdBy: { name: string; avatarUrl: string | null };
+}) {
+  return {
+    id: s.id,
+    name: s.name,
+    slug: s.slug,
+    description: s.description,
+    iconUrl: s.iconUrl,
+    bannerUrl: s.bannerUrl,
+    color: s.color,
+    createdAt: s.createdAt.toISOString(),
+    createdById: s.createdById,
+    _count: s._count,
+    createdBy: s.createdBy,
+  };
+}
+
+export async function GET(request: NextRequest) {
+  const sort = new URL(request.url).searchParams.get("sort") ?? "popular";
+
   const subreddits = await prisma.subreddit.findMany({
     include: {
       _count: { select: { posts: true } },
-      createdBy: { select: { name: true } },
+      createdBy: { select: { name: true, avatarUrl: true } },
     },
-    orderBy: { posts: { _count: "desc" } },
+    orderBy:
+      sort === "new"
+        ? { createdAt: "desc" }
+        : { posts: { _count: "desc" } },
   });
 
-  return NextResponse.json(
-    subreddits.map((s) => ({
-      id: s.id,
-      name: s.name,
-      slug: s.slug,
-      description: s.description,
-      color: s.color,
-      _count: s._count,
-      createdBy: s.createdBy,
-    })),
-  );
+  return NextResponse.json(subreddits.map(serializeSubreddit));
 }
 
 export async function POST(request: NextRequest) {
@@ -36,10 +61,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await requireModerator();
-
   const body: SubredditCreateBody = await request.json();
-  const { name, description, color } = body;
+  const { name, description, color, iconUrl } = body;
 
   if (!name?.trim() || !description?.trim()) {
     return NextResponse.json(
@@ -68,13 +91,16 @@ export async function POST(request: NextRequest) {
       slug,
       description: description.trim(),
       color: color ?? "#D35959",
+      iconUrl: iconUrl ?? null,
       createdById: user.id,
     },
     include: {
       _count: { select: { posts: true } },
-      createdBy: { select: { name: true } },
+      createdBy: { select: { name: true, avatarUrl: true } },
     },
   });
 
-  return NextResponse.json(subreddit, { status: 201 });
+  await ensureDefaultTags(subreddit.id);
+
+  return NextResponse.json(serializeSubreddit(subreddit), { status: 201 });
 }

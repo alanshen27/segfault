@@ -1,20 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { type Prisma } from "@/generated/prisma/client";
 
 interface BankCreateBody {
   name: string;
   description: string;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const url = new URL(request.url);
+  const search = url.searchParams.get("search")?.trim();
+  const sort = url.searchParams.get("sort") ?? "newest";
+
+  const where: Prisma.QuestionBankWhereInput = {};
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  type BankOrderBy = Prisma.QuestionBankOrderByWithRelationInput;
+  let orderBy: BankOrderBy = { createdAt: "desc" };
+  if (sort === "oldest") orderBy = { createdAt: "asc" };
+  else if (sort === "name") orderBy = { name: "asc" };
+  else if (sort === "problems") orderBy = { questions: { _count: "desc" } };
+
   const banks = await prisma.questionBank.findMany({
+    where,
     include: {
       createdBy: { select: { name: true } },
       _count: { select: { questions: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy,
   });
+
   return NextResponse.json(banks);
 }
 

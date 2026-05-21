@@ -46,7 +46,7 @@ export interface QuestionSummary {
   difficulty: Difficulty;
   topic: string;
   author: { name: string };
-  bank: { name: string } | null;
+  bank: { id: string; name: string } | null;
 }
 
 export interface QuestionDetail extends QuestionSummary {
@@ -56,6 +56,7 @@ export interface QuestionDetail extends QuestionSummary {
   sampleOutput: string | null;
   timeLimit: number;
   memoryLimit: number;
+  testCaseCount?: number;
 }
 
 export interface BankSummary {
@@ -151,6 +152,19 @@ export const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   HARD: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
 
+export interface ForumTagSummary {
+  id?: string;
+  slug: string;
+  name: string;
+  color: string;
+  subredditId?: string;
+  subreddit?: { id: string; name: string; slug: string };
+  createdAt?: string;
+  createdBy?: { name: string } | null;
+  _count?: { posts: number };
+}
+
+/** @deprecated use ForumTagSummary from API */
 export const FORUM_TAG = {
   GENERAL: "GENERAL",
   QUESTION: "QUESTION",
@@ -158,16 +172,18 @@ export const FORUM_TAG = {
   META: "META",
 } as const;
 
-export type ForumTag = (typeof FORUM_TAG)[keyof typeof FORUM_TAG];
+export type ForumTagSlug = (typeof FORUM_TAG)[keyof typeof FORUM_TAG];
 
-export const FORUM_TAGS: readonly ForumTag[] = [
+/** @deprecated tags are loaded from /api/forum/tags */
+export const FORUM_TAGS: readonly ForumTagSlug[] = [
   FORUM_TAG.GENERAL,
   FORUM_TAG.QUESTION,
   FORUM_TAG.EDITORIAL,
   FORUM_TAG.META,
 ];
 
-export const FORUM_TAG_COLORS: Record<ForumTag, string> = {
+/** @deprecated use tag.color from API */
+export const FORUM_TAG_COLORS: Record<string, string> = {
   GENERAL: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   QUESTION: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   EDITORIAL: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -179,9 +195,22 @@ export interface SubredditSummary {
   name: string;
   slug: string;
   description: string;
+  iconUrl?: string | null;
+  bannerUrl?: string | null;
   color: string;
+  createdAt: string;
+  createdById?: string;
   _count: { posts: number };
-  createdBy: { name: string };
+  createdBy: { name: string; avatarUrl?: string | null };
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string | null;
+  supabaseId: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -192,14 +221,21 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+export interface ForumPostAttachment {
+  id: string;
+  url: string;
+  sortOrder: number;
+}
+
 export interface ForumPostSummary {
   id: string;
   title: string;
   content: string;
-  tag: ForumTag;
+  tag: ForumTagSummary | null;
   createdAt: string;
-  author: { id: string; name: string };
-  subreddit?: { id: string; name: string; slug: string; color: string } | null;
+  author: { id: string; name: string; avatarUrl?: string | null };
+  subreddit?: { id: string; name: string; slug: string; color: string; iconUrl?: string | null } | null;
+  attachments?: ForumPostAttachment[];
   _count: { comments: number; votes: number };
   voteScore: number;
   userVote?: number | null;
@@ -213,7 +249,7 @@ export interface ForumCommentData {
   id: string;
   content: string;
   createdAt: string;
-  author: { id: string; name: string };
+  author: { id: string; name: string; avatarUrl?: string | null };
   parentId: string | null;
   replies?: ForumCommentData[];
 }

@@ -11,6 +11,7 @@ model User {
   id         String   @id @default(cuid())
   email      String   @unique
   name       String
+  avatarUrl  String?
   role       String   @default("USER") // USER | MODERATOR | ADMIN
   supabaseId String   @unique
   createdAt  DateTime @default(now())
@@ -24,6 +25,7 @@ model User {
   comments     ForumComment[]
   votes        ForumVote[]
   subreddits   Subreddit[]
+  forumTags    ForumTag[]
 }
 
 model Question {
@@ -48,6 +50,17 @@ model Question {
 
   submissions Submission[]
   approvals   Approval[]
+  testCases   QuestionTestCase[]
+}
+
+model QuestionTestCase {
+  id        String @id @default(cuid())
+  input     String @db.Text
+  output    String @db.Text
+  sortOrder Int    @default(0)
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model QuestionBank {
@@ -98,6 +111,8 @@ model Subreddit {
   name        String   @unique
   slug        String   @unique
   description String
+  iconUrl     String?
+  bannerUrl   String?
   color       String   @default("#D35959")
   createdAt   DateTime @default(now())
 
@@ -105,13 +120,31 @@ model Subreddit {
   createdBy   User   @relation(fields: [createdById], references: [id])
 
   posts ForumPost[]
+  tags  ForumTag[]
+}
+
+model ForumTag {
+  id          String   @id @default(cuid())
+  slug        String
+  name        String
+  color       String   @default("bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400")
+  createdAt   DateTime @default(now())
+
+  subredditId String
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+
+  posts ForumPost[]
+
+  @@unique([subredditId, slug])
 }
 
 model ForumPost {
   id        String   @id @default(cuid())
   title     String
   content   String
-  tag       String   @default("GENERAL") // GENERAL | QUESTION | EDITORIAL | META
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -121,8 +154,22 @@ model ForumPost {
   subredditId String?
   subreddit   Subreddit? @relation(fields: [subredditId], references: [id])
 
+  tagId    String?
+  forumTag ForumTag? @relation(fields: [tagId], references: [id])
+
   comments ForumComment[]
   votes    ForumVote[]
+  attachments ForumPostAttachment[]
+}
+
+model ForumPostAttachment {
+  id        String   @id @default(cuid())
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  postId String
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model ForumComment {

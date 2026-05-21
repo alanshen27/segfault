@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { type Prisma } from "@/generated/prisma/client";
+import { sortTestCasesByInputLength } from "@/lib/question-test-cases";
+
+interface TestCaseBody {
+  input: string;
+  output: string;
+}
 
 interface QuestionCreateBody {
   title: string;
@@ -14,7 +20,10 @@ interface QuestionCreateBody {
   timeLimit?: number;
   memoryLimit?: number;
   bankId?: string | null;
+  testCases?: TestCaseBody[];
 }
+
+const MAX_TEST_CASES = 50;
 
 export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
@@ -45,8 +54,9 @@ export async function GET(request: NextRequest) {
   if (bankId) where.bankId = bankId;
   if (search) {
     where.OR = [
-      { title: { contains: search } },
-      { content: { contains: search } },
+      { title: { contains: search, mode: "insensitive" } },
+      { content: { contains: search, mode: "insensitive" } },
+      { topic: { contains: search, mode: "insensitive" } },
     ];
   }
 
@@ -60,7 +70,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         author: { select: { name: true } },
-        bank: { select: { name: true } },
+        bank: { select: { id: true, name: true } },
       },
       orderBy,
       skip: (page - 1) * pageSize,
@@ -85,7 +95,30 @@ export async function POST(request: NextRequest) {
   }
 
   const body: QuestionCreateBody = await request.json();
-  const { title, content, difficulty, topic, constraints, sampleInput, sampleOutput, timeLimit, memoryLimit, bankId } = body;
+  const {
+    title,
+    content,
+    difficulty,
+    topic,
+    constraints,
+    sampleInput,
+    sampleOutput,
+    timeLimit,
+    memoryLimit,
+    bankId,
+    testCases,
+  } = body;
+
+  const sortedCases = sortTestCasesByInputLength(
+    (testCases ?? []).filter((tc) => tc.input?.trim() && tc.output?.trim()),
+  );
+
+  if (sortedCases.length > MAX_TEST_CASES) {
+    return NextResponse.json(
+      { error: `At most ${MAX_TEST_CASES} test cases allowed` },
+      { status: 400 },
+    );
+  }
 
   const question = await prisma.question.create({
     data: {
@@ -101,6 +134,18 @@ export async function POST(request: NextRequest) {
       authorId: user.id,
       bankId: bankId || null,
       approved: user.role === "ADMIN" || user.role === "MODERATOR",
+      ...(sortedCases.length > 0 && {
+        testCases: {
+          create: sortedCases.map((tc, index) => ({
+            input: tc.input,
+            output: tc.output,
+            sortOrder: index,
+          })),
+        },
+      }),
+    },
+    include: {
+      _count: { select: { testCases: true } },
     },
   });
 
