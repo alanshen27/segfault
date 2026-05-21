@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase-client";
 import Avatar from "@/components/Avatar";
-import Image from "next/image"
+import Logo from "@/components/Logo";
 
 interface NavUser {
   email?: string;
@@ -137,7 +137,7 @@ export default function Navbar() {
             href="/"
             className="font-bold text-lg tracking-tight flex items-center gap-2"
           >
-            <Image height={20} width={20} src="/logo.png" alt="segfault logo" />
+            <Logo />
             <span className="text-neutral-900 dark:text-white mb-0.5">segfault</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
