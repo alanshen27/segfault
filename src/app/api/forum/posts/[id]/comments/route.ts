@@ -47,5 +47,7 @@ export async function POST(
     createdAt: comment.createdAt.toISOString(),
     author: comment.author,
     parentId: comment.parentId,
+    voteScore: 0,
+    userVote: null,
   }, { status: 201 });
 }

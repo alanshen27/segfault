@@ -47,6 +47,7 @@ export interface QuestionSummary {
   topic: string;
   author: { name: string };
   bank: { id: string; name: string } | null;
+  solved?: boolean;
 }
 
 export interface QuestionDetail extends QuestionSummary {
@@ -57,6 +58,29 @@ export interface QuestionDetail extends QuestionSummary {
   timeLimit: number;
   memoryLimit: number;
   testCaseCount?: number;
+}
+
+export interface TestCaseRunResult {
+  index: number;
+  label: string;
+  passed: boolean;
+  status: string;
+  time?: string;
+  memory?: number;
+  stdout?: string;
+  stderr?: string;
+  compileOutput?: string;
+  expected?: string;
+  actual?: string;
+}
+
+export interface RunTestsResponse {
+  results: TestCaseRunResult[];
+  passedCount: number;
+  totalCount: number;
+  allPassed: boolean;
+  solved?: boolean;
+  submissionStatus?: SubmissionStatus;
 }
 
 export interface BankSummary {
@@ -83,7 +107,7 @@ export interface ApprovalDetail {
   submittedBy: { name: string; email: string };
 }
 
-export interface PistonRunResult {
+export interface CodeRunResult {
   run: {
     stdout: string;
     stderr: string;
@@ -91,8 +115,10 @@ export interface PistonRunResult {
     signal: string | null;
     output: string;
   };
-  language: string;
-  version: string;
+  status?: { id: number; description: string };
+  time?: string;
+  memory?: number;
+  token?: string;
 }
 
 export interface Language {
@@ -121,20 +147,6 @@ export const BOILERPLATES: Record<string, string> = {
 export const LANGUAGE_MAP: Record<string, string> = {
   python: "python",
   python3: "python",
-  javascript: "javascript",
-  js: "javascript",
-  typescript: "typescript",
-  ts: "typescript",
-  cpp: "cpp",
-  c: "c",
-  java: "java",
-  rust: "rust",
-  go: "go",
-};
-
-export const PISTON_LANGUAGE_MAP: Record<string, string> = {
-  python: "python3",
-  python3: "python3",
   javascript: "javascript",
   js: "javascript",
   typescript: "typescript",
@@ -219,6 +231,7 @@ export interface PaginatedResponse<T> {
   page: number;
   pageSize: number;
   totalPages: number;
+  solvedCount?: number;
 }
 
 export interface ForumPostAttachment {
@@ -251,5 +264,7 @@ export interface ForumCommentData {
   createdAt: string;
   author: { id: string; name: string; avatarUrl?: string | null };
   parentId: string | null;
+  voteScore: number;
+  userVote?: number | null;
   replies?: ForumCommentData[];
 }

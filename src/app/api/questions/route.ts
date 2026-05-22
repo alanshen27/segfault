@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
   const sort = url.searchParams.get("sort") ?? "newest";
   const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
   const pageSize = Math.min(50, Math.max(1, parseInt(url.searchParams.get("pageSize") ?? "20", 10)));
+  const excludeSolved = url.searchParams.get("excludeSolved") === "true";
 
   const where: Prisma.QuestionWhereInput = {};
 
@@ -59,10 +60,33 @@ export async function GET(request: NextRequest) {
     ];
   }
 
+  if (excludeSolved && user) {
+    where.NOT = {
+      submissions: {
+        some: {
+          userId: user.id,
+          status: "ACCEPTED",
+        },
+      },
+    };
+  }
+
   type QuestionOrderBy = Prisma.QuestionOrderByWithRelationInput;
   let orderBy: QuestionOrderBy = { createdAt: "desc" };
   if (sort === "oldest") orderBy = { createdAt: "asc" };
   else if (sort === "title") orderBy = { title: "asc" };
+
+  const solvedQuestionIds = user
+    ? new Set(
+        (
+          await prisma.submission.findMany({
+            where: { userId: user.id, status: "ACCEPTED" },
+            select: { questionId: true },
+            distinct: ["questionId"],
+          })
+        ).map((s) => s.questionId),
+      )
+    : null;
 
   const [questions, total] = await Promise.all([
     prisma.question.findMany({
@@ -79,11 +103,15 @@ export async function GET(request: NextRequest) {
   ]);
 
   return NextResponse.json({
-    data: questions,
+    data: questions.map((q) => ({
+      ...q,
+      solved: solvedQuestionIds?.has(q.id) ?? false,
+    })),
     total,
     page,
     pageSize,
     totalPages: Math.ceil(total / pageSize),
+    solvedCount: solvedQuestionIds?.size ?? 0,
   });
 }
 

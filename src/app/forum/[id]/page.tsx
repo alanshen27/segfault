@@ -103,6 +103,34 @@ export default function ForumPostPage() {
     }
   };
 
+  const handleCommentVote = async (commentId: string, value: number) => {
+    const res = await fetch(`/api/forum/comments/${commentId}/vote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ value }),
+    });
+    if (res.status === 401) {
+      router.push("/login");
+      return;
+    }
+    if (res.ok && post) {
+      const data: { vote: number | null } = await res.json();
+      setPost({
+        ...post,
+        comments: post.comments.map((c) => {
+          if (c.id !== commentId) return c;
+          const oldVote = c.userVote ?? 0;
+          const newVote = data.vote ?? 0;
+          return {
+            ...c,
+            voteScore: c.voteScore - oldVote + newVote,
+            userVote: data.vote,
+          };
+        }),
+      });
+    }
+  };
+
   const handleReply = async (content: string, parentId: string | null) => {
     setSubmittingReply(true);
     try {
@@ -243,6 +271,7 @@ export default function ForumPostPage() {
               <ForumThread
                 comments={post.comments}
                 onSubmitReply={handleReply}
+                onVoteComment={handleCommentVote}
                 submitting={submittingReply}
                 canReply={!!user}
               />

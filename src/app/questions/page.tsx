@@ -11,6 +11,7 @@ import {
   DIFFICULTIES,
   DIFFICULTY_COLORS,
 } from "@/lib/types";
+import { useCurrentUser } from "@/lib/use-current-user";
 
 type DifficultyFilter = Difficulty | "ALL";
 type SortOption = "newest" | "oldest" | "title";
@@ -18,6 +19,7 @@ type SortOption = "newest" | "oldest" | "title";
 export default function QuestionsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useCurrentUser();
 
   const initialPage = parseInt(searchParams.get("page") ?? "1", 10);
   const initialDiff = (searchParams.get("difficulty") ?? "ALL") as DifficultyFilter;
@@ -25,6 +27,7 @@ export default function QuestionsPage() {
   const initialTopic = searchParams.get("topic") ?? "";
   const initialSort = (searchParams.get("sort") ?? "newest") as SortOption;
   const initialSearch = searchParams.get("search") ?? "";
+  const initialExcludeSolved = searchParams.get("excludeSolved") === "true";
 
   const [questions, setQuestions] = useState<QuestionSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +42,8 @@ export default function QuestionsPage() {
   const [topic, setTopic] = useState(initialTopic);
   const [banks, setBanks] = useState<BankSummary[]>([]);
   const [topics, setTopics] = useState<string[]>([]);
+  const [excludeSolved, setExcludeSolved] = useState(initialExcludeSolved);
+  const [solvedCount, setSolvedCount] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -78,6 +83,7 @@ export default function QuestionsPage() {
     params.set("sort", sort);
     params.set("page", String(page));
     params.set("pageSize", "20");
+    if (excludeSolved && user) params.set("excludeSolved", "true");
 
     fetch(`/api/questions?${params.toString()}`)
       .then((r) => r.json())
@@ -86,11 +92,12 @@ export default function QuestionsPage() {
         setQuestions(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
+        setSolvedCount(res.solvedCount ?? 0);
         setLoading(false);
       })
       .catch(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [difficulty, search, bankId, topic, sort, page]);
+  }, [difficulty, search, bankId, topic, sort, page, excludeSolved, user]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -100,9 +107,10 @@ export default function QuestionsPage() {
     if (topic) params.set("topic", topic);
     if (sort !== "newest") params.set("sort", sort);
     if (search) params.set("search", search);
+    if (excludeSolved) params.set("excludeSolved", "true");
     const qs = params.toString();
     router.replace(qs ? `?${qs}` : "/questions", { scroll: false });
-  }, [page, difficulty, bankId, topic, sort, search, router]);
+  }, [page, difficulty, bankId, topic, sort, search, excludeSolved, router]);
 
   const activeBank = useMemo(
     () => banks.find((b) => b.id === bankId),
@@ -116,10 +124,17 @@ export default function QuestionsPage() {
     setSort("newest");
     setSearchInput("");
     setSearch("");
+    setExcludeSolved(false);
     setPage(1);
   };
 
-  const hasFilters = difficulty !== "ALL" || bankId || topic || sort !== "newest" || search;
+  const hasFilters =
+    difficulty !== "ALL"
+    || bankId
+    || topic
+    || sort !== "newest"
+    || search
+    || excludeSolved;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -132,6 +147,9 @@ export default function QuestionsPage() {
           <p className="text-sm text-neutral-500 mt-1">
             {total} problem{total !== 1 ? "s" : ""}
             {activeBank ? ` in ${activeBank.name}` : " available"}
+            {user && solvedCount > 0 && (
+              <> · {solvedCount} solved</>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -216,6 +234,21 @@ export default function QuestionsPage() {
             <option value="title">A–Z</option>
           </select>
 
+          {user && (
+            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={excludeSolved}
+                onChange={(e) => {
+                  setExcludeSolved(e.target.checked);
+                  setPage(1);
+                }}
+                className="rounded border-neutral-300 text-primary focus:ring-primary/40"
+              />
+              Hide solved
+            </label>
+          )}
+
           {hasFilters && (
             <button
               type="button"
@@ -253,8 +286,9 @@ export default function QuestionsPage() {
         </div>
       ) : (
         <>
-          <div className="hidden sm:grid grid-cols-[1fr_100px_140px_120px] gap-2 px-4 py-2 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+          <div className="hidden sm:grid grid-cols-[1fr_72px_100px_140px_120px] gap-2 px-4 py-2 text-xs font-medium text-neutral-500 uppercase tracking-wider">
             <span>Title</span>
+            <span>Status</span>
             <span>Difficulty</span>
             <span>Topic</span>
             <span>Bank</span>
@@ -266,7 +300,7 @@ export default function QuestionsPage() {
                 <Link
                   key={q.id}
                   href={`/questions/${q.id}`}
-                  className="group grid grid-cols-1 sm:grid-cols-[1fr_100px_140px_120px] gap-1 sm:gap-2 items-center px-4 py-3.5 rounded-lg hover:bg-neutral-100/80 dark:hover:bg-neutral-900/60 transition-colors"
+                  className="group grid grid-cols-1 sm:grid-cols-[1fr_72px_100px_140px_120px] gap-1 sm:gap-2 items-center px-4 py-3.5 rounded-lg hover:bg-neutral-100/80 dark:hover:bg-neutral-900/60 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-xs text-neutral-400 font-mono w-6 shrink-0 text-right tabular-nums">
@@ -275,6 +309,18 @@ export default function QuestionsPage() {
                     <span className="font-medium text-sm truncate group-hover:text-primary transition-colors">
                       {q.title}
                     </span>
+                  </div>
+                  <div>
+                    {q.solved ? (
+                      <span className="inline-flex items-center gap-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Solved
+                      </span>
+                    ) : (
+                      <span className="text-xs text-neutral-300 dark:text-neutral-700">—</span>
+                    )}
                   </div>
                   <div>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${diffColor}`}>

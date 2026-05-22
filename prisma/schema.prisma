@@ -24,6 +24,7 @@ model User {
   posts        ForumPost[]
   comments     ForumComment[]
   votes        ForumVote[]
+  commentVotes ForumCommentVote[]
   subreddits   Subreddit[]
   forumTags    ForumTag[]
 }
@@ -187,6 +188,20 @@ model ForumComment {
   parentId String?
   parent   ForumComment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies  ForumComment[] @relation("CommentReplies")
+  votes    ForumCommentVote[]
+}
+
+model ForumCommentVote {
+  id    String @id @default(cuid())
+  value Int    // 1 or -1
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
 }
 
 model ForumVote {

@@ -22,8 +22,8 @@ export default async function HomePage() {
         </h1>
         <p className="text-lg text-neutral-500 max-w-xl mx-auto leading-relaxed">
           Practice with {questionCount}+ curated problems across multiple topics.
-          Write code in the browser with Monaco, run against the Piston compiler
-          API. Submit your own problems for community review.
+          Write code in the browser with Monaco, run against Judge0.
+          Submit your own problems for community review.
         </p>
         <div className="flex justify-center gap-3 pt-4">
           <Link

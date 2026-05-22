@@ -3,11 +3,14 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import MonacoEditor from "@/components/MonacoEditor";
+import TestCaseResults from "@/components/TestCaseResults";
+import { useCodeDraft } from "@/hooks/use-code-draft";
+import { useCurrentUser } from "@/lib/use-current-user";
 import {
   type QuestionDetail,
-  type PistonRunResult,
+  type CodeRunResult,
+  type RunTestsResponse,
   LANGUAGES,
-  BOILERPLATES,
   DIFFICULTY_COLORS,
 } from "@/lib/types";
 
@@ -19,12 +22,13 @@ export default function QuestionDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { user, loaded: userLoaded } = useCurrentUser();
   const [question, setQuestion] = useState<QuestionDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [code, setCode] = useState(BOILERPLATES.python);
-  const [language, setLanguage] = useState("python");
+  const { code, setCode, language, setLanguage, saveState } = useCodeDraft(id);
   const [running, setRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const [testResults, setTestResults] = useState<RunTestsResponse | null>(null);
   const [panel, setPanel] = useState<Panel>("problem");
 
   useEffect(() => {
@@ -39,29 +43,50 @@ export default function QuestionDetailPage({
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
-    setCode(BOILERPLATES[lang] || "");
     setOutput(null);
+    setTestResults(null);
   };
 
-  const runCode = async (stdin?: string) => {
+  const hasSample = Boolean(question?.sampleInput);
+  const hasTests =
+    (question?.testCaseCount ?? 0) > 0 || hasSample;
+
+  const runSample = async () => {
+    if (!question?.sampleInput) return;
     setRunning(true);
     setOutput(null);
+    setTestResults(null);
     setPanel("code");
 
     try {
       const res = await fetch("/api/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language, stdin }),
+        body: JSON.stringify({
+          code,
+          language,
+          stdin: question.sampleInput,
+          timeLimitMs: question.timeLimit,
+          memoryLimitMb: question.memoryLimit,
+        }),
       });
-      const data: PistonRunResult = await res.json();
+      const data: CodeRunResult & { error?: string; details?: string } =
+        await res.json();
+
+      if (!res.ok) {
+        setOutput(data.details ?? data.error ?? "Execution failed");
+        return;
+      }
 
       if (data.run) {
         const out = [
+          data.status?.description &&
+            `Status: ${data.status.description}`,
           data.run.stdout && `STDOUT:\n${data.run.stdout}`,
           data.run.stderr && `STDERR:\n${data.run.stderr}`,
           data.run.output && `OUTPUT:\n${data.run.output}`,
-          data.run.signal && `Signal: ${data.run.signal}`,
+          data.time != null && `Time: ${data.time}s`,
+          data.memory != null && `Memory: ${data.memory} KB`,
           `Exit code: ${data.run.code}`,
         ]
           .filter(Boolean)
@@ -70,6 +95,43 @@ export default function QuestionDetailPage({
         setOutput(out || "(no output)");
       } else {
         setOutput(JSON.stringify(data, null, 2));
+      }
+    } catch (err) {
+      setOutput(`Error: ${String(err)}`);
+    }
+
+    setRunning(false);
+  };
+
+  const runAllTests = async () => {
+    if (!user) {
+      setOutput("Sign in to run against test cases.");
+      setPanel("code");
+      return;
+    }
+
+    setRunning(true);
+    setOutput(null);
+    setTestResults(null);
+    setPanel("code");
+
+    try {
+      const res = await fetch(`/api/questions/${id}/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language }),
+      });
+      const data: RunTestsResponse & { error?: string; details?: string } =
+        await res.json();
+
+      if (!res.ok) {
+        setOutput(data.details ?? data.error ?? "Execution failed");
+        return;
+      }
+
+      setTestResults(data);
+      if (data.allPassed) {
+        setQuestion((q) => (q ? { ...q, solved: true } : q));
       }
     } catch (err) {
       setOutput(`Error: ${String(err)}`);
@@ -146,31 +208,43 @@ export default function QuestionDetailPage({
             <option key={l.value} value={l.value}>{l.label}</option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={() => runCode()}
-          disabled={running}
-          className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 inline-flex items-center gap-1.5"
-        >
-          {running ? "Running..." : "Run"}
-        </button>
-        {question.sampleInput && (
+
+        {hasSample && (
           <button
             type="button"
-            onClick={() => runCode(question.sampleInput ?? undefined)}
+            onClick={runSample}
             disabled={running}
-            className="px-4 py-1.5 rounded-lg bg-neutral-200 dark:bg-neutral-800 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-700 disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50"
           >
-            Run with sample
+            {running ? "Running..." : "Run sample"}
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => { setCode(BOILERPLATES[language] || ""); setOutput(null); }}
-          className="px-3 py-1.5 rounded-lg text-sm text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
-        >
-          Reset
-        </button>
+
+        {hasTests && (
+          <button
+            type="button"
+            onClick={runAllTests}
+            disabled={running || !userLoaded}
+            title={!user ? "Sign in to run test cases" : undefined}
+            className="px-4 py-1.5 rounded-lg bg-neutral-800 dark:bg-neutral-700 text-white text-sm font-semibold hover:bg-neutral-700 dark:hover:bg-neutral-600 disabled:opacity-50"
+          >
+            {running ? "Running..." : "Run tests"}
+          </button>
+        )}
+
+        {!userLoaded ? null : !user && hasTests ? (
+          <Link
+            href="/login"
+            className="text-xs text-primary hover:underline"
+          >
+            Sign in for tests
+          </Link>
+        ) : null}
+
+        <span className="text-xs text-neutral-400 ml-auto">
+          {saveState === "saving" && "Saving…"}
+          {saveState === "saved" && "Saved"}
+        </span>
       </div>
 
       <div className="flex-1 min-h-[320px] p-4 pb-0">
@@ -183,10 +257,25 @@ export default function QuestionDetailPage({
         />
       </div>
 
-      {output !== null && (
+      {testResults && (
+        <TestCaseResults
+          results={testResults.results}
+          passedCount={testResults.passedCount}
+          totalCount={testResults.totalCount}
+          allPassed={testResults.allPassed}
+        />
+      )}
+
+      {output !== null && !testResults && (
         <div className="shrink-0 mx-4 mb-4 mt-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900 max-h-48 overflow-y-auto">
           <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Output</div>
           <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{output}</pre>
+        </div>
+      )}
+
+      {testResults?.allPassed && (
+        <div className="shrink-0 mx-4 mb-4 px-4 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 text-sm font-medium">
+          All tests passed — marked as solved.
         </div>
       )}
     </div>
@@ -208,6 +297,11 @@ export default function QuestionDetailPage({
               <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${difficultyColor}`}>
                 {question.difficulty}
               </span>
+              {question.solved && (
+                <span className="text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  Solved
+                </span>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-neutral-500 mt-1">
               <span>{question.topic}</span>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Avatar from "@/components/Avatar";
+import ForumVoteRail from "@/components/forum/ForumVoteRail";
 import { timeAgo } from "@/lib/forum-utils";
 import { type ForumCommentData } from "@/lib/types";
 
@@ -37,11 +38,13 @@ function ThreadNode({
   comment,
   depth,
   onSubmitReply,
+  onVote,
   canReply,
 }: {
   comment: ForumCommentData;
   depth: number;
   onSubmitReply: (content: string, parentId: string) => Promise<void>;
+  onVote: (commentId: string, value: number) => void;
   canReply: boolean;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -99,7 +102,15 @@ function ThreadNode({
                   <p className="mt-1.5 text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">
                     {comment.content}
                   </p>
-                  <div className="flex items-center gap-3 mt-2">
+                  <div className="flex flex-wrap items-center gap-3 mt-2">
+                    <ForumVoteRail
+                      size="sm"
+                      plain
+                      orientation="horizontal"
+                      score={comment.voteScore}
+                      userVote={comment.userVote}
+                      onVote={(value) => onVote(comment.id, value)}
+                    />
                     {canReply ? (
                       <button
                         type="button"
@@ -177,6 +188,7 @@ function ThreadNode({
                   comment={reply}
                   depth={depth + 1}
                   onSubmitReply={onSubmitReply}
+                  onVote={onVote}
                   canReply={canReply}
                 />
               ))}
@@ -191,6 +203,7 @@ function ThreadNode({
 interface ForumThreadProps {
   comments: ForumCommentData[];
   onSubmitReply: (content: string, parentId: string | null) => Promise<void>;
+  onVoteComment: (commentId: string, value: number) => void;
   submitting: boolean;
   canReply?: boolean;
 }
@@ -198,6 +211,7 @@ interface ForumThreadProps {
 export default function ForumThread({
   comments,
   onSubmitReply,
+  onVoteComment,
   submitting,
   canReply = true,
 }: ForumThreadProps) {
@@ -262,6 +276,7 @@ export default function ForumThread({
               comment={c}
               depth={0}
               onSubmitReply={onSubmitReply}
+              onVote={onVoteComment}
               canReply={canReply}
             />
           ))}

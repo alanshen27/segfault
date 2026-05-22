@@ -1,45 +1,71 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PISTON_LANGUAGE_MAP } from "@/lib/types";
-
-const PISTON_URL = "https://emkc.org/api/v2/piston";
+import {
+  exitCodeFromResult,
+  runCode,
+} from "@/lib/judge0";
 
 interface CompileRequestBody {
   code: string;
   language: string;
   stdin?: string;
+  /** Time limit in milliseconds (from question settings) */
+  timeLimitMs?: number;
+  /** Memory limit in megabytes (from question settings) */
+  memoryLimitMb?: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: CompileRequestBody = await request.json();
-    const { code, language } = body;
+    const { code, language, stdin, timeLimitMs, memoryLimitMb } = body;
 
-    const pistonLang = PISTON_LANGUAGE_MAP[language?.toLowerCase()] || language;
+    if (!code?.trim()) {
+      return NextResponse.json({ error: "Code is required" }, { status: 400 });
+    }
+    if (!language) {
+      return NextResponse.json(
+        { error: "Language is required" },
+        { status: 400 },
+      );
+    }
 
-    const res = await fetch(`${PISTON_URL}/execute`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        language: pistonLang,
-        version: "*",
-        files: [{ content: code }],
-        stdin: body.stdin || "",
-        compileTimeout: 10000,
-        runTimeout: 5000,
-        compileMemoryLimit: -1,
-        runMemoryLimit: -1,
-      }),
+    const cpuTimeLimit =
+      timeLimitMs != null ? Math.max(timeLimitMs / 1000, 1) : 5;
+    const memoryLimit =
+      memoryLimitMb != null ? memoryLimitMb * 1024 : 256 * 1024;
+
+    const result = await runCode({
+      sourceCode: code,
+      language,
+      stdin,
+      cpuTimeLimit,
+      memoryLimit,
     });
 
-    const data: unknown = await res.json();
-    return NextResponse.json(data);
+    const exitCode = exitCodeFromResult(result);
+
+    return NextResponse.json({
+      run: {
+        stdout: result.stdout ?? "",
+        stderr: result.stderr ?? "",
+        output: result.compile_output ?? result.message ?? "",
+        code: exitCode,
+        signal: null,
+      },
+      status: result.status,
+      time: result.time,
+      memory: result.memory,
+      token: result.token,
+    });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const status = message.includes("Unsupported language") ? 400 : 500;
     return NextResponse.json(
       {
-        error: "Compilation failed",
-        details: String(error),
+        error: "Execution failed",
+        details: message,
       },
-      { status: 500 },
+      { status },
     );
   }
 }

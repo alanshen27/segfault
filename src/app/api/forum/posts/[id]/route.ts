@@ -22,6 +22,7 @@ export async function GET(
       comments: {
         include: {
           author: { select: { id: true, name: true, avatarUrl: true } },
+          votes: true,
         },
         orderBy: { createdAt: "asc" },
       },
@@ -57,6 +58,10 @@ export async function GET(
       createdAt: c.createdAt.toISOString(),
       author: c.author,
       parentId: c.parentId,
+      voteScore: c.votes.reduce((sum, v) => sum + v.value, 0),
+      userVote: currentUser
+        ? c.votes.find((v) => v.userId === currentUser.id)?.value ?? null
+        : null,
     })),
   });
 }

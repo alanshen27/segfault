@@ -31,10 +31,24 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  let solved = false;
+  if (user) {
+    const accepted = await prisma.submission.findFirst({
+      where: {
+        questionId: id,
+        userId: user.id,
+        status: "ACCEPTED",
+      },
+      select: { id: true },
+    });
+    solved = !!accepted;
+  }
+
   const { _count, ...rest } = question;
   return NextResponse.json({
     ...rest,
     testCaseCount: _count.testCases,
+    solved,
   });
 }
 

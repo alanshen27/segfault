@@ -8,6 +8,7 @@ interface QuestionCardProps {
   topic: string;
   author?: { name: string };
   bank?: { name: string } | null;
+  solved?: boolean;
 }
 
 export default function QuestionCard({
@@ -17,6 +18,7 @@ export default function QuestionCard({
   topic,
   author,
   bank,
+  solved,
 }: QuestionCardProps) {
   const colorClass =
     DIFFICULTY_COLORS[difficulty] ?? "bg-neutral-100 text-neutral-600";
@@ -27,8 +29,13 @@ export default function QuestionCard({
       className="group block p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-primary/40 dark:hover:border-primary/40 transition-all bg-white dark:bg-neutral-950 hover:shadow-sm"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-medium text-neutral-900 dark:text-white group-hover:text-primary transition-colors">
+        <h3 className="font-medium text-neutral-900 dark:text-white group-hover:text-primary transition-colors flex items-center gap-2">
           {title}
+          {solved && (
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+              Solved
+            </span>
+          )}
         </h3>
         <span
           className={`text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${colorClass}`}
