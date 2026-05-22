@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "segfault",
-  description: "Competitive Programming Trainer",
+  description: "A community for coders to learn — practice problems, discuss solutions, and grow together.",
 };
 
 export default function RootLayout({

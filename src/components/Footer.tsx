@@ -10,7 +10,7 @@ export default function Footer() {
             <Logo />
             <span>segfault</span>
             <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
-            <span>Competitive Programming Trainer</span>
+            <span>A community for coders to learn</span>
           </div>
           <div className="flex items-center gap-4 text-sm text-neutral-500">
             <Link href="/questions" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
