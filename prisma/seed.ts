@@ -404,6 +404,165 @@ Space Complexity: $O(1)$
   }
 
   console.log(`Seeded ${questions.length} questions into "${bank.name}" bank.`);
+
+  // --- MVP Pivot seed data ---
+
+  const builders = [
+    {
+      supabaseId: "seed-builder-1",
+      email: "maya@segfault.dev",
+      name: "Maya Chen",
+    },
+    {
+      supabaseId: "seed-builder-2",
+      email: "liam@segfault.dev",
+      name: "Liam Rodriguez",
+    },
+    {
+      supabaseId: "seed-builder-3",
+      email: "aisha@segfault.dev",
+      name: "Aisha Patel",
+    },
+  ];
+
+  const users = [];
+  for (const b of builders) {
+    const u = await prisma.user.upsert({
+      where: { supabaseId: b.supabaseId },
+      update: {},
+      create: b,
+    });
+    users.push(u);
+  }
+
+  // Builder profiles
+  await prisma.builderProfile.upsert({
+    where: { userId: users[0].id },
+    update: {},
+    create: {
+      userId: users[0].id,
+      bio: "CS sophomore obsessed with developer tools and making things that just work.",
+      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Figma"],
+      interests: ["DevTools", "Web", "Open Source"],
+      timezone: "PST",
+      school: "Stanford",
+      openTo: ["Hackathons", "Startups", "Open Source"],
+      githubUrl: "https://github.com/mayachen",
+      websiteUrl: "https://maya.dev",
+    },
+  });
+
+  await prisma.builderProfile.upsert({
+    where: { userId: users[1].id },
+    update: {},
+    create: {
+      userId: users[1].id,
+      bio: "ML researcher building AI tools for education. Previously interned at DeepMind.",
+      skills: ["Python", "ML/AI", "PostgreSQL", "Docker", "AWS"],
+      interests: ["AI", "EdTech", "Research"],
+      timezone: "EST",
+      school: "MIT",
+      openTo: ["Research", "Startups"],
+      githubUrl: "https://github.com/liamrod",
+      linkedinUrl: "https://linkedin.com/in/liamrod",
+    },
+  });
+
+  await prisma.builderProfile.upsert({
+    where: { userId: users[2].id },
+    update: {},
+    create: {
+      userId: users[2].id,
+      bio: "Full-stack engineer who loves building weird side projects at 2am.",
+      skills: ["TypeScript", "Rust", "Go", "React", "Node.js", "Redis"],
+      interests: ["Games", "Hardware", "Open Source"],
+      timezone: "GMT",
+      school: "Imperial College",
+      openTo: ["Hackathons", "Open Source"],
+      githubUrl: "https://github.com/aishap",
+    },
+  });
+
+  // Projects
+  const project1 = await prisma.project.create({
+    data: {
+      title: "Nomad",
+      tagline: "student social + academic planner",
+      description:
+        "A mobile-first app that combines social features with an academic planner. Students can share their schedules, find study groups, and coordinate campus activities.",
+      githubUrl: "https://github.com/example/nomad",
+      demoUrl: "https://nomad.app",
+      tags: ["Mobile", "EdTech", "Web"],
+      status: "Building",
+      lookingFor: ["Frontend", "Design"],
+      authorId: users[0].id,
+    },
+  });
+
+  const project2 = await prisma.project.create({
+    data: {
+      title: "LabRat",
+      tagline: "AI-powered research paper summarizer",
+      description:
+        "Upload a research paper and get structured summaries, key findings, and related work suggestions powered by fine-tuned language models.",
+      githubUrl: "https://github.com/example/labrat",
+      tags: ["AI", "ML", "EdTech"],
+      status: "Shipped",
+      lookingFor: ["ML", "Research"],
+      authorId: users[1].id,
+    },
+  });
+
+  await prisma.project.create({
+    data: {
+      title: "Pixelcraft",
+      tagline: "collaborative pixel art editor in the browser",
+      description:
+        "Real-time collaborative pixel art with WebSocket sync and export to GIF/PNG. Built for game jams and creative coding sessions.",
+      githubUrl: "https://github.com/example/pixelcraft",
+      demoUrl: "https://pixelcraft.dev",
+      tags: ["Games", "Web", "Open Source"],
+      status: "Idea",
+      lookingFor: ["Frontend", "Backend", "Design"],
+      authorId: users[2].id,
+    },
+  });
+
+  // Build logs
+  await prisma.buildLog.createMany({
+    data: [
+      {
+        content: "shipped auth today, using supabase + prisma. surprisingly painless",
+        authorId: users[0].id,
+        projectId: project1.id,
+      },
+      {
+        content: "spent 4h fixing prisma connection pooling on vercel. serverless is pain",
+        authorId: users[0].id,
+        projectId: project1.id,
+      },
+      {
+        content: "fine-tuned llama 3 on arxiv abstracts. results are surprisingly good",
+        authorId: users[1].id,
+        projectId: project2.id,
+      },
+      {
+        content: "training transformer exploded at epoch 47. need to debug gradient scaling",
+        authorId: users[1].id,
+        projectId: project2.id,
+      },
+      {
+        content: "prototyping websocket sync for the pixel editor. crdt vs ot decisions...",
+        authorId: users[2].id,
+      },
+      {
+        content: "built a tiny rust CLI to batch-convert sprites to gif. 10x faster than python version",
+        authorId: users[2].id,
+      },
+    ],
+  });
+
+  console.log("Seeded MVP pivot data: 3 builders, 3 projects, 6 build logs.");
 }
 
 main()

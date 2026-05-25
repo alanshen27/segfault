@@ -268,3 +268,99 @@ export interface ForumCommentData {
   userVote?: number | null;
   replies?: ForumCommentData[];
 }
+
+// --- MVP Pivot Types ---
+
+export const PROJECT_STATUS = {
+  IDEA: "Idea",
+  BUILDING: "Building",
+  SHIPPED: "Shipped",
+} as const;
+
+export type ProjectStatus = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
+
+export const PROJECT_STATUSES: readonly ProjectStatus[] = [
+  PROJECT_STATUS.IDEA,
+  PROJECT_STATUS.BUILDING,
+  PROJECT_STATUS.SHIPPED,
+];
+
+export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
+  Idea: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  Building: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Shipped: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+};
+
+export const PROJECT_TAGS = [
+  "AI", "Robotics", "Web", "Hackathon", "EdTech", "ML",
+  "Mobile", "DevTools", "Games", "Fintech", "Health", "Open Source",
+] as const;
+
+export type ProjectTag = (typeof PROJECT_TAGS)[number];
+
+export const LOOKING_FOR_ROLES = [
+  "Frontend", "Backend", "ML", "Design", "Research", "Pitching", "Testing",
+] as const;
+
+export type LookingForRole = (typeof LOOKING_FOR_ROLES)[number];
+
+export const BUILDER_SKILLS = [
+  "React", "Next.js", "TypeScript", "Python", "Rust", "Go", "Java",
+  "C++", "Swift", "Kotlin", "Flutter", "Node.js", "Django", "Rails",
+  "PostgreSQL", "MongoDB", "Redis", "Docker", "Kubernetes", "AWS",
+  "GCP", "Figma", "TailwindCSS", "GraphQL", "REST", "ML/AI",
+] as const;
+
+export const BUILDER_INTERESTS = [
+  "AI", "Robotics", "Web", "Mobile", "DevTools", "Games",
+  "Fintech", "Health", "EdTech", "Open Source", "Research", "Hardware",
+] as const;
+
+export const OPEN_TO_OPTIONS = [
+  "Hackathons", "Startups", "Research", "Open Source",
+] as const;
+
+export type OpenToOption = (typeof OPEN_TO_OPTIONS)[number];
+
+export interface ProjectSummary {
+  id: string;
+  title: string;
+  tagline: string;
+  description?: string | null;
+  githubUrl?: string | null;
+  demoUrl?: string | null;
+  tags: string[];
+  status: string;
+  lookingFor: string[];
+  author: { id: string; name: string; avatarUrl?: string | null };
+  createdAt: string;
+}
+
+export interface BuilderProfileSummary {
+  id: string;
+  bio?: string | null;
+  skills: string[];
+  interests: string[];
+  timezone?: string | null;
+  school?: string | null;
+  openTo: string[];
+  githubUrl?: string | null;
+  linkedinUrl?: string | null;
+  websiteUrl?: string | null;
+  user: { id: string; name: string; avatarUrl?: string | null };
+}
+
+export interface BuildLogEntry {
+  id: string;
+  content: string;
+  author: { id: string; name: string; avatarUrl?: string | null };
+  project?: { id: string; title: string } | null;
+  createdAt: string;
+}
+
+export const SITE_STATS = {
+  builders: "30+",
+  sessions: "weekly build sessions",
+  teams: "hackathon teams",
+  shipped: "projects shipped",
+} as const;

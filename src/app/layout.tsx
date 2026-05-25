@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "segfault",
-  description: "A community for coders to learn — practice problems, discuss solutions, and grow together.",
+  title: "segfault.zip",
+  description: "Find builders. Share projects. Ship weird software. A student developer network for project showcases, hackathon teammates, and build logs.",
 };
 
 export default function RootLayout({
