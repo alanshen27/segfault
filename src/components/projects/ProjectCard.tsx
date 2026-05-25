@@ -53,18 +53,23 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
       )}
 
-      <div className="mt-auto pt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mt-auto pt-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           <Avatar
             src={project.author.avatarUrl}
             name={project.author.name}
             size="sm"
           />
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-neutral-500 truncate">
             {project.author.name}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
+          {(project.voteScore ?? 0) !== 0 && (
+            <span className="text-xs font-medium text-neutral-500 tabular-nums">
+              {project.voteScore} upvote{(project.voteScore ?? 0) === 1 ? "" : "s"}
+            </span>
+          )}
           {project.githubUrl && (
             <a
               href={project.githubUrl}

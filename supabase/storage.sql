@@ -5,7 +5,8 @@ values
   ('avatars', 'avatars', true, 2097152, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
   ('community-icons', 'community-icons', true, 2097152, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
   ('community-banners', 'community-banners', true, 5242880, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
-  ('post-images', 'post-images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+  ('post-images', 'post-images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
+  ('project-images', 'project-images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 on conflict (id) do update set
   public = excluded.public,
   file_size_limit = excluded.file_size_limit,
@@ -68,3 +69,16 @@ using (bucket_id = 'post-images');
 create policy "Post image public read"
 on storage.objects for select to public
 using (bucket_id = 'post-images');
+
+-- Project images: authenticated users can upload
+create policy "Project image uploads"
+on storage.objects for insert to authenticated
+with check (bucket_id = 'project-images');
+
+create policy "Project image updates"
+on storage.objects for update to authenticated
+using (bucket_id = 'project-images');
+
+create policy "Project image public read"
+on storage.objects for select to public
+using (bucket_id = 'project-images');

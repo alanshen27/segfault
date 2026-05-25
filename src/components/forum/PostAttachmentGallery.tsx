@@ -11,7 +11,7 @@ export default function PostAttachmentGallery({ attachments }: PostAttachmentGal
 
   return (
     <div className="mt-5 pt-5">
-      <h2 className="text-sm font-semibold text-neutral-400 mb-3">
+      <h2 className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 mb-3">
         Attached photos ({attachments.length})
       </h2>
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -21,7 +21,7 @@ export default function PostAttachmentGallery({ attachments }: PostAttachmentGal
               href={attachment.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl overflow-hidden bg-neutral-900 hover:opacity-90 transition-opacity"
+              className="block rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 hover:opacity-90 transition-opacity"
             >
               <img
                 src={attachment.url}

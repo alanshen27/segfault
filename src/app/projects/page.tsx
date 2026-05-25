@@ -5,6 +5,7 @@ import Link from "next/link";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ProjectFilters from "@/components/projects/ProjectFilters";
 import EmptyState from "@/components/EmptyState";
+import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
 import { type ProjectSummary } from "@/lib/types";
 
 export default function ProjectsPage() {
@@ -37,21 +38,19 @@ export default function ProjectsPage() {
   }, [tag, status, lookingFor]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
-          <p className="text-sm text-neutral-500 mt-1">
-            Share what you&apos;re building. Find collaborators.
-          </p>
-        </div>
-        <Link
-          href="/projects/new"
-          className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shrink-0"
-        >
-          Share a project
-        </Link>
-      </div>
+    <PageContainer className="py-8">
+      <PageHeader
+        title="Projects"
+        description="Share what you're building. Find collaborators."
+        actions={
+          <Link
+            href="/projects/new"
+            className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shrink-0"
+          >
+            Share a project
+          </Link>
+        }
+      />
 
       <ProjectFilters
         tag={tag}
@@ -63,13 +62,12 @@ export default function ProjectsPage() {
       />
 
       {loading ? (
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-48 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse"
-            />
-          ))}
+        <div className="mt-8">
+          <ListSkeleton
+            count={4}
+            layout="grid"
+            className="h-48 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse"
+          />
         </div>
       ) : projects.length === 0 ? (
         <div className="mt-8">
@@ -88,6 +86,6 @@ export default function ProjectsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

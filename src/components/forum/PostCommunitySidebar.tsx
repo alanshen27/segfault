@@ -11,7 +11,7 @@ interface PostCommunitySidebarProps {
 export default function PostCommunitySidebar({ community }: PostCommunitySidebarProps) {
   return (
     <div className="sticky top-20 space-y-4">
-      <div className="rounded-xl bg-neutral-950 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden shadow-sm">
         {community.bannerUrl ? (
           <img
             src={community.bannerUrl}
@@ -32,11 +32,11 @@ export default function PostCommunitySidebar({ community }: PostCommunitySidebar
             iconUrl={community.iconUrl}
             color={community.color}
             size="lg"
-            className="ring-4 ring-neutral-950 mb-3"
+            className="ring-4 ring-white dark:ring-neutral-950 mb-3"
           />
           <Link
             href={`/forum/communities/${community.slug}`}
-            className="text-lg font-bold hover:text-primary transition-colors"
+            className="text-lg font-bold text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors"
           >
             s/{community.name}
           </Link>
@@ -46,11 +46,11 @@ export default function PostCommunitySidebar({ community }: PostCommunitySidebar
           <div className="mt-4 pt-4 text-xs text-neutral-500 space-y-2">
             <div className="flex justify-between">
               <span>Members</span>
-              <span className="font-semibold text-neutral-300">—</span>
+              <span className="font-semibold text-neutral-700 dark:text-neutral-300">—</span>
             </div>
             <div className="flex justify-between">
               <span>Posts</span>
-              <span className="font-semibold text-neutral-300 tabular-nums">
+              <span className="font-semibold text-neutral-700 dark:text-neutral-300 tabular-nums">
                 {community._count.posts}
               </span>
             </div>

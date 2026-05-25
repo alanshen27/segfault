@@ -4,6 +4,7 @@ export const AVATAR_BUCKET = "avatars";
 export const COMMUNITY_ICON_BUCKET = "community-icons";
 export const COMMUNITY_BANNER_BUCKET = "community-banners";
 export const POST_IMAGE_BUCKET = "post-images";
+export const PROJECT_IMAGE_BUCKET = "project-images";
 
 const MAX_POST_IMAGES = 10;
 
@@ -71,6 +72,11 @@ export async function uploadCommunityBanner(slug: string, file: File): Promise<s
 export async function uploadPostImage(postId: string, index: number, file: File): Promise<string> {
   const path = `${postId}/${index}.${extForType(file.type)}`;
   return uploadImage(POST_IMAGE_BUCKET, path, file, 5 * 1024 * 1024);
+}
+
+export async function uploadProjectImage(projectId: string, index: number, file: File): Promise<string> {
+  const path = `${projectId}/${index}.${extForType(file.type)}`;
+  return uploadImage(PROJECT_IMAGE_BUCKET, path, file, 5 * 1024 * 1024);
 }
 
 export { MAX_POST_IMAGES };

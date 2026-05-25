@@ -8,6 +8,21 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const builderProfile = await prisma.builderProfile.findUnique({
+    where: { userId: user.id },
+    select: {
+      bio: true,
+      skills: true,
+      interests: true,
+      timezone: true,
+      school: true,
+      openTo: true,
+      githubUrl: true,
+      linkedinUrl: true,
+      websiteUrl: true,
+    },
+  });
+
   return NextResponse.json({
     id: user.id,
     name: user.name,
@@ -15,6 +30,7 @@ export async function GET() {
     role: user.role,
     avatarUrl: user.avatarUrl,
     supabaseId: user.supabaseId,
+    builderProfile,
   });
 }
 
@@ -39,6 +55,21 @@ export async function PATCH(request: NextRequest) {
     },
   });
 
+  const builderProfile = await prisma.builderProfile.findUnique({
+    where: { userId: updated.id },
+    select: {
+      bio: true,
+      skills: true,
+      interests: true,
+      timezone: true,
+      school: true,
+      openTo: true,
+      githubUrl: true,
+      linkedinUrl: true,
+      websiteUrl: true,
+    },
+  });
+
   return NextResponse.json({
     id: updated.id,
     name: updated.name,
@@ -46,5 +77,6 @@ export async function PATCH(request: NextRequest) {
     role: updated.role,
     avatarUrl: updated.avatarUrl,
     supabaseId: updated.supabaseId,
+    builderProfile,
   });
 }

@@ -52,3 +52,10 @@ body {
   background: var(--primary-200);
   color: var(--primary-900);
 }
+
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background: var(--primary-700);
+    color: var(--foreground);
+  }
+}

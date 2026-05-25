@@ -31,6 +31,9 @@ model User {
   projects       Project[]
   builderProfile BuilderProfile?
   buildLogs      BuildLog[]
+  projectVotes         ProjectVote[]
+  projectComments      ProjectComment[]
+  projectCommentVotes  ProjectCommentVote[]
 }
 
 model Question {
@@ -235,7 +238,10 @@ model Project {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
 
-  buildLogs BuildLog[]
+  buildLogs   BuildLog[]
+  votes       ProjectVote[]
+  comments    ProjectComment[]
+  attachments ProjectAttachment[]
 
   createdAt DateTime @default(now())
 }
@@ -268,7 +274,61 @@ model BuildLog {
   author    User   @relation(fields: [authorId], references: [id])
 
   projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+model ProjectVote {
+  id    String @id @default(cuid())
+  value Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
+model ProjectComment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   ProjectComment?  @relation("ProjectCommentReplies", fields: [parentId], references: [id])
+  replies  ProjectComment[] @relation("ProjectCommentReplies")
+  votes    ProjectCommentVote[]
+}
+
+model ProjectCommentVote {
+  id    String @id @default(cuid())
+  value Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String
+  comment   ProjectComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+}
+
+model ProjectAttachment {
+  id        String   @id @default(cuid())
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

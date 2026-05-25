@@ -72,7 +72,7 @@ function ThreadNode({
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className="shrink-0 mt-3 w-5 h-5 rounded text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 flex items-center justify-center text-xs font-bold transition-colors"
+          className="shrink-0 mt-3 w-5 h-5 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center text-xs font-bold transition-colors"
           aria-label={collapsed ? "Expand thread" : "Collapse thread"}
         >
           {collapsed ? "+" : "−"}
@@ -88,7 +88,7 @@ function ThreadNode({
             />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-                <span className="font-semibold text-neutral-200">
+                <span className="font-semibold text-neutral-900 dark:text-neutral-200">
                   u/{comment.author.name}
                 </span>
                 <span className="text-neutral-500">·</span>
@@ -99,7 +99,7 @@ function ThreadNode({
 
               {!collapsed && (
                 <>
-                  <p className="mt-1.5 text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">
+                  <p className="mt-1.5 text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap leading-relaxed">
                     {comment.content}
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mt-2">
@@ -115,7 +115,7 @@ function ThreadNode({
                       <button
                         type="button"
                         onClick={() => setShowReply((s) => !s)}
-                        className="text-xs font-semibold text-neutral-500 hover:text-neutral-200 transition-colors"
+                        className="text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
                       >
                         Reply
                       </button>
@@ -142,13 +142,13 @@ function ThreadNode({
                         rows={3}
                         autoFocus
                         placeholder={`Reply to u/${comment.author.name}...`}
-                        className="w-full px-3 py-2.5 rounded-lg bg-neutral-900 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+                        className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-transparent bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
                       />
                       <div className="flex justify-end gap-2 mt-2">
                         <button
                           type="button"
                           onClick={() => { setShowReply(false); setReplyText(""); }}
-                          className="px-4 py-1.5 text-xs font-semibold text-neutral-400 hover:text-neutral-200"
+                          className="px-4 py-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                         >
                           Cancel
                         </button>
@@ -179,7 +179,7 @@ function ThreadNode({
 
           {!collapsed && comment.replies && comment.replies.length > 0 && (
             <div
-              className="mt-1 ml-2 sm:ml-3 pl-3 sm:pl-4 border-l border-neutral-800 space-y-0"
+              className="mt-1 ml-2 sm:ml-3 pl-3 sm:pl-4 border-l border-neutral-200 dark:border-neutral-800 space-y-0"
               style={{ marginLeft: depth > 0 ? undefined : "0.25rem" }}
             >
               {comment.replies.map((reply) => (
@@ -228,7 +228,7 @@ export default function ForumThread({
   return (
     <section>
       <div className="flex items-center justify-between mb-4 pb-3">
-        <h2 className="text-base font-semibold text-neutral-100">
+        <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
           Discussion
           <span className="ml-2 text-sm font-normal text-neutral-500 tabular-nums">
             {comments.length} {comments.length === 1 ? "thread" : "threads"}
@@ -243,7 +243,7 @@ export default function ForumThread({
             onChange={(e) => setDraft(e.target.value)}
             rows={4}
             placeholder="Share your thoughts..."
-            className="w-full px-4 py-3 rounded-xl bg-neutral-900 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-transparent bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
           />
           <div className="flex justify-end mt-2">
             <button
@@ -256,7 +256,7 @@ export default function ForumThread({
           </div>
         </form>
       ) : (
-        <div className="mb-6 rounded-xl bg-neutral-900 px-4 py-3 text-sm text-neutral-400">
+        <div className="mb-6 rounded-xl border border-neutral-200 dark:border-transparent bg-neutral-50 dark:bg-neutral-900 px-4 py-3 text-sm text-neutral-600 dark:text-neutral-400">
           <Link href="/login" className="text-primary font-semibold hover:underline">
             Sign in
           </Link>

@@ -16,7 +16,7 @@ interface ForumPostCardProps {
 
 export default function ForumPostCard({ post, onVote, compact = false }: ForumPostCardProps) {
   return (
-    <article className="group flex gap-0 rounded-xl bg-transparent hover:bg-neutral-900/40 transition-colors overflow-hidden">
+    <article className="group flex gap-0 rounded-xl bg-transparent hover:bg-neutral-100/80 dark:hover:bg-neutral-900/40 transition-colors overflow-hidden">
       <ForumVoteRail
         plain
         score={post.voteScore}

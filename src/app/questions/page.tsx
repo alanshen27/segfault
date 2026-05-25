@@ -11,6 +11,7 @@ import {
   DIFFICULTIES,
   DIFFICULTY_COLORS,
 } from "@/lib/types";
+import { PageContainer, PaginationBar } from "@/components/layout";
 import { useCurrentUser } from "@/lib/use-current-user";
 
 type DifficultyFilter = Difficulty | "ALL";
@@ -137,7 +138,7 @@ export default function QuestionsPage() {
     || excludeSolved;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+    <PageContainer width="wide" className="py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">Practice</p>
@@ -336,33 +337,16 @@ export default function QuestionsPage() {
             })}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4">
-              <span className="text-xs text-neutral-500 tabular-nums">
-                Page {page} of {totalPages} · {total} total
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+          <PaginationBar
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            itemLabel="total"
+            onPageChange={setPage}
+            className="mt-6 pt-4"
+          />
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }

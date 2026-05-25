@@ -226,7 +226,7 @@ export default function QuestionDetailPage({
             onClick={runAllTests}
             disabled={running || !userLoaded}
             title={!user ? "Sign in to run test cases" : undefined}
-            className="px-4 py-1.5 rounded-lg bg-neutral-800 dark:bg-neutral-700 text-white text-sm font-semibold hover:bg-neutral-700 dark:hover:bg-neutral-600 disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-white text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-600 disabled:opacity-50 transition-colors"
           >
             {running ? "Running..." : "Run tests"}
           </button>

@@ -6,6 +6,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import EmptyState from "@/components/EmptyState";
 import ForumPostCard from "@/components/forum/ForumPostCard";
 import ForumSidebar from "@/components/forum/ForumSidebar";
+import {
+  ForumHero,
+  ForumPageShell,
+  ListSkeleton,
+  PageContainer,
+  PaginationBar,
+} from "@/components/layout";
 import TagPicker from "@/components/TagPicker";
 import { useCurrentUser } from "@/lib/use-current-user";
 import {
@@ -142,56 +149,43 @@ export default function ForumPage() {
     : "/forum/new";
 
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
-      {/* Hero */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
-        <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">
-                Community
-              </p>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                {activeSubreddit ? (
-                  <>s/{activeSubreddit.name}</>
-                ) : (
-                  <>Forum</>
-                )}
-              </h1>
-              <p className="text-neutral-500 mt-2 max-w-xl text-sm sm:text-base">
-                {activeSubreddit
-                  ? activeSubreddit.description
-                  : "Discuss problems, share editorials, and connect with other competitive programmers."}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
+    <ForumPageShell>
+      <ForumHero
+        eyebrow="Community"
+        title={activeSubreddit ? <>s/{activeSubreddit.name}</> : <>Forum</>}
+        description={
+          activeSubreddit
+            ? activeSubreddit.description
+            : "Discuss problems, share editorials, and connect with other competitive programmers."
+        }
+        actions={
+          <>
+            <Link
+              href="/forum/communities"
+              className="px-4 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+            >
+              Communities
+            </Link>
+            {user ? (
               <Link
-                href="/forum/communities"
-                className="px-4 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                href={newPostHref}
+                className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
               >
-                Communities
+                New Post
               </Link>
-              {user ? (
-                <Link
-                  href={newPostHref}
-                  className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
-                >
-                  New Post
-                </Link>
-              ) : (
-                <Link
-                  href="/login"
-                  className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
-                >
-                  Sign in to Post
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+              >
+                Sign in to Post
+              </Link>
+            )}
+          </>
+        }
+      />
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <PageContainer width="wide" className="py-6">
         <div className="flex gap-6">
           <div className="flex-1 min-w-0 space-y-4">
             {/* Toolbar */}
@@ -293,11 +287,10 @@ export default function ForumPage() {
 
             {/* Feed */}
             {loading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-32 rounded-xl bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
-                ))}
-              </div>
+              <ListSkeleton
+                count={4}
+                className="h-32 rounded-xl bg-neutral-200/60 dark:bg-neutral-900 animate-pulse"
+              />
             ) : posts.length === 0 ? (
               <EmptyState
                 title="No posts yet"
@@ -317,31 +310,13 @@ export default function ForumPage() {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-xs text-neutral-500 tabular-nums">
-                  Page {page} of {totalPages} · {total} posts
-                </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-white dark:hover:bg-neutral-900 transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-300 dark:border-neutral-700 disabled:opacity-30 hover:bg-white dark:hover:bg-neutral-900 transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+            <PaginationBar
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              itemLabel="posts"
+              onPageChange={setPage}
+            />
           </div>
 
           <aside className="hidden lg:block w-72 shrink-0">
@@ -354,7 +329,7 @@ export default function ForumPage() {
             />
           </aside>
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </ForumPageShell>
   );
 }

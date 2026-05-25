@@ -21,20 +21,25 @@ export default function CommunityIcon({
   className = "",
 }: CommunityIconProps) {
   const initial = (name.charAt(0) || "?").toUpperCase();
+  const ring =
+    /\bring-/.test(className)
+      ? ""
+      : "ring-2 ring-white dark:ring-neutral-950";
+  const base = `${SIZES[size]} rounded-full shrink-0 ${ring} ${className}`;
 
   if (iconUrl) {
     return (
       <img
         src={iconUrl}
         alt={name}
-        className={`${SIZES[size]} rounded-full object-cover shrink-0 ring-2 ring-white dark:ring-neutral-950 ${className}`}
+        className={`${base} object-cover`}
       />
     );
   }
 
   return (
     <div
-      className={`${SIZES[size]} rounded-full shrink-0 text-white font-bold flex items-center justify-center ring-2 ring-white dark:ring-neutral-950 ${className}`}
+      className={`${base} text-white font-bold flex items-center justify-center`}
       style={{ backgroundColor: color }}
       aria-hidden
     >

@@ -18,10 +18,28 @@ export async function GET(request: NextRequest) {
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { id: true, name: true, avatarUrl: true } },
+      votes: true,
+      _count: { select: { comments: true, votes: true } },
     },
   });
 
-  return NextResponse.json(projects);
+  return NextResponse.json(
+    projects.map((project) => ({
+      id: project.id,
+      title: project.title,
+      tagline: project.tagline,
+      description: project.description,
+      githubUrl: project.githubUrl,
+      demoUrl: project.demoUrl,
+      tags: project.tags,
+      status: project.status,
+      lookingFor: project.lookingFor,
+      author: project.author,
+      createdAt: project.createdAt.toISOString(),
+      voteScore: project.votes.reduce((sum, v) => sum + v.value, 0),
+      _count: project._count,
+    })),
+  );
 }
 
 interface CreateProjectBody {

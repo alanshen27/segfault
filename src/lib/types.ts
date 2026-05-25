@@ -216,6 +216,18 @@ export interface SubredditSummary {
   createdBy: { name: string; avatarUrl?: string | null };
 }
 
+export interface BuilderProfileData {
+  bio?: string | null;
+  skills: string[];
+  interests: string[];
+  timezone?: string | null;
+  school?: string | null;
+  openTo: string[];
+  githubUrl?: string | null;
+  linkedinUrl?: string | null;
+  websiteUrl?: string | null;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -223,6 +235,7 @@ export interface UserProfile {
   role: string;
   avatarUrl?: string | null;
   supabaseId: string;
+  builderProfile?: BuilderProfileData | null;
 }
 
 export interface PaginatedResponse<T> {
@@ -334,6 +347,21 @@ export interface ProjectSummary {
   lookingFor: string[];
   author: { id: string; name: string; avatarUrl?: string | null };
   createdAt: string;
+  voteScore?: number;
+  userVote?: number | null;
+  _count?: { comments: number; votes: number };
+}
+
+export interface ProjectAttachment {
+  id: string;
+  url: string;
+  sortOrder: number;
+}
+
+export interface ProjectDetail extends ProjectSummary {
+  attachments: ProjectAttachment[];
+  comments: ForumCommentData[];
+  buildLogs: BuildLogEntry[];
 }
 
 export interface BuilderProfileSummary {

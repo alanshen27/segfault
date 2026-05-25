@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import BuilderCard from "@/components/builders/BuilderCard";
 import BuilderFilters from "@/components/builders/BuilderFilters";
 import EmptyState from "@/components/EmptyState";
+import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
 import { type BuilderProfileSummary } from "@/lib/types";
 
 export default function BuildersPage() {
@@ -36,13 +37,11 @@ export default function BuildersPage() {
   }, [skill, interest, openTo]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Builders</h1>
-        <p className="text-sm text-neutral-500 mt-1">
-          Find teammates for your next project or hackathon.
-        </p>
-      </div>
+    <PageContainer className="py-8">
+      <PageHeader
+        title="Builders"
+        description="Find teammates for your next project or hackathon."
+      />
 
       <BuilderFilters
         skill={skill}
@@ -69,7 +68,7 @@ export default function BuildersPage() {
             title="No builders yet"
             description="Be the first to create your builder profile."
             actionLabel="Set up profile"
-            actionHref="/builders/edit"
+            actionHref="/profile"
           />
         </div>
       ) : (
@@ -79,6 +78,6 @@ export default function BuildersPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

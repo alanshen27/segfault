@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import TagPicker from "@/components/TagPicker";
+import { ForumPageShell, PageContainer } from "@/components/layout";
 import PostImagePicker, { type PendingPostImage } from "@/components/PostImagePicker";
 import { uploadPostImage } from "@/lib/storage";
 import { type SubredditSummary } from "@/lib/types";
@@ -83,8 +84,8 @@ export default function NewForumPostPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
-      <div className="max-w-2xl mx-auto px-4 py-8 sm:py-10">
+    <ForumPageShell>
+      <PageContainer width="narrow" className="py-8 sm:py-10">
         <nav className="flex items-center gap-2 mb-6 text-sm text-neutral-500">
           <Link href="/forum" className="hover:text-primary transition-colors">Forum</Link>
           <span>/</span>
@@ -175,7 +176,7 @@ export default function NewForumPostPage() {
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </ForumPageShell>
   );
 }

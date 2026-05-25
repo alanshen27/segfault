@@ -47,5 +47,11 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  return NextResponse.json(log, { status: 201 });
+  return NextResponse.json({
+    id: log.id,
+    content: log.content,
+    createdAt: log.createdAt.toISOString(),
+    author: log.author,
+    project: log.project,
+  }, { status: 201 });
 }

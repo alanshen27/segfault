@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import EmptyState from "@/components/EmptyState";
-import CommunityIcon from "@/components/CommunityIcon";
 import Avatar from "@/components/Avatar";
 import ForumPostCard from "@/components/forum/ForumPostCard";
+import {
+  CommunityHeader,
+  ForumPageShell,
+  PageContainer,
+} from "@/components/layout";
 import {
   type ForumPostSummary,
   type SubredditSummary,
@@ -107,27 +111,38 @@ export default function CommunityPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="h-32 bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
-        <div className="px-4 py-8 space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-lg bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
-          ))}
-        </div>
-      </div>
+      <ForumPageShell>
+        <PageContainer width="community">
+          <div className="relative h-32 sm:h-40 mb-12 sm:mb-3">
+            <div className="absolute inset-0 rounded-b-2xl bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
+            <div className="absolute left-0 bottom-0 z-20 translate-y-1/2 w-20 h-20 rounded-full bg-neutral-200/60 dark:bg-neutral-900 animate-pulse ring-4 ring-neutral-50 dark:ring-neutral-950" />
+          </div>
+          <div className="space-y-3 sm:pl-24">
+            <div className="space-y-2">
+              <div className="h-7 w-40 rounded bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
+              <div className="h-4 w-64 rounded bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
+            </div>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 rounded-xl bg-neutral-200/60 dark:bg-neutral-900 animate-pulse" />
+            ))}
+          </div>
+        </PageContainer>
+      </ForumPageShell>
     );
   }
 
   if (notFound || !community) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <EmptyState
-          title="Community not found"
-          description="This community doesn't exist or may have been removed."
-          actionLabel="Browse communities"
-          actionHref="/forum/communities"
-        />
-      </div>
+      <ForumPageShell>
+        <PageContainer width="community" className="py-8">
+          <EmptyState
+            title="Community not found"
+            description="This community doesn't exist or may have been removed."
+            actionLabel="Browse communities"
+            actionHref="/forum/communities"
+          />
+        </PageContainer>
+      </ForumPageShell>
     );
   }
 
@@ -137,54 +152,33 @@ export default function CommunityPage() {
     : "/login";
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="relative z-0 h-24 sm:h-32 overflow-hidden">
-        {community.bannerUrl ? (
-          <img
-            src={community.bannerUrl}
-            alt=""
-            className="w-full h-full object-cover brightness-75"
-          />
-        ) : (
-          <div
-            className="w-full h-full"
-            style={{
-              background: `linear-gradient(135deg, ${community.color} 0%, ${community.color}99 100%)`,
-            }}
-          />
-        )}
-        <div className="absolute inset-0 bg-black/40" aria-hidden />
-      </div>
-      <div className="relative z-10 px-4 pb-8">
-        <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-10 sm:-mt-12 mb-6">
-          <CommunityIcon
-            name={community.name}
-            iconUrl={community.iconUrl}
-            color={community.color}
-            size="xl"
-            className="relative z-10 shrink-0 ring-4 ring-white dark:ring-neutral-950"
-          />
-          <div className="flex-1 min-w-0 pb-1">
-            <h1 className="text-2xl font-bold tracking-tight">s/{community.name}</h1>
-            <p className="text-sm text-neutral-500 mt-0.5">{community.description}</p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {canManage && (
+    <ForumPageShell>
+      <PageContainer width="community" className="pb-8">
+        <CommunityHeader
+          name={community.name}
+          description={community.description}
+          color={community.color}
+          iconUrl={community.iconUrl}
+          bannerUrl={community.bannerUrl}
+          actions={
+            <>
+              {canManage && (
+                <Link
+                  href={`/forum/communities/${community.slug}/settings`}
+                  className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium bg-white dark:bg-neutral-950 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                >
+                  Settings
+                </Link>
+              )}
               <Link
-                href={`/forum/communities/${community.slug}/settings`}
-                className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                href={createPostHref}
+                className="px-5 py-2 rounded-full bg-primary text-white font-semibold hover:bg-primary-hover transition-colors text-sm text-center shadow-sm"
               >
-                Settings
+                {user ? "Create Post" : "Sign in to Post"}
               </Link>
-            )}
-            <Link
-              href={createPostHref}
-              className="px-5 py-2 rounded-full bg-primary text-white font-semibold hover:bg-primary-hover transition-colors text-sm text-center"
-            >
-              {user ? "Create Post" : "Sign in to Post"}
-            </Link>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         <div className="flex items-center gap-4 mb-6 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-sm">
           <div>
@@ -215,7 +209,7 @@ export default function CommunityPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </PageContainer>
+    </ForumPageShell>
   );
 }

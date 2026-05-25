@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import BuildLogCard from "@/components/logs/BuildLogCard";
 import EmptyState from "@/components/EmptyState";
+import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
+import { inputClass } from "@/lib/styles";
 import { type BuildLogEntry, type ProjectSummary } from "@/lib/types";
 
 export default function LogsPage() {
@@ -61,13 +63,11 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Build Logs</h1>
-        <p className="text-sm text-neutral-500 mt-1">
-          Quick updates on what you&apos;re building. Think commit messages for humans.
-        </p>
-      </div>
+    <PageContainer width="narrow" className="py-8">
+      <PageHeader
+        title="Build Logs"
+        description="Quick updates on what you're building. Think commit messages for humans."
+      />
 
       <form
         onSubmit={handlePost}
@@ -78,7 +78,7 @@ export default function LogsPage() {
           onChange={(e) => setContent(e.target.value)}
           rows={2}
           placeholder="shipped auth today..."
-          className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm resize-none"
+          className={`${inputClass} resize-none`}
         />
         <div className="flex items-center gap-3 mt-3">
           {projects.length > 0 && (
@@ -106,14 +106,7 @@ export default function LogsPage() {
       </form>
 
       {loading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-16 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse"
-            />
-          ))}
-        </div>
+        <ListSkeleton count={3} className="h-16 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
       ) : logs.length === 0 ? (
         <EmptyState
           icon="📝"
@@ -127,6 +120,6 @@ export default function LogsPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

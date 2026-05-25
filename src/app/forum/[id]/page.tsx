@@ -11,6 +11,12 @@ import ForumThread from "@/components/forum/ForumThread";
 import ForumSuggestedPosts from "@/components/forum/ForumSuggestedPosts";
 import PostAttachmentGallery from "@/components/forum/PostAttachmentGallery";
 import PostCommunitySidebar from "@/components/forum/PostCommunitySidebar";
+import {
+  BackLink,
+  ForumPageShell,
+  PageContainer,
+  PageNotFound,
+} from "@/components/layout";
 import { timeAgo } from "@/lib/forum-utils";
 import { useCurrentUser } from "@/lib/use-current-user";
 import {
@@ -164,24 +170,24 @@ export default function ForumPostPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-950">
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-4">
-          <div className="h-6 w-32 bg-neutral-900 rounded animate-pulse" />
-          <div className="h-72 rounded-xl bg-neutral-900 animate-pulse" />
-          <div className="h-96 rounded-xl bg-neutral-900 animate-pulse" />
-        </div>
-      </div>
+      <ForumPageShell>
+        <PageContainer width="wide" className="py-8 space-y-4">
+          <div className="h-6 w-32 bg-neutral-200 dark:bg-neutral-900 rounded animate-pulse" />
+          <div className="h-72 rounded-xl bg-neutral-200 dark:bg-neutral-900 animate-pulse" />
+          <div className="h-96 rounded-xl bg-neutral-200 dark:bg-neutral-900 animate-pulse" />
+        </PageContainer>
+      </ForumPageShell>
     );
   }
 
   if (!post) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <p className="text-neutral-500">Post not found.</p>
-        <Link href="/forum" className="text-primary text-sm mt-2 inline-block hover:underline">
-          Back to Forum
-        </Link>
-      </div>
+      <PageNotFound
+        width="wide"
+        message="Post not found."
+        backHref="/forum"
+        backLabel="Back to Forum"
+      />
     );
   }
 
@@ -192,21 +198,18 @@ export default function ForumPostPage() {
   );
 
   return (
-    <div className="min-h-screen bg-neutral-950">
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-        <Link
+    <ForumPageShell>
+      <PageContainer width="wide" className="py-6 sm:py-8">
+        <BackLink
           href={post.subreddit ? `/forum/communities/${post.subreddit.slug}` : "/forum"}
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-primary transition-colors mb-6"
+          className="mb-6"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
           {post.subreddit ? `Back to s/${post.subreddit.name}` : "Back to Forum"}
-        </Link>
+        </BackLink>
 
         <div className="flex gap-6 lg:gap-8">
           <div className="flex-1 min-w-0">
-            <article className="mb-6 overflow-hidden">
+            <article className="mb-6 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
               <div className="p-5 sm:p-6 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {post.subreddit && (
@@ -228,7 +231,7 @@ export default function ForumPostPage() {
                   <TagBadge tag={post.tag} size="md" />
                 </div>
 
-                <div className="flex items-start gap-4 mb-4">
+                <div className="space-y-3 mb-4">
                   <ForumVoteRail
                     size="md"
                     plain
@@ -237,7 +240,7 @@ export default function ForumPostPage() {
                     userVote={post.userVote}
                     onVote={handleVote}
                   />
-                  <h1 className="flex-1 min-w-0 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-neutral-50 pt-0.5">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-neutral-900 dark:text-neutral-50">
                     {post.title}
                   </h1>
                 </div>
@@ -245,21 +248,21 @@ export default function ForumPostPage() {
                 <div className="flex items-center gap-3 pb-4 mb-4">
                   <Avatar src={post.author.avatarUrl} name={post.author.name} size="md" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-neutral-200">u/{post.author.name}</p>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-200">u/{post.author.name}</p>
                     <p className="text-xs text-neutral-500">{timeAgo(post.createdAt)}</p>
                   </div>
                   {canDelete && (
                     <button
                       type="button"
                       onClick={handleDelete}
-                      className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
+                      className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors"
                     >
                       Delete
                     </button>
                   )}
                 </div>
 
-                <div className="text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap text-neutral-300 max-w-none">
+                <div className="text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap text-neutral-700 dark:text-neutral-300 max-w-none">
                   {post.content}
                 </div>
 
@@ -267,7 +270,7 @@ export default function ForumPostPage() {
               </div>
             </article>
 
-            <div className="p-5 sm:p-6">
+            <div className="p-5 sm:p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
               <ForumThread
                 comments={post.comments}
                 onSubmitReply={handleReply}
@@ -289,7 +292,7 @@ export default function ForumPostPage() {
             </aside>
           )}
         </div>
-      </div>
-    </div>
+      </PageContainer>
+    </ForumPageShell>
   );
 }
