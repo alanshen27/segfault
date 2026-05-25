@@ -15,10 +15,10 @@ interface NavUser {
 }
 
 const NAV_LINKS = [
-  { href: "/questions", label: "Problems" },
-  { href: "/banks", label: "Banks" },
+  { href: "/projects", label: "Projects" },
+  { href: "/builders", label: "Builders" },
+  { href: "/logs", label: "Logs" },
   { href: "/forum", label: "Forum" },
-  { href: "/submit", label: "Submit", authRequired: true },
 ] as const;
 
 export default function Navbar() {
@@ -144,7 +144,7 @@ export default function Navbar() {
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
-                href={"authRequired" in link && link.authRequired && !user ? "/login" : link.href}
+                href={link.href}
                 className={linkClass(link.href)}
               >
                 {link.label}
@@ -186,7 +186,7 @@ export default function Navbar() {
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
-              href={"authRequired" in link && link.authRequired && !user ? "/login" : link.href}
+              href={link.href}
               onClick={closeMobileMenu}
               className={`block py-1 ${linkClass(link.href)}`}
             >

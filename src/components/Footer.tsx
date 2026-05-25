@@ -10,20 +10,20 @@ export default function Footer() {
             <Logo />
             <span>segfault</span>
             <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
-            <span>A community for coders to learn</span>
+            <span>Find builders. Share projects. Ship weird software.</span>
           </div>
           <div className="flex items-center gap-4 text-sm text-neutral-500">
-            <Link href="/questions" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-              Problems
+            <Link href="/projects" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
+              Projects
             </Link>
-            <Link href="/banks" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-              Banks
+            <Link href="/builders" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
+              Builders
+            </Link>
+            <Link href="/logs" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
+              Logs
             </Link>
             <Link href="/forum" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
               Forum
-            </Link>
-            <Link href="/submit" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-              Submit
             </Link>
           </div>
         </div>
