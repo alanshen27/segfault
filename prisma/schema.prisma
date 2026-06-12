@@ -34,6 +34,8 @@ model User {
   projectVotes         ProjectVote[]
   projectComments      ProjectComment[]
   projectCommentVotes  ProjectCommentVote[]
+  prizeAwards          PrizeAward[]       @relation("PrizeRecipient")
+  prizesAwarded        PrizeAward[]       @relation("PrizeGranter")
 }
 
 model Question {
@@ -331,4 +333,37 @@ model ProjectAttachment {
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Prize {
+  id          String  @id @default(cuid())
+  name        String
+  description String
+  type        String  // CERTIFICATE | BADGE | COSMETIC | PERK | PHYSICAL
+  imageUrl    String?
+  rarity      String  @default("COMMON") // COMMON | RARE | LEGENDARY
+  maxSupply   Int?
+  active      Boolean @default(true)
+  createdAt   DateTime @default(now())
+
+  awards PrizeAward[]
+}
+
+model PrizeAward {
+  id            String   @id @default(cuid())
+  certificateNo String   @unique @default(cuid())
+  reason        String
+  equipped      Boolean  @default(false)
+  claimStatus   String   @default("NONE") // NONE | PENDING_CLAIM | CLAIMED | SHIPPED
+  shippingInfo  String?
+  awardedAt     DateTime @default(now())
+
+  prizeId String
+  prize   Prize @relation(fields: [prizeId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation("PrizeRecipient", fields: [userId], references: [id])
+
+  awardedById String?
+  awardedBy   User?  @relation("PrizeGranter", fields: [awardedById], references: [id])
 }

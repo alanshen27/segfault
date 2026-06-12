@@ -12,7 +12,9 @@ import {
   BUILDER_INTERESTS,
   OPEN_TO_OPTIONS,
   type UserProfile,
+  type PrizeAwardSummary,
 } from "@/lib/types";
+import TrophyCase from "@/components/TrophyCase";
 
 function toggleInList(
   arr: string[],
@@ -41,6 +43,7 @@ export default function ProfilePage() {
   const [githubUrl, setGithubUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [awards, setAwards] = useState<PrizeAwardSummary[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +69,13 @@ export default function ProfilePage() {
           setWebsiteUrl(bp.websiteUrl ?? "");
         }
         setLoading(false);
+
+        fetch("/api/prizes/awards?userId=" + data.id)
+          .then((r) => r.json())
+          .then((awardsData: PrizeAwardSummary[]) => {
+            if (active) setAwards(awardsData);
+          })
+          .catch(() => {});
       })
       .catch(() => {
         if (active) {
@@ -146,6 +156,36 @@ export default function ProfilePage() {
   return (
     <PageContainer width="narrow" className="py-8">
       <h1 className="text-2xl font-bold tracking-tight mb-6">Profile</h1>
+
+      {awards.length > 0 && (
+        <div className="mb-6 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+          <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-4">
+            Trophy Case
+          </h2>
+          <TrophyCase
+            awards={awards}
+            editable
+            onEquip={async (awardId, equipped) => {
+              const res = await fetch("/api/prizes/awards/equip", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ awardId, equipped }),
+              });
+              if (res.ok) {
+                setAwards((prev) =>
+                  prev.map((a) => {
+                    if (a.id === awardId) return { ...a, equipped };
+                    if (equipped && a.prize.type === prev.find((x) => x.id === awardId)?.prize.type) {
+                      return { ...a, equipped: false };
+                    }
+                    return a;
+                  }),
+                );
+              }
+            }}
+          />
+        </div>
+      )}
 
       <form
         onSubmit={handleSave}

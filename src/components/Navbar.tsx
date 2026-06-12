@@ -155,6 +155,11 @@ export default function Navbar() {
                 Moderate
               </Link>
             )}
+            {user && user.role === "ADMIN" && (
+              <Link href="/admin/prizes" className={linkClass("/admin/prizes")}>
+                Prizes
+              </Link>
+            )}
           </div>
         </div>
 
@@ -196,6 +201,11 @@ export default function Navbar() {
           {user && (user.role === "MODERATOR" || user.role === "ADMIN") && (
             <Link href="/moderate" onClick={closeMobileMenu} className={`block py-1 ${linkClass("/moderate")}`}>
               Moderate
+            </Link>
+          )}
+          {user && user.role === "ADMIN" && (
+            <Link href="/admin/prizes" onClick={closeMobileMenu} className={`block py-1 ${linkClass("/admin/prizes")}`}>
+              Prizes
             </Link>
           )}
           {user && (

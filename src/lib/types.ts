@@ -375,7 +375,12 @@ export interface BuilderProfileSummary {
   githubUrl?: string | null;
   linkedinUrl?: string | null;
   websiteUrl?: string | null;
-  user: { id: string; name: string; avatarUrl?: string | null };
+  user: {
+    id: string;
+    name: string;
+    avatarUrl?: string | null;
+    equippedBadge?: { name: string; rarity: string } | null;
+  };
 }
 
 export interface BuildLogEntry {
@@ -392,3 +397,90 @@ export const SITE_STATS = {
   teams: "hackathon teams",
   shipped: "projects shipped",
 } as const;
+
+// --- Prize System Types ---
+
+export const PRIZE_TYPE = {
+  CERTIFICATE: "CERTIFICATE",
+  BADGE: "BADGE",
+  COSMETIC: "COSMETIC",
+  PERK: "PERK",
+  PHYSICAL: "PHYSICAL",
+} as const;
+
+export type PrizeType = (typeof PRIZE_TYPE)[keyof typeof PRIZE_TYPE];
+
+export const PRIZE_TYPES: readonly PrizeType[] = [
+  PRIZE_TYPE.CERTIFICATE,
+  PRIZE_TYPE.BADGE,
+  PRIZE_TYPE.COSMETIC,
+  PRIZE_TYPE.PERK,
+  PRIZE_TYPE.PHYSICAL,
+];
+
+export const PRIZE_RARITY = {
+  COMMON: "COMMON",
+  RARE: "RARE",
+  LEGENDARY: "LEGENDARY",
+} as const;
+
+export type PrizeRarity = (typeof PRIZE_RARITY)[keyof typeof PRIZE_RARITY];
+
+export const PRIZE_RARITIES: readonly PrizeRarity[] = [
+  PRIZE_RARITY.COMMON,
+  PRIZE_RARITY.RARE,
+  PRIZE_RARITY.LEGENDARY,
+];
+
+export const PRIZE_RARITY_COLORS: Record<PrizeRarity, string> = {
+  COMMON: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400",
+  RARE: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  LEGENDARY: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+};
+
+export const PRIZE_TYPE_COLORS: Record<PrizeType, string> = {
+  CERTIFICATE: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  BADGE: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  COSMETIC: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
+  PERK: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+  PHYSICAL: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+};
+
+export const CLAIM_STATUS = {
+  NONE: "NONE",
+  PENDING_CLAIM: "PENDING_CLAIM",
+  CLAIMED: "CLAIMED",
+  SHIPPED: "SHIPPED",
+} as const;
+
+export type ClaimStatus = (typeof CLAIM_STATUS)[keyof typeof CLAIM_STATUS];
+
+export interface PrizeSummary {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  imageUrl?: string | null;
+  rarity: string;
+  maxSupply?: number | null;
+  active: boolean;
+  _count: { awards: number };
+}
+
+export interface PrizeAwardSummary {
+  id: string;
+  certificateNo: string;
+  reason: string;
+  equipped: boolean;
+  claimStatus: string;
+  awardedAt: string;
+  prize: {
+    id: string;
+    name: string;
+    type: string;
+    rarity: string;
+    imageUrl?: string | null;
+  };
+  user: { id: string; name: string; avatarUrl?: string | null };
+  awardedBy?: { id: string; name: string } | null;
+}
