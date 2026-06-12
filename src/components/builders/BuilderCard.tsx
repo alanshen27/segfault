@@ -1,4 +1,5 @@
 import Avatar from "@/components/Avatar";
+import PrizeBadge from "@/components/PrizeBadge";
 import { type BuilderProfileSummary } from "@/lib/types";
 
 interface BuilderCardProps {
@@ -15,7 +16,15 @@ export default function BuilderCard({ profile }: BuilderCardProps) {
           size="lg"
         />
         <div className="min-w-0">
-          <h3 className="font-semibold truncate">{profile.user.name}</h3>
+          <h3 className="font-semibold truncate flex items-center gap-1">
+            {profile.user.name}
+            {profile.user.equippedBadge && (
+              <PrizeBadge
+                name={profile.user.equippedBadge.name}
+                rarity={profile.user.equippedBadge.rarity}
+              />
+            )}
+          </h3>
           {profile.school && (
             <p className="text-xs text-neutral-500 truncate">
               {profile.school}

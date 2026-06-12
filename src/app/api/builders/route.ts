@@ -17,11 +17,33 @@ export async function GET(request: NextRequest) {
     where,
     orderBy: { createdAt: "desc" },
     include: {
-      user: { select: { id: true, name: true, avatarUrl: true } },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+          prizeAwards: {
+            where: { equipped: true },
+            take: 1,
+            include: {
+              prize: { select: { name: true, rarity: true, type: true } },
+            },
+          },
+        },
+      },
     },
   });
 
-  return NextResponse.json(profiles);
+  const mapped = profiles.map((p) => {
+    const { prizeAwards, ...user } = p.user;
+    const equippedBadge =
+      prizeAwards.length > 0
+        ? { name: prizeAwards[0].prize.name, rarity: prizeAwards[0].prize.rarity }
+        : null;
+    return { ...p, user: { ...user, equippedBadge } };
+  });
+
+  return NextResponse.json(mapped);
 }
 
 interface UpsertBuilderBody {
