@@ -119,6 +119,36 @@ body {
   }
 }
 
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+}
+
+.text-outline-paper {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--paper);
+}
+
+.stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--ink) 0,
+    var(--ink) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+}
+
+.ticker-track-reverse {
+  animation: ticker-scroll 26s linear infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track-reverse {
+    animation: none;
+  }
+}
+
 .grain::before {
   content: "";
   position: absolute;

@@ -128,17 +128,30 @@ export default async function HomePage() {
     <div className="bg-white dark:bg-neutral-950 text-ink">
       {/* Hero */}
       <section className="relative border-b-2 border-ink">
-        <div className="max-w-6xl mx-auto px-4 pt-14 pb-12 sm:pt-20 sm:pb-16">
+        <div className="relative max-w-6xl mx-auto px-4 pt-14 pb-12 sm:pt-20 sm:pb-16">
+          <span
+            className="hidden md:block absolute right-6 top-10 rotate-6 border-2 border-ink bg-primary text-white font-mono text-xs uppercase tracking-widest px-3 py-2 shadow-hard-sm"
+            aria-hidden
+          >
+            ★ 100% real software
+          </span>
+          <span
+            className="hidden md:block absolute right-40 top-24 -rotate-3 border-2 border-ink bg-paper font-mono text-xs uppercase tracking-widest px-3 py-2 shadow-hard-sm"
+            aria-hidden
+          >
+            no lectures ✶ no gatekeeping
+          </span>
           <p className="rise-in font-mono text-xs sm:text-sm">
             <span className="bg-ink text-paper px-1.5 py-0.5">segfault</span>{" "}
-            — a community, not a course
+            — a community, not a course{" "}
+            <span className="text-primary">✶✶✶</span>
           </p>
-          <h1 className="rise-in rise-in-1 font-display mt-6 text-[2.6rem] leading-[0.95] sm:text-6xl lg:text-[5.5rem]">
+          <h1 className="rise-in rise-in-1 font-display mt-6 text-[3rem] leading-[0.92] sm:text-7xl lg:text-[7rem]">
             Learn to build
             <br />
             <span className="text-primary">real things</span>
             <br />
-            with AI.
+            <span className="text-outline">with AI.</span>
           </h1>
           <div className="mt-10 grid lg:grid-cols-[1.2fr_1fr] gap-10 items-end">
             <div>
@@ -199,6 +212,7 @@ export default async function HomePage() {
         </div>
 
         {/* Ticker */}
+        <div className="border-t-2 border-ink stripes h-4" aria-hidden />
         <div className="border-t-2 border-ink bg-ink text-paper py-3 overflow-hidden">
           <div className="ticker-track flex w-max whitespace-nowrap" aria-hidden>
             {[0, 1].map((half) => (
@@ -218,12 +232,18 @@ export default async function HomePage() {
       </section>
 
       {/* Tracks */}
-      <section className="max-w-6xl mx-auto px-4 py-16 sm:py-24">
+      <section className="relative max-w-6xl mx-auto px-4 py-16 sm:py-24">
+        <span
+          className="hidden lg:block absolute right-8 top-16 -rotate-6 border-2 border-ink bg-paper font-mono text-xs uppercase tracking-widest px-3 py-2 shadow-hard-sm"
+          aria-hidden
+        >
+          pick one ↓ or all three
+        </span>
         <div className="max-w-3xl">
-          <SectionLabel>The tracks</SectionLabel>
-          <h2 className="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl leading-[1.02]">
-            Vibe coding is the craft.{" "}
-            <em className="text-neutral-400 dark:text-neutral-600">
+          <SectionLabel>The tracks ✶</SectionLabel>
+          <h2 className="font-display mt-4 text-4xl sm:text-5xl lg:text-6xl leading-[0.98]">
+            Vibe coding is <span className="text-primary">the craft.</span>{" "}
+            <em className="text-outline">
               These are the places to practice it.
             </em>
           </h2>
@@ -256,9 +276,10 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-16 sm:py-24">
           <div className="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-16">
             <div>
-              <SectionLabel>The method</SectionLabel>
-              <h2 className="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl leading-[1.02]">
-                Learn by <span className="text-primary">shipping.</span>
+              <SectionLabel>The method ■</SectionLabel>
+              <h2 className="font-display mt-4 text-4xl sm:text-5xl lg:text-6xl leading-[0.98]">
+                Learn by{" "}
+                <span className="bg-primary text-white px-2">shipping.</span>
               </h2>
               <p className="mt-5 text-neutral-700 dark:text-neutral-300 leading-relaxed max-w-md">
                 Tutorials teach you to follow. Shipping teaches you to build.
@@ -291,9 +312,10 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-4 py-16 sm:py-24">
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <SectionLabel>From the workshop</SectionLabel>
-            <h2 className="font-display mt-4 text-3xl sm:text-4xl leading-[1.02]">
-              What&apos;s being built right now
+            <SectionLabel>From the workshop ★</SectionLabel>
+            <h2 className="font-display mt-4 text-4xl sm:text-5xl leading-[0.98]">
+              What&apos;s being built{" "}
+              <span className="text-primary">right now</span>
             </h2>
           </div>
           <Link
@@ -410,10 +432,10 @@ export default async function HomePage() {
       <section className="border-y-2 border-ink bg-paper">
         <div className="max-w-6xl mx-auto px-4 py-16 sm:py-24">
           <div className="max-w-3xl">
-            <SectionLabel>How it works</SectionLabel>
-            <h2 className="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl leading-[1.02]">
+            <SectionLabel>How it works ✶</SectionLabel>
+            <h2 className="font-display mt-4 text-4xl sm:text-5xl lg:text-6xl leading-[0.98]">
               A community that runs on{" "}
-              <span className="text-primary">momentum</span>
+              <span className="bg-primary text-white px-2">momentum</span>
             </h2>
           </div>
           <div className="mt-12 grid sm:grid-cols-2 border-2 border-ink bg-white dark:bg-neutral-950 shadow-hard divide-y-2 divide-ink sm:divide-y-0">
@@ -435,12 +457,31 @@ export default async function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-ink text-paper">
+      <section className="bg-ink text-paper overflow-hidden">
+        <div className="border-b-2 border-paper/20 py-3 overflow-hidden">
+          <div
+            className="ticker-track-reverse flex w-max whitespace-nowrap"
+            aria-hidden
+          >
+            {[0, 1].map((half) => (
+              <div key={half} className="flex">
+                {TICKER_ITEMS.map((item) => (
+                  <span
+                    key={`${half}-${item}`}
+                    className="font-display text-2xl uppercase px-5 text-outline-paper"
+                  >
+                    {item} <span className="text-primary">★</span>
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="max-w-6xl mx-auto px-4 py-20 sm:py-28 text-center">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
             {"// no prerequisites, just intent"}
           </p>
-          <h2 className="font-display mt-5 text-3xl sm:text-5xl lg:text-6xl leading-[0.98]">
+          <h2 className="font-display mt-5 text-4xl sm:text-6xl lg:text-[5.5rem] leading-[0.92]">
             Come build
             <br />
             something <span className="text-primary">real.</span>
