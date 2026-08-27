@@ -115,7 +115,7 @@ async function getCommunityActivity() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-mono text-xs lowercase tracking-[0.18em] text-primary">
+    <p className="font-mono text-xs lowercase tracking-[0.18em] text-neutral-400 dark:text-neutral-500">
       <span aria-hidden>✳ </span>
       {children}
     </p>
@@ -129,64 +129,82 @@ export default async function HomePage() {
     <div className="bg-paper text-ink">
       {/* Hero */}
       <section className="border-b border-neutral-200 dark:border-neutral-800">
-        <div className="max-w-5xl mx-auto px-4 pt-20 pb-16 sm:pt-28 sm:pb-24">
-          <p className="rise-in font-mono text-xs sm:text-sm text-neutral-500">
-            segfault <span className="text-primary">✳</span> a community, not a
-            course
-          </p>
-          <h1 className="rise-in rise-in-1 font-display mt-6 text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">
-            learn to build <span className="text-primary">real things</span>
-            <br />
-            with AI.
-          </h1>
-          <p className="rise-in rise-in-2 mt-6 max-w-xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
-            Segfault is where ambitious young builders learn vibe coding —
-            shipping actual software with AI as a collaborator, alongside
-            people doing the same.
-          </p>
-          <div className="rise-in rise-in-3 mt-9 flex flex-wrap items-center gap-3">
-            <a
-              href={DISCORD_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              join the discord
-            </a>
-            <Link
-              href="/projects"
-              className="px-6 py-3 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:border-primary hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              see what people ship
-            </Link>
-          </div>
-
-          <div
-            className="rise-in rise-in-3 mt-14 max-w-md rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden"
-            aria-hidden
-          >
-            <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-neutral-200 dark:border-neutral-800">
-              <span className="w-2 h-2 rounded-full bg-primary/50" />
-              <span className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-              <span className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-              <span className="ml-2 font-mono text-[11px] text-neutral-400">
-                ~/segfault
-              </span>
+        <div className="max-w-6xl mx-auto px-4 pt-20 pb-16 sm:pt-24 sm:pb-20">
+          <div className="grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-center">
+            <div>
+              <p className="rise-in font-mono text-xs sm:text-sm text-neutral-500">
+                segfault <span className="text-primary">✳</span> a community,
+                not a course
+              </p>
+              <h1 className="rise-in rise-in-1 font-display mt-6 text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">
+                learn to build real things
+                <br />
+                with AI.
+              </h1>
+              <p className="rise-in rise-in-2 mt-6 max-w-xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+                Segfault is where ambitious young builders learn vibe coding —
+                shipping actual software with AI as a collaborator, alongside
+                people doing the same.
+              </p>
+              <div className="rise-in rise-in-3 mt-9 flex flex-wrap items-center gap-3">
+                <a
+                  href={DISCORD_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  join the discord
+                </a>
+                <Link
+                  href="/projects"
+                  className="px-6 py-3 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:border-neutral-500 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  see what people ship
+                </Link>
+              </div>
             </div>
-            <div className="p-4 font-mono text-[13px] leading-6 text-neutral-500 dark:text-neutral-400">
-              <p>
-                <span className="text-primary">$</span> segfault init
-              </p>
-              <p className="text-neutral-400 dark:text-neutral-500">
-                → idea: something your friends would actually use
-              </p>
-              <p className="text-neutral-400 dark:text-neutral-500">
-                → mentor: online · community: 24/7
-              </p>
-              <p className="mt-1">
-                <span className="text-primary">$</span> ship
-                <span className="cursor-blink text-primary">▌</span>
-              </p>
+
+            <div className="rise-in rise-in-2 relative hidden lg:block" aria-hidden>
+              <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-16px_rgba(0,0,0,0.12)] overflow-hidden">
+                <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-neutral-200 dark:border-neutral-800">
+                  <span className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                  <span className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                  <span className="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                  <span className="ml-2 font-mono text-[11px] text-neutral-400">
+                    ~/segfault
+                  </span>
+                </div>
+                <div className="p-5 font-mono text-[13px] leading-6 text-neutral-500 dark:text-neutral-400">
+                  <p>
+                    <span className="text-neutral-400">$</span> segfault init
+                  </p>
+                  <p className="text-neutral-400 dark:text-neutral-500">
+                    → idea: something your friends would actually use
+                  </p>
+                  <p className="text-neutral-400 dark:text-neutral-500">
+                    → stack: whatever ships fastest
+                  </p>
+                  <p className="text-neutral-400 dark:text-neutral-500">
+                    → mentor: online · community: 24/7
+                  </p>
+                  <p className="mt-2">
+                    <span className="text-neutral-400">$</span> ship
+                    <span className="cursor-blink text-primary">▌</span>
+                  </p>
+                </div>
+              </div>
+              <div className="absolute -bottom-6 -left-8 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-16px_rgba(0,0,0,0.12)] px-4 py-3">
+                <p className="font-mono text-[11px] text-neutral-400">
+                  build log · just now
+                </p>
+                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
+                  shipped v0.2 — demo friday 👋
+                </p>
+              </div>
+              <div className="absolute -top-4 -right-4 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-3.5 py-1.5 font-mono text-[11px] text-neutral-500 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" />
+                mentor online
+              </div>
             </div>
           </div>
         </div>
@@ -201,7 +219,7 @@ export default async function HomePage() {
                     key={`${half}-${item}`}
                     className="font-mono text-xs lowercase tracking-[0.18em] text-neutral-400 dark:text-neutral-600 px-6"
                   >
-                    {item} <span className="text-primary/60 px-2">✳</span>
+                    {item} <span className="text-neutral-300 dark:text-neutral-700 px-2">✳</span>
                   </span>
                 ))}
               </div>
@@ -216,7 +234,7 @@ export default async function HomePage() {
           <SectionLabel>the tracks</SectionLabel>
           <h2 className="font-display mt-3 text-3xl sm:text-4xl leading-[1.08]">
             vibe coding is the craft.{" "}
-            <span className="text-neutral-400 dark:text-neutral-600">
+            <span className="text-neutral-400 dark:text-neutral-500">
               these are the places to practice it.
             </span>
           </h2>
@@ -236,7 +254,7 @@ export default async function HomePage() {
               <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed flex-1">
                 {track.description}
               </p>
-              <p className="mt-5 font-mono text-xs text-primary/80">
+              <p className="mt-5 font-mono text-xs text-neutral-400 dark:text-neutral-500">
                 {track.terminal}
               </p>
             </article>
@@ -251,7 +269,7 @@ export default async function HomePage() {
             <div>
               <SectionLabel>the method</SectionLabel>
               <h2 className="font-display mt-3 text-3xl sm:text-4xl leading-[1.08]">
-                learn by <span className="text-primary">shipping.</span>
+                learn by shipping.
               </h2>
               <p className="mt-5 text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-md">
                 Tutorials teach you to follow. Shipping teaches you to build.
@@ -262,7 +280,7 @@ export default async function HomePage() {
             <ol className="divide-y divide-neutral-200 dark:divide-neutral-800">
               {SHIPPING_STEPS.map((step, i) => (
                 <li key={step.label} className="py-6 first:pt-0 last:pb-0 flex gap-5">
-                  <span className="font-mono text-xs text-primary pt-1.5 shrink-0">
+                  <span className="font-mono text-xs text-neutral-400 pt-1.5 shrink-0">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -405,15 +423,14 @@ export default async function HomePage() {
           <div className="max-w-2xl">
             <SectionLabel>how it works</SectionLabel>
             <h2 className="font-display mt-3 text-3xl sm:text-4xl leading-[1.08]">
-              a community that runs on{" "}
-              <span className="text-primary">momentum</span>
+              a community that runs on momentum
             </h2>
           </div>
           <div className="mt-10 grid sm:grid-cols-2 gap-x-10 gap-y-8">
             {COMMUNITY_ITEMS.map((item) => (
               <div key={item.title}>
                 <h3 className="font-display text-lg leading-snug">
-                  <span className="text-primary" aria-hidden>
+                  <span className="text-neutral-300 dark:text-neutral-600" aria-hidden>
                     ✳{" "}
                   </span>
                   {item.title}
@@ -430,11 +447,11 @@ export default async function HomePage() {
       {/* Final CTA */}
       <section>
         <div className="max-w-5xl mx-auto px-4 py-20 sm:py-28 text-center">
-          <p className="font-mono text-xs lowercase tracking-[0.18em] text-primary">
+          <p className="font-mono text-xs lowercase tracking-[0.18em] text-neutral-400">
             {"// no prerequisites, just intent"}
           </p>
           <h2 className="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl leading-[1.05]">
-            come build something <span className="text-primary">real.</span>
+            come build something real.
           </h2>
           <p className="mt-5 max-w-lg mx-auto text-neutral-600 dark:text-neutral-400 leading-relaxed">
             The Discord is where sessions happen, questions get answered, and
