@@ -79,12 +79,44 @@ body {
 
 .font-display {
   font-family: var(--font-display), var(--font-geist-sans), sans-serif;
-  font-weight: 700;
+  font-weight: 400;
   font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .font-display em {
   font-style: normal;
+}
+
+.shadow-hard {
+  box-shadow: 6px 6px 0 0 var(--ink);
+}
+
+.shadow-hard-sm {
+  box-shadow: 4px 4px 0 0 var(--ink);
+}
+
+.shadow-hard-primary {
+  box-shadow: 6px 6px 0 0 var(--primary);
+}
+
+@media (hover: hover) {
+  .hover-lift {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .hover-lift:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 0 var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift,
+  .hover-lift:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 .grain::before {
