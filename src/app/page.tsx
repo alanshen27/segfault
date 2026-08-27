@@ -139,10 +139,9 @@ export default async function HomePage() {
                 <span className="text-primary">segfault</span> — a community,
                 not a course
               </p>
-              <h1 className="rise-in rise-in-1 font-display mt-5 text-5xl sm:text-6xl lg:text-7xl leading-[1.02] tracking-tight">
+              <h1 className="rise-in rise-in-1 font-display mt-5 text-4xl sm:text-5xl lg:text-6xl leading-[1.06] tracking-tight">
                 Learn to build{" "}
-                <em className="text-primary">real things</em>
-                <br className="hidden sm:block" /> with AI.
+                <em className="text-primary">real things</em> with AI.
               </h1>
               <p className="rise-in rise-in-2 mt-6 max-w-xl text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 Segfault is where ambitious young builders learn vibe coding —
@@ -450,7 +449,7 @@ export default async function HomePage() {
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
             {"// no prerequisites, just intent"}
           </p>
-          <h2 className="font-display mt-4 text-4xl sm:text-5xl lg:text-6xl tracking-tight">
+          <h2 className="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl tracking-tight">
             Come build something{" "}
             <em className="text-primary">real.</em>
           </h2>
