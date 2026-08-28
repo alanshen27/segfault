@@ -138,7 +138,7 @@ export default function Navbar() {
             className="font-bold text-lg tracking-tight flex items-center gap-2"
           >
             <Logo />
-            <span className="text-neutral-900 dark:text-white mb-0.5">oat.cafe</span>
+            <span className="text-neutral-900 dark:text-white mb-0.5">brew.coffee</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map((link) => (

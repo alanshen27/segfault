@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-neutral-500">
             <Logo />
-            <span className="font-semibold text-neutral-700 dark:text-neutral-300">oat.cafe</span>
+            <span className="font-semibold text-neutral-700 dark:text-neutral-300">brew.coffee</span>
             <span className="text-neutral-300 dark:text-neutral-700">&middot;</span>
             <span className="font-mono text-xs">learn to build real things with AI</span>
           </div>
