@@ -3,17 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #6f4e37;
-  --primary-hover: #5a3f2c;
-  --primary-light: #f0e7dc;
-  --primary-dark: #4a3324;
+  --primary: #2b2019;
+  --primary-hover: #191310;
+  --primary-light: #efe9e0;
+  --primary-dark: #191310;
   --primary-50: #faf6f0;
   --primary-100: #f3ebe0;
   --primary-200: #e3d3c1;
-  --primary-500: #6f4e37;
-  --primary-600: #5a3f2c;
-  --primary-700: #483225;
-  --primary-900: #2b1e16;
+  --primary-500: #2b2019;
+  --primary-600: #221a14;
+  --primary-700: #1a1410;
+  --primary-900: #0f0b09;
 }
 
 @theme inline {
@@ -35,17 +35,20 @@
   --font-display: var(--font-display);
   --color-ink: var(--ink);
   --color-paper: var(--paper);
+  --color-card: var(--card);
 }
 
 :root {
-  --ink: #2e241c;
-  --paper: #f7f1e8;
+  --ink: #2b2019;
+  --paper: #f4eee4;
+  --card: #faf6ee;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --ink: #efe7dc;
     --paper: #17120e;
+    --card: #1e1813;
   }
 }
 
@@ -53,9 +56,9 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --primary: #8a6a50;
-    --primary-hover: #9c7a5e;
-    --primary-light: #2a211a;
+    --primary: #6b5240;
+    --primary-hover: #7d6350;
+    --primary-light: #2a221b;
   }
 }
 

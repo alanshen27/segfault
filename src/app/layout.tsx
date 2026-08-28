@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+      <body className="min-h-full flex flex-col bg-paper text-neutral-900 dark:text-neutral-100">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

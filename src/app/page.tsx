@@ -116,7 +116,7 @@ function FeedCard({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 ${className}`}
+      className={`rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card ${className}`}
     >
       {children}
     </section>
@@ -171,7 +171,7 @@ export default async function HomePage() {
       <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] gap-8 items-start">
         {/* Sidebar */}
         <aside className="hidden lg:block sticky top-24 space-y-4">
-          <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4">
+          <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card p-4">
             <p className="font-display text-lg leading-tight">
               oat.cafe <span aria-hidden>☕</span>
             </p>
@@ -181,7 +181,7 @@ export default async function HomePage() {
           </div>
           <nav
             aria-label="community channels"
-            className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-2"
+            className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card p-2"
           >
             <p className="px-3 pt-2 pb-1 font-mono text-[11px] lowercase tracking-[0.18em] text-neutral-400">
               channels
@@ -211,7 +211,7 @@ export default async function HomePage() {
                   href={channel.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
+                  className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-card px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
                 >
                   {channel.emoji} # {channel.label}
                 </a>
@@ -219,7 +219,7 @@ export default async function HomePage() {
                 <Link
                   key={channel.label}
                   href={channel.href}
-                  className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
+                  className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-card px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
                 >
                   {channel.emoji} # {channel.label}
                 </Link>

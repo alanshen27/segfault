@@ -130,7 +130,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-neutral-200 dark:border-neutral-800 bg-card/85 dark:bg-card/85 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link
@@ -187,7 +187,7 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-4 py-3 space-y-3">
+        <div className="md:hidden border-t border-neutral-200 dark:border-neutral-800 bg-card px-4 py-3 space-y-3">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
