@@ -1,6 +1,7 @@
 import {
   ChannelType,
   Client,
+  EmbedBuilder,
   Events,
   GatewayIntentBits,
   Partials,
@@ -11,7 +12,13 @@ import {
   type Message,
 } from "discord.js";
 import { mentorReply, type HistoryEntry } from "./mentor.js";
-import { scheduleDailyPost } from "./daily.js";
+import {
+  ESPRESSO,
+  buildMemeEmbed,
+  buildNewsEmbed,
+  buildResourceEmbed,
+  scheduleDailyPost,
+} from "./daily.js";
 
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -77,6 +84,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMembers,
   ],
   partials: [Partials.Channel],
 });
@@ -92,12 +100,47 @@ const askCommand = new SlashCommandBuilder()
       .setMaxLength(1500),
   );
 
+const newsCommand = new SlashCommandBuilder()
+  .setName("news")
+  .setDescription("Get a fresh AI & coding news digest right now");
+
+const resourceCommand = new SlashCommandBuilder()
+  .setName("resource")
+  .setDescription("Get a hand-picked builder resource right now");
+
+const memeCommand = new SlashCommandBuilder()
+  .setName("meme")
+  .setDescription("Get a programming meme");
+
 async function registerCommands(applicationId: string): Promise<void> {
   const rest = new REST().setToken(DISCORD_TOKEN!);
   await rest.put(Routes.applicationCommands(applicationId), {
-    body: [askCommand.toJSON()],
+    body: [
+      askCommand.toJSON(),
+      newsCommand.toJSON(),
+      resourceCommand.toJSON(),
+      memeCommand.toJSON(),
+    ],
   });
 }
+
+const EMBED_COMMANDS: Record<
+  string,
+  { build: () => Promise<EmbedBuilder | null>; empty: string }
+> = {
+  news: {
+    build: buildNewsEmbed,
+    empty: "nothing newsworthy in the last 24h — try again later.",
+  },
+  resource: {
+    build: buildResourceEmbed,
+    empty: "couldn't find a good resource right now — try again later.",
+  },
+  meme: {
+    build: buildMemeEmbed,
+    empty: "the meme well is dry — try again in a minute.",
+  },
+};
 
 client.once(Events.ClientReady, async (readyClient) => {
   console.log(`Mentor online as ${readyClient.user.tag}`);
@@ -110,10 +153,42 @@ client.once(Events.ClientReady, async (readyClient) => {
   scheduleDailyPost(client);
 });
 
+client.on(Events.GuildMemberAdd, async (member) => {
+  const channel = member.guild.systemChannel;
+  if (!channel) return;
+  try {
+    const embed = new EmbedBuilder()
+      .setColor(ESPRESSO)
+      .setTitle("☕ welcome to the café")
+      .setDescription(
+        `hey <@${member.id}> — pull up a chair. tell us what you're building (or want to build), and ping me or use \`/ask\` any time you're stuck.`,
+      );
+    await channel.send({ embeds: [embed] });
+  } catch (error) {
+    console.error("Welcome message failed:", error);
+  }
+});
+
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
-  if (!interaction.isChatInputCommand() || interaction.commandName !== "ask") {
+  if (!interaction.isChatInputCommand()) return;
+
+  const embedCommand = EMBED_COMMANDS[interaction.commandName];
+  if (embedCommand) {
+    await interaction.deferReply();
+    try {
+      const embed = await embedCommand.build();
+      if (embed) await interaction.editReply({ embeds: [embed] });
+      else await interaction.editReply(embedCommand.empty);
+    } catch (error) {
+      console.error(`${interaction.commandName} command error:`, error);
+      await interaction.editReply(
+        "Something broke on my end — try again in a minute.",
+      );
+    }
     return;
   }
+
+  if (interaction.commandName !== "ask") return;
   const question = interaction.options.getString("question", true);
   await interaction.deferReply();
   try {

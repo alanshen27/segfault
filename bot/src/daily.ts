@@ -1,11 +1,13 @@
 import OpenAI from "openai";
 import type { Client, TextChannel } from "discord.js";
-import { ChannelType } from "discord.js";
+import { ChannelType, EmbedBuilder } from "discord.js";
 
 const MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
 const NEWS_CHANNEL_ID = process.env.DAILY_NEWS_CHANNEL_ID ?? "1542808944227909684";
 const RESOURCES_CHANNEL_ID = process.env.RESOURCES_CHANNEL_ID ?? "1542792389926588489";
+
+export const ESPRESSO = 0x2b2019;
 
 interface MemeApiResponse {
   title?: string;
@@ -22,12 +24,18 @@ interface HnHit {
   points: number;
 }
 
-async function fetchMeme(): Promise<string | null> {
+export async function buildMemeEmbed(): Promise<EmbedBuilder | null> {
   const response = await fetch("https://meme-api.com/gimme/ProgrammerHumor");
   if (!response.ok) return null;
   const meme = (await response.json()) as MemeApiResponse;
   if (!meme.url || meme.nsfw || meme.spoiler) return null;
-  return `☕ gm builders — today's meme:\n**${meme.title ?? "untitled"}**\n${meme.url}`;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle(meme.title ?? "today's meme")
+    .setURL(meme.postLink ?? meme.url)
+    .setImage(meme.url)
+    .setFooter({ text: "☕ daily meme · r/ProgrammerHumor" })
+    .setTimestamp();
 }
 
 async function searchHn(
@@ -62,7 +70,7 @@ async function summarize(
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
     model: MODEL,
-    max_tokens: 500,
+    max_tokens: 600,
     messages: [
       { role: "system", content: systemPrompt },
       {
@@ -74,29 +82,43 @@ async function summarize(
   return completion.choices[0]?.message?.content?.trim() ?? null;
 }
 
-async function fetchNews(): Promise<string | null> {
+export async function buildNewsEmbed(): Promise<EmbedBuilder | null> {
   const hits = await searchHn("AI coding", "story", 24 * 60 * 60, 20);
   if (hits.length === 0) return null;
-  return summarize(
-    "You write a short, casual morning digest for a Discord of young builders learning to ship software with AI. One line of intro, then each story as a bullet: a one-sentence plain-language takeaway followed by its link on the same bullet. Keep the links exactly as given. No hype, no invented facts, under 1500 characters total.",
+  const digest = await summarize(
+    "You write a short, casual news digest for a Discord of young builders learning to ship software with AI. Format each story as a markdown bullet: '- [story title](url) — one-sentence plain-language takeaway.' Use the exact titles and links given. No intro line, no hype, no invented facts, under 1800 characters total.",
     hits,
   );
+  if (!digest) return null;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle("☕ daily brew — ai & coding news")
+    .setDescription(digest)
+    .setFooter({ text: "compiled from hacker news · last 24h" })
+    .setTimestamp();
 }
 
-async function fetchResource(): Promise<string | null> {
+export async function buildResourceEmbed(): Promise<EmbedBuilder | null> {
   const hits = await searchHn(
     "AI tool OR tutorial OR guide",
     "(story,show_hn)",
     7 * 24 * 60 * 60,
     30,
   );
-  if (hits.length === 0) return fetchMeme();
+  if (hits.length === 0) return buildMemeEmbed();
   const pick = hits[Math.floor(Math.random() * hits.length)];
-  const summary = await summarize(
-    "You write a one-or-two sentence, casual pitch for a resource shared with a Discord of young builders learning to ship software with AI. Explain plainly why it's worth a look. Keep the link exactly as given at the end. No hype, no invented facts.",
+  const pitch = await summarize(
+    "You write a one-or-two sentence, casual pitch for a resource shared with a Discord of young builders learning to ship software with AI. Explain plainly why it's worth a look. Do not include any links — just the pitch text. No hype, no invented facts.",
     [pick],
   );
-  return summary ? `📚 today's resource:\n${summary}` : null;
+  if (!pitch) return null;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle(`📚 ${pick.title}`)
+    .setURL(pick.url)
+    .setDescription(pitch)
+    .setFooter({ text: "resource of the day" })
+    .setTimestamp();
 }
 
 const RANDOM_WINDOW_START_UTC = 12;
@@ -125,7 +147,7 @@ function scheduleChannelPost(
   client: Client,
   label: string,
   channelId: string,
-  buildPost: () => Promise<string | null>,
+  buildPost: () => Promise<EmbedBuilder | null>,
 ): void {
   const run = async () => {
     try {
@@ -133,8 +155,8 @@ function scheduleChannelPost(
       if (!channel || channel.type !== ChannelType.GuildText) {
         console.error(`${label}: channel ${channelId} is not a text channel`);
       } else {
-        const post = await buildPost();
-        if (post) await (channel as TextChannel).send(post);
+        const embed = await buildPost();
+        if (embed) await (channel as TextChannel).send({ embeds: [embed] });
         else console.error(`${label}: no content from any source`);
       }
     } catch (error) {
@@ -149,6 +171,11 @@ function scheduleChannelPost(
 }
 
 export function scheduleDailyPost(client: Client): void {
-  scheduleChannelPost(client, "daily-news", NEWS_CHANNEL_ID, fetchNews);
-  scheduleChannelPost(client, "resources", RESOURCES_CHANNEL_ID, fetchResource);
+  scheduleChannelPost(client, "daily-news", NEWS_CHANNEL_ID, buildNewsEmbed);
+  scheduleChannelPost(
+    client,
+    "resources",
+    RESOURCES_CHANNEL_ID,
+    buildResourceEmbed,
+  );
 }
