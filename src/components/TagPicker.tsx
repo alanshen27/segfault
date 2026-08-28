@@ -83,7 +83,7 @@ export default function TagPicker({
   }
 
   if (loading) {
-    return <div className="h-8 rounded-lg bg-neutral-100 dark:bg-neutral-900 animate-pulse" />;
+    return <div className="h-8 rounded-lg bg-primary-50 dark:bg-neutral-900 animate-pulse" />;
   }
 
   return (
@@ -113,7 +113,7 @@ export default function TagPicker({
       </div>
 
       {showCreate && allowCreate && (
-        <form onSubmit={handleCreate} className="mt-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 space-y-3">
+        <form onSubmit={handleCreate} className="mt-3 p-3 rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 space-y-3">
           {error && (
             <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
           )}
@@ -127,7 +127,7 @@ export default function TagPicker({
               minLength={2}
               maxLength={32}
               placeholder="e.g. Contest Prep"
-              className="w-full px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
           <div>
@@ -150,7 +150,7 @@ export default function TagPicker({
             <button
               type="submit"
               disabled={creating}
-              className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover disabled:opacity-50"
+              className="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-medium hover:bg-primary-hover disabled:opacity-50"
             >
               {creating ? "Creating..." : "Create tag"}
             </button>

@@ -24,7 +24,7 @@ export default function ProjectFilters({
   onLookingForChange,
 }: ProjectFiltersProps) {
   const selectClass =
-    "px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40";
+    "px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40";
 
   return (
     <div className="flex flex-wrap gap-2">

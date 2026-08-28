@@ -71,7 +71,7 @@ export default function LogsPage() {
 
       <form
         onSubmit={handlePost}
-        className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 mb-6"
+        className="p-4 rounded-xl border border-primary-200/70 dark:border-neutral-800 mb-6"
       >
         <textarea
           value={content}
@@ -85,7 +85,7 @@ export default function LogsPage() {
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">No project</option>
               {projects.map((p) => (
@@ -98,7 +98,7 @@ export default function LogsPage() {
           <button
             type="submit"
             disabled={posting || !content.trim()}
-            className="ml-auto px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors"
+            className="ml-auto px-4 py-1.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors"
           >
             {posting ? "Posting..." : "Post"}
           </button>
@@ -106,7 +106,7 @@ export default function LogsPage() {
       </form>
 
       {loading ? (
-        <ListSkeleton count={3} className="h-16 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+        <ListSkeleton count={3} className="h-16 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse" />
       ) : logs.length === 0 ? (
         <EmptyState
           icon="📝"

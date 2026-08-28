@@ -103,8 +103,8 @@ export default function BanksPage() {
     <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">Collections</p>
-          <h1 className="text-3xl font-bold tracking-tight">Question Banks</h1>
+          <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary mb-1">Collections</p>
+          <h1 className="text-3xl font-display font-semibold tracking-tight">Question Banks</h1>
           <p className="text-sm text-neutral-500 mt-1">
             {filtered.length} bank{filtered.length !== 1 ? "s" : ""} · {totalProblems} problems
           </p>
@@ -130,7 +130,7 @@ export default function BanksPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search banks by name or description..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-primary-50 dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </div>
 
@@ -148,7 +148,7 @@ export default function BanksPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-colors ${
                 sort === value
                   ? "bg-primary text-white"
-                  : "bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "bg-primary-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
               }`}
             >
               {label}
@@ -158,7 +158,7 @@ export default function BanksPage() {
           <select
             value={minProblems}
             onChange={(e) => setMinProblems(Number(e.target.value))}
-            className="ml-auto px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="ml-auto px-3 py-1.5 text-xs font-medium rounded-full bg-primary-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
             <option value={0}>Any size</option>
             <option value={1}>1+ problems</option>
@@ -169,7 +169,7 @@ export default function BanksPage() {
       </div>
 
       {showCreate && (
-        <div className="mb-6 p-5 rounded-xl bg-neutral-100 dark:bg-neutral-900/50">
+        <div className="mb-6 p-5 rounded-xl bg-primary-50 dark:bg-neutral-900/50">
           <h2 className="text-lg font-semibold mb-3">Create a new bank</h2>
           <form onSubmit={handleCreate} className="space-y-3">
             {createError && (
@@ -182,7 +182,7 @@ export default function BanksPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full px-3 py-2 rounded-lg bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                 placeholder="e.g., Dynamic Programming Classics"
               />
             </div>
@@ -193,7 +193,7 @@ export default function BanksPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+                className="w-full px-3 py-2 rounded-lg bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
                 placeholder="What kinds of problems belong here?"
               />
             </div>
@@ -211,7 +211,7 @@ export default function BanksPage() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-36 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+            <div key={i} className="h-36 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse" />
           ))}
         </div>
       ) : filtered.length === 0 ? (

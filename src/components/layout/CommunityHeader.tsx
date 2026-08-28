@@ -55,7 +55,7 @@ export default function CommunityHeader({
 
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-12 sm:mt-3 sm:pl-24">
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          <h1 className="text-2xl sm:text-3xl font-display font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
             s/{name}
           </h1>
           {description && (

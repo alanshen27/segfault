@@ -209,7 +209,7 @@ export default function ForumPostPage() {
 
         <div className="flex gap-6 lg:gap-8">
           <div className="flex-1 min-w-0">
-            <article className="mb-6 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
+            <article className="mb-6 overflow-hidden rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
               <div className="p-5 sm:p-6 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {post.subreddit && (
@@ -240,7 +240,7 @@ export default function ForumPostPage() {
                     userVote={post.userVote}
                     onVote={handleVote}
                   />
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-neutral-900 dark:text-neutral-50">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-semibold tracking-tight leading-tight text-neutral-900 dark:text-neutral-50">
                     {post.title}
                   </h1>
                 </div>
@@ -270,7 +270,7 @@ export default function ForumPostPage() {
               </div>
             </article>
 
-            <div className="p-5 sm:p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
+            <div className="p-5 sm:p-6 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-transparent shadow-sm dark:shadow-none">
               <ForumThread
                 comments={post.comments}
                 onSubmitReply={handleReply}

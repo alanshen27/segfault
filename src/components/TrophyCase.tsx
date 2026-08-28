@@ -45,10 +45,10 @@ export default function TrophyCase({
         return (
           <div
             key={award.id}
-            className={`relative p-4 rounded-xl border bg-white dark:bg-neutral-950 transition-all ${
+            className={`relative p-4 rounded-xl border bg-card transition-all ${
               award.equipped
                 ? `border-transparent ring-2 ${ringClass}`
-                : "border-neutral-200 dark:border-neutral-800"
+                : "border-primary-200/70 dark:border-neutral-800"
             }`}
           >
             <Link

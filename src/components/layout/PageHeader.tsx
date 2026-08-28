@@ -25,11 +25,11 @@ export default function PageHeader({
     >
       <div>
         {eyebrow && (
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">
+          <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary mb-2">
             {eyebrow}
           </p>
         )}
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">{title}</h1>
         {description && (
           <p className="text-sm text-neutral-500 mt-1">{description}</p>
         )}

@@ -34,12 +34,12 @@ function ProjectAttachmentGallery({
               href={attachment.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 hover:opacity-90 transition-opacity"
+              className="block rounded-xl overflow-hidden border border-primary-200/70 dark:border-neutral-800 hover:opacity-90 transition-opacity"
             >
               <img
                 src={attachment.url}
                 alt=""
-                className="w-full max-h-96 object-contain bg-neutral-100 dark:bg-neutral-900"
+                className="w-full max-h-96 object-contain bg-primary-50 dark:bg-neutral-900"
                 loading="lazy"
               />
             </a>
@@ -164,9 +164,9 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <PageContainer width="content" className="py-8 space-y-4">
-        <div className="h-6 w-32 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse" />
-        <div className="h-40 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
-        <div className="h-64 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+        <div className="h-6 w-32 bg-primary-50 dark:bg-neutral-900 rounded animate-pulse" />
+        <div className="h-40 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse" />
+        <div className="h-64 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse" />
       </PageContainer>
     );
   }
@@ -207,7 +207,7 @@ export default function ProjectDetailPage() {
         />
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
+            <h1 className="text-3xl font-display font-semibold tracking-tight">{project.title}</h1>
             <p className="text-neutral-500 mt-1">{project.tagline}</p>
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
@@ -297,7 +297,7 @@ export default function ProjectDetailPage() {
         onLogsChange={(buildLogs) => setProject((prev) => (prev ? { ...prev, buildLogs } : prev))}
       />
 
-      <div className="mt-10 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 sm:p-6">
+      <div className="mt-10 rounded-xl border border-primary-200/70 dark:border-neutral-800 p-5 sm:p-6">
         <ForumThread
           comments={project.comments}
           onSubmitReply={handleReply}

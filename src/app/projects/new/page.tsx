@@ -89,13 +89,13 @@ export default function NewProjectPage() {
 
   return (
     <PageContainer width="narrow" className="py-8">
-      <h1 className="text-2xl font-bold tracking-tight mb-6">
+      <h1 className="text-2xl font-display font-semibold tracking-tight mb-6">
         Share a project
       </h1>
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800"
+        className="space-y-5 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800"
       >
         {error && (
           <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg">
@@ -239,7 +239,7 @@ export default function NewProjectPage() {
         <button
           type="submit"
           disabled={saving}
-          className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
+          className="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
         >
           {saving ? "Creating..." : "Create project"}
         </button>

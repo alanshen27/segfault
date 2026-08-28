@@ -8,7 +8,7 @@ interface BuilderCardProps {
 
 export default function BuilderCard({ profile }: BuilderCardProps) {
   return (
-    <div className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-primary/40 transition-colors flex flex-col">
+    <div className="p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 hover:border-primary/40 transition-colors flex flex-col">
       <div className="flex items-center gap-3">
         <Avatar
           src={profile.user.avatarUrl}

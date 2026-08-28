@@ -101,7 +101,7 @@ export default function ModeratePage() {
         <h1 className="text-2xl font-bold mb-6">Moderator Dashboard</h1>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 animate-pulse" />
+            <div key={i} className="h-24 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 animate-pulse" />
           ))}
         </div>
       </div>
@@ -173,7 +173,7 @@ export default function ModeratePage() {
               {approvals.map((approval) => {
                 const diffColor = DIFFICULTY_COLORS[approval.question.difficulty] ?? "bg-neutral-100 text-neutral-600";
                 return (
-                  <div key={approval.id} className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                  <div key={approval.id} className="p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-medium text-lg">{approval.question.title}</h3>
@@ -233,7 +233,7 @@ export default function ModeratePage() {
               {questions.map((q) => {
                 const diffColor = DIFFICULTY_COLORS[q.difficulty] ?? "bg-neutral-100 text-neutral-600";
                 return (
-                  <div key={q.id} className="flex items-center justify-between p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                  <div key={q.id} className="flex items-center justify-between p-4 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card">
                     <div className="flex items-center gap-3 min-w-0">
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${diffColor}`}>
                         {q.difficulty}
@@ -267,7 +267,7 @@ export default function ModeratePage() {
           <div className="mb-4">
             <button
               onClick={() => setShowCreateBank(true)}
-              className="px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm flex items-center gap-2"
+              className="px-4 py-2 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-colors text-sm flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -286,7 +286,7 @@ export default function ModeratePage() {
                   onChange={(e) => setBankName(e.target.value)}
                   required
                   placeholder="Bank name"
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
                 />
                 <textarea
                   value={bankDesc}
@@ -294,10 +294,10 @@ export default function ModeratePage() {
                   required
                   rows={2}
                   placeholder="Description"
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
                 />
                 <div className="flex gap-2">
-                  <button type="submit" disabled={creatingBank} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors">
+                  <button type="submit" disabled={creatingBank} className="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors">
                     {creatingBank ? "Creating..." : "Create"}
                   </button>
                   <button type="button" onClick={() => setShowCreateBank(false)} className="px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
@@ -315,7 +315,7 @@ export default function ModeratePage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {banks.map((bank) => (
-                <div key={bank.id} className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                <div key={bank.id} className="p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card">
                   <h3 className="font-medium">{bank.name}</h3>
                   <p className="text-sm text-neutral-500 mt-1 line-clamp-2">{bank.description}</p>
                   <div className="flex items-center gap-2 mt-3 text-xs text-neutral-400">

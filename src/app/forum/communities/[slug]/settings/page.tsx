@@ -119,8 +119,8 @@ export default function CommunitySettingsPage() {
   if (loading || !community || !user) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="h-8 w-48 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse mb-6" />
-        <div className="h-96 bg-neutral-100 dark:bg-neutral-900 rounded-xl animate-pulse" />
+        <div className="h-8 w-48 bg-primary-50 dark:bg-neutral-900 rounded animate-pulse mb-6" />
+        <div className="h-96 bg-primary-50 dark:bg-neutral-900 rounded-xl animate-pulse" />
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function CommunitySettingsPage() {
         >
           ← Back to s/{community.name}
         </Link>
-        <h1 className="text-2xl font-bold tracking-tight mt-3">Community settings</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight mt-3">Community settings</h1>
         <p className="text-sm text-neutral-500 mt-1">
           Update how s/{community.name} looks and what it says about itself.
         </p>
@@ -142,7 +142,7 @@ export default function CommunitySettingsPage() {
 
       <form
         onSubmit={handleSave}
-        className="space-y-6 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950"
+        className="space-y-6 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card"
       >
         {error && (
           <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg">
@@ -218,7 +218,7 @@ export default function CommunitySettingsPage() {
               value={color}
               onChange={(e) => setColor(e.target.value)}
               pattern="^#[0-9A-Fa-f]{6}$"
-              className="flex-1 px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="flex-1 px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function CommunitySettingsPage() {
             required
             minLength={10}
             rows={4}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
           />
         </div>
 
@@ -248,7 +248,7 @@ export default function CommunitySettingsPage() {
           </button>
           <Link
             href={`/forum/communities/${community.slug}`}
-            className="px-5 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+            className="px-5 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-primary-light dark:hover:bg-neutral-900 transition-colors"
           >
             Cancel
           </Link>

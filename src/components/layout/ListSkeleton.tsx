@@ -6,7 +6,7 @@ interface ListSkeletonProps {
 
 export default function ListSkeleton({
   count = 3,
-  className = "h-48 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse",
+  className = "h-48 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse",
   layout = "stack",
 }: ListSkeletonProps) {
   const items = Array.from({ length: count }, (_, i) => (

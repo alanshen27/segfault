@@ -67,7 +67,7 @@ export default function MonacoEditor({
 
   return (
     <div
-      className={`rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 ${
+      className={`rounded-xl overflow-hidden border border-primary-200/70 dark:border-neutral-800 ${
         isDark ? "bg-neutral-950" : "bg-white"
       } ${className}`}
     >

@@ -162,7 +162,7 @@ export default function ForumPage() {
           <>
             <Link
               href="/forum/communities"
-              className="px-4 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+              className="px-4 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-primary-light dark:hover:bg-neutral-900 transition-colors"
             >
               Communities
             </Link>
@@ -189,8 +189,8 @@ export default function ForumPage() {
         <div className="flex gap-6">
           <div className="flex-1 min-w-0 space-y-4">
             {/* Toolbar */}
-            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-sm overflow-hidden">
-              <div className="flex items-center gap-1 p-1.5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-900/50">
+            <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card shadow-sm overflow-hidden">
+              <div className="flex items-center gap-1 p-1.5 border-b border-primary-200/70 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-900/50">
                 {(["new", "top"] as const).map((mode) => (
                   <button
                     key={mode}
@@ -215,7 +215,7 @@ export default function ForumPage() {
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                     placeholder="Search discussions..."
-                    className="w-full pl-9 pr-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full pl-9 pr-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
               </div>

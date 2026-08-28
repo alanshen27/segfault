@@ -104,7 +104,7 @@ export default function SubmitPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
             placeholder="e.g., Two Sum"
           />
         </div>
@@ -117,7 +117,7 @@ export default function SubmitPage() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               required
-              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
               placeholder="e.g., Dynamic Programming"
             />
           </div>
@@ -126,7 +126,7 @@ export default function SubmitPage() {
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
             >
               {DIFFICULTIES.map((d) => (
                 <option key={d} value={d}>
@@ -145,7 +145,7 @@ export default function SubmitPage() {
           <select
             value={bankId}
             onChange={(e) => setBankId(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
           >
             <option value="">No bank (standalone problem)</option>
             {banks.map((bank) => (
@@ -166,7 +166,7 @@ export default function SubmitPage() {
             onChange={(e) => setContent(e.target.value)}
             required
             rows={10}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
             placeholder={`## Problem Statement\n\nWrite your problem here. Use:\n- **bold** for emphasis\n- $$formulas$$ for LaTeX\n- \`\`\` for code blocks`}
           />
         </div>
@@ -180,7 +180,7 @@ export default function SubmitPage() {
             value={constraints}
             onChange={(e) => setConstraints(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
             placeholder="e.g., $$1 \leq n \leq 10^5$$"
           />
         </div>
@@ -192,7 +192,7 @@ export default function SubmitPage() {
               value={sampleInput}
               onChange={(e) => setSampleInput(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
               placeholder="nums = [2,7,11,15], target = 9"
             />
           </div>
@@ -202,7 +202,7 @@ export default function SubmitPage() {
               value={sampleOutput}
               onChange={(e) => setSampleOutput(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
+              className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-mono text-sm transition-colors"
               placeholder="[0,1]"
             />
           </div>
@@ -217,7 +217,7 @@ export default function SubmitPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
+          className="w-full py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-colors disabled:opacity-50"
         >
           {submitting ? "Submitting for review..." : "Submit for Review"}
         </button>

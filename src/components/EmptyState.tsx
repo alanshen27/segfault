@@ -20,7 +20,7 @@ export default function EmptyState({
   compact = false,
 }: EmptyStateProps) {
   const actionClass =
-    "inline-flex px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors mt-4";
+    "inline-flex px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors mt-4";
 
   return (
     <div className={`text-center ${compact ? "py-4" : "py-16 sm:py-20"}`}>

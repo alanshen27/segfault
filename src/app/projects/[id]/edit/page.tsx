@@ -140,8 +140,8 @@ export default function EditProjectPage() {
   if (loading || userLoading) {
     return (
       <PageContainer width="narrow" className="py-8">
-        <div className="h-8 w-48 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse mb-6" />
-        <div className="h-96 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+        <div className="h-8 w-48 bg-primary-50 dark:bg-neutral-900 rounded animate-pulse mb-6" />
+        <div className="h-96 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse" />
       </PageContainer>
     );
   }
@@ -152,13 +152,13 @@ export default function EditProjectPage() {
         Back to project
       </BackLink>
 
-      <h1 className="text-2xl font-bold tracking-tight mb-6">
+      <h1 className="text-2xl font-display font-semibold tracking-tight mb-6">
         Edit project
       </h1>
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800"
+        className="space-y-5 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800"
       >
         {error && (
           <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg">
@@ -290,7 +290,7 @@ export default function EditProjectPage() {
                   <img
                     src={attachment.url}
                     alt=""
-                    className="w-full h-24 object-cover rounded-lg border border-neutral-200 dark:border-neutral-800"
+                    className="w-full h-24 object-cover rounded-lg border border-primary-200/70 dark:border-neutral-800"
                   />
                 </li>
               ))}
@@ -306,7 +306,7 @@ export default function EditProjectPage() {
         <button
           type="submit"
           disabled={saving}
-          className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
+          className="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
         >
           {saving ? "Saving..." : "Save changes"}
         </button>

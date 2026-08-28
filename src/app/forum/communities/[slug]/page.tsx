@@ -165,7 +165,7 @@ export default function CommunityPage() {
               {canManage && (
                 <Link
                   href={`/forum/communities/${community.slug}/settings`}
-                  className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium bg-white dark:bg-neutral-950 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                  className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium bg-card hover:bg-primary-light dark:hover:bg-neutral-900 transition-colors"
                 >
                   Settings
                 </Link>
@@ -180,7 +180,7 @@ export default function CommunityPage() {
           }
         />
 
-        <div className="flex items-center gap-4 mb-6 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-sm">
+        <div className="flex items-center gap-4 mb-6 p-4 rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card text-sm">
           <div>
             <span className="font-bold">{community._count.posts}</span>
             <span className="text-neutral-500 ml-1">Posts</span>

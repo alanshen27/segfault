@@ -179,7 +179,7 @@ function ThreadNode({
 
           {!collapsed && comment.replies && comment.replies.length > 0 && (
             <div
-              className="mt-1 ml-2 sm:ml-3 pl-3 sm:pl-4 border-l border-neutral-200 dark:border-neutral-800 space-y-0"
+              className="mt-1 ml-2 sm:ml-3 pl-3 sm:pl-4 border-l border-primary-200/70 dark:border-neutral-800 space-y-0"
               style={{ marginLeft: depth > 0 ? undefined : "0.25rem" }}
             >
               {comment.replies.map((reply) => (

@@ -145,8 +145,8 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <PageContainer width="narrow" className="py-8">
-        <div className="h-8 w-32 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse mb-6" />
-        <div className="h-96 bg-neutral-100 dark:bg-neutral-900 rounded-xl animate-pulse" />
+        <div className="h-8 w-32 bg-primary-50 dark:bg-neutral-900 rounded animate-pulse mb-6" />
+        <div className="h-96 bg-primary-50 dark:bg-neutral-900 rounded-xl animate-pulse" />
       </PageContainer>
     );
   }
@@ -155,10 +155,10 @@ export default function ProfilePage() {
 
   return (
     <PageContainer width="narrow" className="py-8">
-      <h1 className="text-2xl font-bold tracking-tight mb-6">Profile</h1>
+      <h1 className="text-2xl font-display font-semibold tracking-tight mb-6">Profile</h1>
 
       {awards.length > 0 && (
-        <div className="mb-6 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+        <div className="mb-6 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card">
           <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-4">
             Trophy Case
           </h2>
@@ -189,7 +189,7 @@ export default function ProfilePage() {
 
       <form
         onSubmit={handleSave}
-        className="space-y-8 p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950"
+        className="space-y-8 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card"
       >
         {error && (
           <div className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 p-3 rounded-lg">
@@ -232,12 +232,12 @@ export default function ProfilePage() {
               type="email"
               value={user.email}
               disabled
-              className="w-full px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500 text-sm cursor-not-allowed"
+              className="w-full px-3 py-2 rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500 text-sm cursor-not-allowed"
             />
           </div>
         </section>
 
-        <section className="space-y-5 pt-5 border-t border-neutral-200 dark:border-neutral-800">
+        <section className="space-y-5 pt-5 border-t border-primary-200/70 dark:border-neutral-800">
           <div>
             <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
               Builder profile
@@ -378,7 +378,7 @@ export default function ProfilePage() {
         <button
           type="submit"
           disabled={saving}
-          className="px-5 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
+          className="px-5 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-50 transition-colors text-sm"
         >
           {saving ? "Saving..." : "Save changes"}
         </button>

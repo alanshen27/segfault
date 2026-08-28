@@ -22,7 +22,7 @@ export default function ForumSidebar({
 }: ForumSidebarProps) {
   return (
     <div className="sticky top-20 space-y-4">
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card overflow-hidden shadow-sm">
         <div className="h-1 bg-linear-to-r from-primary to-primary-hover" />
         <div className="p-4">
           <h3 className="font-semibold text-sm mb-1">Start a discussion</h3>
@@ -38,8 +38,8 @@ export default function ForumSidebar({
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden shadow-sm">
-        <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+      <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card overflow-hidden shadow-sm">
+        <div className="px-4 py-3 border-b border-primary-200/70 dark:border-neutral-800 flex items-center justify-between">
           <h3 className="text-sm font-semibold">Communities</h3>
           <Link href="/forum/communities" className="text-xs text-primary hover:underline">
             Browse all
@@ -96,7 +96,7 @@ export default function ForumSidebar({
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4 shadow-sm">
+      <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card p-4 shadow-sm">
         <h3 className="text-sm font-semibold mb-3">Forum stats</h3>
         <dl className="space-y-2.5 text-sm">
           <div className="flex justify-between">
