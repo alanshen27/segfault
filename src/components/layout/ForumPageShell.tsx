@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export default function ForumPageShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-paper dark:bg-neutral-950">
       {children}
     </div>
   );

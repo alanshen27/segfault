@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import BuilderCard from "@/components/builders/BuilderCard";
 import BuilderFilters from "@/components/builders/BuilderFilters";
 import EmptyState from "@/components/EmptyState";
-import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
+import { CafeHeader, CafeShell, ListSkeleton } from "@/components/layout";
 import { type BuilderProfileSummary } from "@/lib/types";
 
 export default function BuildersPage() {
@@ -37,10 +37,11 @@ export default function BuildersPage() {
   }, [skill, interest, openTo]);
 
   return (
-    <PageContainer className="py-8">
-      <PageHeader
-        title="Builders"
-        description="Find teammates for your next project or hackathon."
+    <CafeShell active="find-teammates">
+      <CafeHeader
+        kicker="🧑‍🤝‍🧑 # find-teammates"
+        title="builders"
+        description="who's at the counter — find teammates for your next project, hackathon, or side quest."
       />
 
       <BuilderFilters
@@ -62,15 +63,13 @@ export default function BuildersPage() {
           ))}
         </div>
       ) : profiles.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            icon="👋"
-            title="No builders yet"
-            description="Be the first to create your builder profile."
-            actionLabel="Set up profile"
-            actionHref="/profile"
-          />
-        </div>
+        <EmptyState
+          icon="👋"
+          title="no builders at the counter yet"
+          description="be the first to set up your builder profile."
+          actionLabel="set up profile"
+          actionHref="/profile"
+        />
       ) : (
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {profiles.map((profile) => (
@@ -78,6 +77,6 @@ export default function BuildersPage() {
           ))}
         </div>
       )}
-    </PageContainer>
+    </CafeShell>
   );
 }

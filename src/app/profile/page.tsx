@@ -155,7 +155,10 @@ export default function ProfilePage() {
 
   return (
     <PageContainer width="narrow" className="py-8">
-      <h1 className="text-2xl font-display font-semibold tracking-tight mb-6">Profile</h1>
+      <div className="mb-8">
+        <p className="font-mono text-[11px] lowercase tracking-[0.18em] text-primary mb-2"># your table</p>
+        <h1 className="text-3xl font-display font-semibold tracking-tight lowercase">profile</h1>
+      </div>
 
       {awards.length > 0 && (
         <div className="mb-6 p-5 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card">

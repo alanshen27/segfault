@@ -11,7 +11,7 @@ import {
   DIFFICULTIES,
   DIFFICULTY_COLORS,
 } from "@/lib/types";
-import { PageContainer, PaginationBar } from "@/components/layout";
+import { CafeHeader, CafeShell, PaginationBar } from "@/components/layout";
 import { useCurrentUser } from "@/lib/use-current-user";
 
 type DifficultyFilter = Difficulty | "ALL";
@@ -138,38 +138,36 @@ export default function QuestionsPage() {
     || excludeSolved;
 
   return (
-    <PageContainer width="wide" className="py-6 sm:py-8">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-        <div>
-          <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary mb-1">Practice</p>
-          <h1 className="text-3xl font-display font-semibold tracking-tight">
-            {activeBank ? activeBank.name : "Problems"}
-          </h1>
-          <p className="text-sm text-neutral-500 mt-1">
+    <CafeShell active="ask-anything">
+      <CafeHeader
+        kicker="🙋 # practice"
+        title={activeBank ? activeBank.name : "problems"}
+        description={
+          <>
             {total} problem{total !== 1 ? "s" : ""}
-            {activeBank ? ` in ${activeBank.name}` : " available"}
-            {user && solvedCount > 0 && (
-              <> · {solvedCount} solved</>
-            )}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href="/banks"
-            className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-primary-light dark:hover:bg-neutral-900 transition-colors"
-          >
-            Banks
-          </Link>
-          <Link
-            href="/submit"
-            className="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
-          >
-            Submit Problem
-          </Link>
-        </div>
-      </div>
+            {activeBank ? ` in ${activeBank.name}` : " on the menu"}
+            {user && solvedCount > 0 && <> · {solvedCount} solved</>}
+          </>
+        }
+        actions={
+          <>
+            <Link
+              href="/banks"
+              className="px-4 py-2 rounded-full border border-primary-200 dark:border-neutral-700 text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+            >
+              banks
+            </Link>
+            <Link
+              href="/submit"
+              className="px-5 py-2.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors"
+            >
+              submit a problem
+            </Link>
+          </>
+        }
+      />
 
-      <div className="mb-5 space-y-3">
+      <div className="space-y-3">
         <div className="relative">
           <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -269,11 +267,11 @@ export default function QuestionsPage() {
           ))}
         </div>
       ) : questions.length === 0 ? (
-        <div className="text-center py-20">
+        <div className="text-center py-20 rounded-2xl border border-dashed border-primary-200 dark:border-neutral-800 bg-card">
           <div className="text-4xl mb-3 opacity-40">{"</>"}</div>
-          <p className="text-neutral-500 font-medium">No problems found</p>
+          <p className="text-neutral-500 font-medium">no problems found</p>
           <p className="text-sm text-neutral-400 mt-1">
-            {hasFilters ? "Try adjusting your filters or search." : "Check back later for new problems."}
+            {hasFilters ? "try adjusting your filters or search." : "check back later for new problems."}
           </p>
           {hasFilters && (
             <button
@@ -286,13 +284,13 @@ export default function QuestionsPage() {
           )}
         </div>
       ) : (
-        <>
-          <div className="hidden sm:grid grid-cols-[1fr_72px_100px_140px_120px] gap-2 px-4 py-2 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-            <span>Title</span>
-            <span>Status</span>
-            <span>Difficulty</span>
-            <span>Topic</span>
-            <span>Bank</span>
+        <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card p-2">
+          <div className="hidden sm:grid grid-cols-[1fr_72px_100px_140px_120px] gap-2 px-4 py-2 font-mono text-[11px] lowercase tracking-[0.14em] text-neutral-400">
+            <span>title</span>
+            <span>status</span>
+            <span>difficulty</span>
+            <span>topic</span>
+            <span>bank</span>
           </div>
           <div className="divide-y divide-neutral-100 dark:divide-neutral-900">
             {questions.map((q, idx) => {
@@ -343,10 +341,10 @@ export default function QuestionsPage() {
             total={total}
             itemLabel="total"
             onPageChange={setPage}
-            className="mt-6 pt-4"
+            className="mt-4 pt-4 px-4 pb-2"
           />
-        </>
+        </div>
       )}
-    </PageContainer>
+    </CafeShell>
   );
 }

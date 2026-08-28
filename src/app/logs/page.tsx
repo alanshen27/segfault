@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import BuildLogCard from "@/components/logs/BuildLogCard";
 import EmptyState from "@/components/EmptyState";
-import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
+import { CafeHeader, CafeShell, ListSkeleton } from "@/components/layout";
 import { inputClass } from "@/lib/styles";
 import { type BuildLogEntry, type ProjectSummary } from "@/lib/types";
 
@@ -63,15 +63,16 @@ export default function LogsPage() {
   };
 
   return (
-    <PageContainer width="narrow" className="py-8">
-      <PageHeader
-        title="Build Logs"
-        description="Quick updates on what you're building. Think commit messages for humans."
+    <CafeShell active="build-logs">
+      <CafeHeader
+        kicker="📓 # build-logs"
+        title="build logs"
+        description="quick updates on what you're building — commit messages for humans."
       />
 
       <form
         onSubmit={handlePost}
-        className="p-4 rounded-xl border border-primary-200/70 dark:border-neutral-800 mb-6"
+        className="p-4 rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card"
       >
         <textarea
           value={content}
@@ -110,16 +111,16 @@ export default function LogsPage() {
       ) : logs.length === 0 ? (
         <EmptyState
           icon="📝"
-          title="No build logs yet"
-          description="Share what you shipped, broke, or learned today."
+          title="no build logs yet"
+          description="share what you shipped, broke, or learned today."
         />
       ) : (
-        <div className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
+        <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card px-4 divide-y divide-neutral-100 dark:divide-neutral-800/50">
           {logs.map((log) => (
             <BuildLogCard key={log.id} log={log} />
           ))}
         </div>
       )}
-    </PageContainer>
+    </CafeShell>
   );
 }
