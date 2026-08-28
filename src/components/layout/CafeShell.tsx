@@ -40,7 +40,7 @@ export default function CafeShell({ active, children }: CafeShellProps) {
         <aside className="hidden lg:block sticky top-24 space-y-4">
           <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card p-4">
             <p className="font-display text-lg leading-tight">
-              oat.cafe <span aria-hidden>☕</span>
+              buildwith.coffee <span aria-hidden>☕</span>
             </p>
             <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">
               a café for young builders learning to ship real things with AI.

@@ -12,7 +12,7 @@ export default function Logo({ size = 20, className = "" }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="oat.cafe logo"
+      aria-label="buildwith.coffee logo"
       className={className}
     >
       <rect width="32" height="32" rx="9" className="fill-primary" />
