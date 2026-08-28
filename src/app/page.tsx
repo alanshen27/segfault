@@ -164,7 +164,7 @@ export default async function HomePage() {
         <aside className="hidden lg:block sticky top-24 space-y-4">
           <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card p-4">
             <p className="font-display text-lg leading-tight">
-              brew.coffee <span aria-hidden>☕</span>
+              buildwith.coffee <span aria-hidden>☕</span>
             </p>
             <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">
               a café for young builders learning to ship real things with AI.
@@ -232,7 +232,7 @@ export default async function HomePage() {
                 learn to build real things with AI.
               </h1>
               <p className="rise-in rise-in-2 mt-5 max-w-xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
-                brew.coffee is where ambitious young builders learn vibe coding —
+                buildwith.coffee is where ambitious young builders learn vibe coding —
                 shipping actual software with AI as a collaborator, alongside
                 people doing the same.
               </p>

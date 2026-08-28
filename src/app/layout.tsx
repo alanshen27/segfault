@@ -20,9 +20,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "brew.coffee — learn to build real things with AI",
+  title: "buildwith.coffee — learn to build real things with AI",
   description:
-    "brew.coffee is a community where ambitious young builders learn vibe coding: shipping real software with AI. Projects, build logs, weekly sessions, and a Discord that actually builds.",
+    "buildwith.coffee is a community where ambitious young builders learn vibe coding: shipping real software with AI. Projects, build logs, weekly sessions, and a Discord that actually builds.",
 };
 
 export default function RootLayout({
