@@ -1,5 +1,7 @@
 export { default as PageContainer, type PageWidth } from "./PageContainer";
 export { default as PageHeader } from "./PageHeader";
+export { default as CafeShell } from "./CafeShell";
+export { default as CafeHeader } from "./CafeHeader";
 export { default as ForumPageShell } from "./ForumPageShell";
 export { default as ForumHero } from "./ForumHero";
 export { default as CommunityHeader } from "./CommunityHeader";

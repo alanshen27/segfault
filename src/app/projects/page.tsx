@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ProjectFilters from "@/components/projects/ProjectFilters";
 import EmptyState from "@/components/EmptyState";
-import { ListSkeleton, PageContainer, PageHeader } from "@/components/layout";
+import { CafeHeader, CafeShell, ListSkeleton } from "@/components/layout";
 import { type ProjectSummary } from "@/lib/types";
 
 export default function ProjectsPage() {
@@ -38,16 +38,17 @@ export default function ProjectsPage() {
   }, [tag, status, lookingFor]);
 
   return (
-    <PageContainer className="py-8">
-      <PageHeader
-        title="Projects"
-        description="Share what you're building. Find collaborators."
+    <CafeShell active="now-building">
+      <CafeHeader
+        kicker="🔨 # now-building"
+        title="projects"
+        description="what the café is building right now. share yours, find collaborators, ship together."
         actions={
           <Link
             href="/projects/new"
-            className="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shrink-0"
+            className="px-5 py-2.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors shrink-0"
           >
-            Share a project
+            share a project
           </Link>
         }
       />
@@ -62,7 +63,7 @@ export default function ProjectsPage() {
       />
 
       {loading ? (
-        <div className="mt-8">
+        <div>
           <ListSkeleton
             count={4}
             layout="grid"
@@ -70,22 +71,20 @@ export default function ProjectsPage() {
           />
         </div>
       ) : projects.length === 0 ? (
-        <div className="mt-8">
-          <EmptyState
-            icon="🚀"
-            title="No projects yet"
-            description="Be the first to share what you're building."
-            actionLabel="Share a project"
-            actionHref="/projects/new"
-          />
-        </div>
+        <EmptyState
+          icon="🔨"
+          title="nothing on the workbench yet"
+          description="be the first to share what you're building."
+          actionLabel="share a project"
+          actionHref="/projects/new"
+        />
       ) : (
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       )}
-    </PageContainer>
+    </CafeShell>
   );
 }

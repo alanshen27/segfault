@@ -151,12 +151,12 @@ export default function ForumPage() {
   return (
     <ForumPageShell>
       <ForumHero
-        eyebrow="Community"
-        title={activeSubreddit ? <>s/{activeSubreddit.name}</> : <>Forum</>}
+        eyebrow="💬 # forum"
+        title={activeSubreddit ? <>s/{activeSubreddit.name}</> : <>forum</>}
         description={
           activeSubreddit
             ? activeSubreddit.description
-            : "Discuss problems, share editorials, and connect with other competitive programmers."
+            : "table talk — discuss problems, share editorials, and swap notes with other builders."
         }
         actions={
           <>

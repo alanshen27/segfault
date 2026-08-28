@@ -7,18 +7,9 @@ import {
   type ProjectStatus,
 } from "@/lib/types";
 
+import { CHANNELS, DISCORD_URL } from "@/lib/site";
+
 export const dynamic = "force-dynamic";
-
-const DISCORD_URL = "https://discord.gg/RpnJVrzPTj";
-
-const CHANNELS = [
-  { emoji: "🔨", label: "now-building", href: "/projects" },
-  { emoji: "☕", label: "coffee-chat", href: DISCORD_URL, external: true },
-  { emoji: "📓", label: "build-logs", href: "/logs" },
-  { emoji: "🙋", label: "ask-anything", href: "/questions" },
-  { emoji: "🧑‍🤝‍🧑", label: "find-teammates", href: "/builders" },
-  { emoji: "💬", label: "forum", href: "/forum" },
-] as const;
 
 const TRACKS = [
   {

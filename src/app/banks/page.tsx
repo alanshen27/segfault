@@ -103,8 +103,8 @@ export default function BanksPage() {
     <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary mb-1">Collections</p>
-          <h1 className="text-3xl font-display font-semibold tracking-tight">Question Banks</h1>
+          <p className="font-mono text-[11px] lowercase tracking-[0.18em] text-primary mb-1"># collections</p>
+          <h1 className="text-3xl sm:text-4xl font-display font-semibold tracking-tight lowercase">question banks</h1>
           <p className="text-sm text-neutral-500 mt-1">
             {filtered.length} bank{filtered.length !== 1 ? "s" : ""} · {totalProblems} problems
           </p>

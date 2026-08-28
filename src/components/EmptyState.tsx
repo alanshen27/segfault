@@ -23,7 +23,9 @@ export default function EmptyState({
     "inline-flex px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors mt-4";
 
   return (
-    <div className={`text-center ${compact ? "py-4" : "py-16 sm:py-20"}`}>
+    <div
+      className={`text-center rounded-2xl border border-dashed border-primary-200 dark:border-neutral-800 bg-card ${compact ? "py-4" : "py-16 sm:py-20"}`}
+    >
       {icon && (
         <div className={`${compact ? "text-2xl mb-2" : "text-4xl mb-3"} opacity-40`}>{icon}</div>
       )}
