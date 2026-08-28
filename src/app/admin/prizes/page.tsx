@@ -182,7 +182,7 @@ export default function AdminPrizesPage() {
     <PageContainer width="wide" className="py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Prize Management</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Prize Management</h1>
           <p className="text-sm text-neutral-500 mt-1">
             Create prizes and award them to builders.
           </p>

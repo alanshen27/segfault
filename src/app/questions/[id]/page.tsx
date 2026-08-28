@@ -361,7 +361,7 @@ function renderMarkdown(md: string): string {
 
   html = html.replace(/^### (.+)$/gm, "<h3 class='text-base font-semibold mt-4 mb-2'>$1</h3>");
   html = html.replace(/^## (.+)$/gm, "<h2 class='text-lg font-semibold mt-4 mb-2'>$1</h2>");
-  html = html.replace(/^# (.+)$/gm, "<h1 class='text-xl font-bold mt-4 mb-2'>$1</h1>");
+  html = html.replace(/^# (.+)$/gm, "<h1 class='text-xl font-display font-semibold tracking-tight mt-4 mb-2'>$1</h1>");
 
   html = html.replace(/\$\$([^$]+)\$\$/g, "<div class='text-center py-1 font-mono text-sm'>$1</div>");
   html = html.replace(/\$([^$]+)\$/g, "<code class='font-mono text-sm'>$1</code>");

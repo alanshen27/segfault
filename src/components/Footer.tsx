@@ -30,7 +30,7 @@ export default function Footer() {
               </Link>
             ))}
             <a
-              href="https://discord.gg/segfault"
+              href="https://discord.gg/RpnJVrzPTj"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary hover:underline underline-offset-4"

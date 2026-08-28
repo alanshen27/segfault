@@ -98,7 +98,7 @@ export default function ModeratePage() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Moderator Dashboard</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight mb-6">Moderator Dashboard</h1>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-24 rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 animate-pulse" />
@@ -133,7 +133,7 @@ export default function ModeratePage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Moderator Dashboard</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Moderator Dashboard</h1>
           <p className="text-sm text-neutral-500 mt-1">
             Approve problems, manage banks, and keep the community tidy.
           </p>
