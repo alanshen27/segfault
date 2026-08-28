@@ -168,7 +168,7 @@ export default async function HomePage() {
 
   return (
     <div className="bg-paper text-ink">
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 grid lg:grid-cols-[240px_minmax(0,1fr)] gap-8 items-start">
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] gap-8 items-start">
         {/* Sidebar */}
         <aside className="hidden lg:block sticky top-24 space-y-4">
           <div className="rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4">
@@ -201,7 +201,7 @@ export default async function HomePage() {
         </aside>
 
         {/* Feed */}
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           {/* Mobile channels */}
           <div className="lg:hidden -mx-4 px-4 flex gap-2 overflow-x-auto pb-1">
             {CHANNELS.map((channel) =>
