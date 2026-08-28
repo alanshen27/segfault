@@ -98,10 +98,10 @@ export default function CommunitiesPage() {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="h-10 w-48 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse mb-6" />
+        <div className="h-10 w-48 bg-primary-50 dark:bg-neutral-900 rounded animate-pulse mb-6" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-24 rounded-lg bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+            <div key={i} className="h-24 rounded-lg bg-primary-50 dark:bg-neutral-900 animate-pulse" />
           ))}
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function CommunitiesPage() {
               <span className="text-neutral-300">/</span>
               <span className="font-medium text-neutral-900 dark:text-neutral-100">Communities</span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">Explore Communities</h1>
+            <h1 className="text-2xl font-display font-semibold tracking-tight">Explore Communities</h1>
             <p className="text-sm text-neutral-500 mt-0.5">
               Discover places to talk about competitive programming topics
             </p>
@@ -136,7 +136,7 @@ export default function CommunitiesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search communities"
-                className="w-full pl-9 pr-3 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full pl-9 pr-3 py-2.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
             <div className="flex rounded-full border border-neutral-300 dark:border-neutral-700 overflow-hidden shrink-0">
@@ -147,7 +147,7 @@ export default function CommunitiesPage() {
                   className={`px-4 py-2 text-sm font-medium transition-colors ${
                     sort === mode
                       ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
-                      : "bg-white dark:bg-neutral-950 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                      : "bg-card text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900"
                   }`}
                 >
                   {mode === "popular" ? "Popular" : "New"}
@@ -158,7 +158,7 @@ export default function CommunitiesPage() {
 
           {/* Create form modal-style panel */}
           {showCreate && (
-            <div className="mb-4 p-5 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-sm">
+            <div className="mb-4 p-5 rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card shadow-sm">
               <h2 className="text-lg font-semibold mb-4">Create a community</h2>
               <form onSubmit={handleCreate} className="space-y-4">
                 {error && (
@@ -185,7 +185,7 @@ export default function CommunitiesPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="flex-1 px-3 py-2 bg-white dark:bg-neutral-950 text-sm focus:outline-none"
+                      className="flex-1 px-3 py-2 bg-card text-sm focus:outline-none"
                       placeholder="algorithms"
                     />
                   </div>
@@ -197,7 +197,7 @@ export default function CommunitiesPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                     rows={3}
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                     placeholder="What is your community about?"
                   />
                 </div>
@@ -249,7 +249,7 @@ export default function CommunitiesPage() {
               onAction={!search && user ? () => setShowCreate(true) : undefined}
             />
           ) : (
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 divide-y divide-neutral-200 dark:divide-neutral-800 overflow-hidden">
+            <div className="rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card divide-y divide-neutral-200 dark:divide-neutral-800 overflow-hidden">
               {filtered.map((sub) => (
                 <div
                   key={sub.id}
@@ -299,7 +299,7 @@ export default function CommunitiesPage() {
         {/* Sidebar — Reddit-style cards */}
         <div className="hidden lg:block w-80 shrink-0">
           <div className="sticky top-20 space-y-4">
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden">
+            <div className="rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card overflow-hidden">
               <div className="h-10 bg-linear-to-r from-primary to-primary-hover" />
               <div className="p-4">
                 <h3 className="font-semibold text-sm mb-1">Create your own community</h3>
@@ -324,7 +324,7 @@ export default function CommunitiesPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4">
+            <div className="rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card p-4">
               <h3 className="font-semibold text-sm mb-3">Overview</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -340,7 +340,7 @@ export default function CommunitiesPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4 text-xs text-neutral-500 leading-relaxed">
+            <div className="rounded-lg border border-primary-200/70 dark:border-neutral-800 bg-card p-4 text-xs text-neutral-500 leading-relaxed">
               Community icons are stored in Supabase Storage. Run <code className="text-neutral-700 dark:text-neutral-300">supabase/storage.sql</code> in your Supabase SQL editor if uploads fail.
             </div>
           </div>

@@ -57,7 +57,7 @@ export default function BuildersPage() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-56 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse"
+              className="h-56 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse"
             />
           ))}
         </div>

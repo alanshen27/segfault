@@ -75,7 +75,7 @@ export default function PostImagePicker({
       {images.length > 0 && (
         <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
           {images.map((img) => (
-            <li key={img.id} className="relative group rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900">
+            <li key={img.id} className="relative group rounded-lg overflow-hidden border border-primary-200/70 dark:border-neutral-800 bg-primary-50 dark:bg-neutral-900">
               <img
                 src={img.previewUrl}
                 alt=""

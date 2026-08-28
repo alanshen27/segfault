@@ -26,7 +26,7 @@ export default function QuestionCard({
   return (
     <Link
       href={`/questions/${id}`}
-      className="group block p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-primary/40 dark:hover:border-primary/40 transition-all bg-white dark:bg-neutral-950 hover:shadow-sm"
+      className="group block p-4 rounded-xl border border-primary-200/70 dark:border-neutral-800 hover:border-primary/40 dark:hover:border-primary/40 transition-all bg-card hover:shadow-sm"
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-medium text-neutral-900 dark:text-white group-hover:text-primary transition-colors flex items-center gap-2">

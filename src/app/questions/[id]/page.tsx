@@ -169,7 +169,7 @@ export default function QuestionDetailPage({
         dangerouslySetInnerHTML={{ __html: renderMarkdown(question.content) }}
       />
       {question.constraints && (
-        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mt-6 pt-6 border-t border-primary-200/70 dark:border-neutral-800">
           <h3 className="font-semibold text-sm mb-2 text-primary">Constraints</h3>
           <div
             className="text-sm text-neutral-600 dark:text-neutral-400"
@@ -180,13 +180,13 @@ export default function QuestionDetailPage({
       {(question.sampleInput || question.sampleOutput) && (
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {question.sampleInput && (
-            <div className="p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900">
+            <div className="p-4 rounded-xl bg-primary-50 dark:bg-neutral-900">
               <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Sample Input</div>
               <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{question.sampleInput}</pre>
             </div>
           )}
           {question.sampleOutput && (
-            <div className="p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900">
+            <div className="p-4 rounded-xl bg-primary-50 dark:bg-neutral-900">
               <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Expected Output</div>
               <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{question.sampleOutput}</pre>
             </div>
@@ -198,11 +198,11 @@ export default function QuestionDetailPage({
 
   const codePanel = (
     <div className="h-full flex flex-col min-h-0">
-      <div className="shrink-0 flex flex-wrap items-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-900/80">
+      <div className="shrink-0 flex flex-wrap items-center gap-2 px-4 py-3 bg-primary-50 dark:bg-neutral-900/80">
         <select
           value={language}
           onChange={(e) => handleLanguageChange(e.target.value)}
-          className="px-3 py-1.5 rounded-lg bg-white dark:bg-neutral-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          className="px-3 py-1.5 rounded-lg bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
         >
           {LANGUAGES.map((l) => (
             <option key={l.value} value={l.value}>{l.label}</option>
@@ -214,7 +214,7 @@ export default function QuestionDetailPage({
             type="button"
             onClick={runSample}
             disabled={running}
-            className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50"
+            className="px-4 py-1.5 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50"
           >
             {running ? "Running..." : "Run sample"}
           </button>
@@ -267,7 +267,7 @@ export default function QuestionDetailPage({
       )}
 
       {output !== null && !testResults && (
-        <div className="shrink-0 mx-4 mb-4 mt-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900 max-h-48 overflow-y-auto">
+        <div className="shrink-0 mx-4 mb-4 mt-3 p-4 rounded-xl bg-primary-50 dark:bg-neutral-900 max-h-48 overflow-y-auto">
           <div className="text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wide">Output</div>
           <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-800 dark:text-neutral-200">{output}</pre>
         </div>
@@ -283,7 +283,7 @@ export default function QuestionDetailPage({
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col min-h-0">
-      <header className="shrink-0 px-4 sm:px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
+      <header className="shrink-0 px-4 sm:px-6 py-4 border-b border-primary-200/70 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <Link
@@ -293,7 +293,7 @@ export default function QuestionDetailPage({
               ← Back to problems
             </Link>
             <div className="flex flex-wrap items-center gap-2 mt-1">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">{question.title}</h1>
+              <h1 className="text-xl sm:text-2xl font-display font-semibold tracking-tight truncate">{question.title}</h1>
               <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${difficultyColor}`}>
                 {question.difficulty}
               </span>
@@ -323,7 +323,7 @@ export default function QuestionDetailPage({
           </div>
         </div>
 
-        <div className="flex lg:hidden mt-3 gap-1 p-1 rounded-lg bg-neutral-100 dark:bg-neutral-900">
+        <div className="flex lg:hidden mt-3 gap-1 p-1 rounded-lg bg-primary-50 dark:bg-neutral-900">
           {(["problem", "code"] as const).map((p) => (
             <button
               key={p}
@@ -342,7 +342,7 @@ export default function QuestionDetailPage({
       </header>
 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2">
-        <div className={`min-h-0 border-r border-neutral-200 dark:border-neutral-800 ${panel === "problem" ? "block" : "hidden lg:block"}`}>
+        <div className={`min-h-0 border-r border-primary-200/70 dark:border-neutral-800 ${panel === "problem" ? "block" : "hidden lg:block"}`}>
           {problemPanel}
         </div>
         <div className={`min-h-0 ${panel === "code" ? "block" : "hidden lg:block"}`}>

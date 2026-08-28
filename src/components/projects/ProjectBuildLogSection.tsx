@@ -99,13 +99,13 @@ export default function ProjectBuildLogSection({
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
             placeholder="Share a progress update..."
-            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
           />
           <div className="flex justify-end mt-2">
             <button
               type="submit"
               disabled={submitting || !draft.trim()}
-              className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50"
+              className="px-4 py-1.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover disabled:opacity-50"
             >
               {submitting ? "Posting..." : "Add update"}
             </button>
@@ -121,7 +121,7 @@ export default function ProjectBuildLogSection({
       )}
 
       {logs.length === 0 ? (
-        <p className="text-sm text-neutral-500 py-4 text-center rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800">
+        <p className="text-sm text-neutral-500 py-4 text-center rounded-lg border border-dashed border-primary-200/70 dark:border-neutral-800">
           No build updates yet.
         </p>
       ) : (
@@ -176,14 +176,14 @@ export default function ProjectBuildLogSection({
                         value={editDraft}
                         onChange={(e) => setEditDraft(e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
                       />
                       <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => handleSave(log.id)}
                           disabled={savingId === log.id || !editDraft.trim()}
-                          className="px-3 py-1 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary-hover disabled:opacity-50"
+                          className="px-3 py-1 rounded-full bg-primary text-white text-xs font-medium hover:bg-primary-hover disabled:opacity-50"
                         >
                           {savingId === log.id ? "Saving..." : "Save"}
                         </button>

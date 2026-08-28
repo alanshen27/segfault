@@ -11,7 +11,7 @@ interface PostCommunitySidebarProps {
 export default function PostCommunitySidebar({ community }: PostCommunitySidebarProps) {
   return (
     <div className="sticky top-20 space-y-4">
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card overflow-hidden shadow-sm">
         {community.bannerUrl ? (
           <img
             src={community.bannerUrl}

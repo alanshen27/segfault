@@ -141,8 +141,8 @@ export default function QuestionsPage() {
     <PageContainer width="wide" className="py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">Practice</p>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary mb-1">Practice</p>
+          <h1 className="text-3xl font-display font-semibold tracking-tight">
             {activeBank ? activeBank.name : "Problems"}
           </h1>
           <p className="text-sm text-neutral-500 mt-1">
@@ -156,7 +156,7 @@ export default function QuestionsPage() {
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/banks"
-            className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+            className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-primary-light dark:hover:bg-neutral-900 transition-colors"
           >
             Banks
           </Link>
@@ -179,7 +179,7 @@ export default function QuestionsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search by title, topic, or description..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-primary-50 dark:bg-neutral-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </div>
 
@@ -192,7 +192,7 @@ export default function QuestionsPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-colors ${
                 difficulty === d
                   ? "bg-primary text-white"
-                  : "bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "bg-primary-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
               }`}
             >
               {d === "ALL" ? "All" : d.charAt(0) + d.slice(1).toLowerCase()}
@@ -204,7 +204,7 @@ export default function QuestionsPage() {
           <select
             value={bankId}
             onChange={(e) => { setBankId(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-primary-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
             <option value="">All banks</option>
             {banks.map((b) => (
@@ -216,7 +216,7 @@ export default function QuestionsPage() {
             <select
               value={topic}
               onChange={(e) => { setTopic(e.target.value); setPage(1); }}
-              className="px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className="px-3 py-1.5 text-xs font-medium rounded-full bg-primary-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">All topics</option>
               {topics.map((t) => (
@@ -228,7 +228,7 @@ export default function QuestionsPage() {
           <select
             value={sort}
             onChange={(e) => { setSort(e.target.value as SortOption); setPage(1); }}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-primary-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -236,7 +236,7 @@ export default function QuestionsPage() {
           </select>
 
           {user && (
-            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-900 cursor-pointer select-none">
+            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-primary-50 dark:bg-neutral-900 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={excludeSolved}
@@ -265,7 +265,7 @@ export default function QuestionsPage() {
       {loading ? (
         <div className="space-y-1">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-14 rounded-lg bg-neutral-100 dark:bg-neutral-900 animate-pulse" />
+            <div key={i} className="h-14 rounded-lg bg-primary-50 dark:bg-neutral-900 animate-pulse" />
           ))}
         </div>
       ) : questions.length === 0 ? (

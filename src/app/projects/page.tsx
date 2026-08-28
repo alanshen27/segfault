@@ -45,7 +45,7 @@ export default function ProjectsPage() {
         actions={
           <Link
             href="/projects/new"
-            className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shrink-0"
+            className="px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shrink-0"
           >
             Share a project
           </Link>
@@ -66,7 +66,7 @@ export default function ProjectsPage() {
           <ListSkeleton
             count={4}
             layout="grid"
-            className="h-48 rounded-xl bg-neutral-100 dark:bg-neutral-900 animate-pulse"
+            className="h-48 rounded-xl bg-primary-50 dark:bg-neutral-900 animate-pulse"
           />
         </div>
       ) : projects.length === 0 ? (

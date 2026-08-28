@@ -88,7 +88,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="text-sm px-4 py-1.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
+            className="text-sm px-4 py-1.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
           >
             Sign Up
           </Link>
@@ -121,7 +121,7 @@ export default function Navbar() {
         </Link>
         <Link
           href="/signup"
-          className="text-sm px-4 py-1.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
+          className="text-sm px-4 py-1.5 rounded-full bg-primary text-white font-medium hover:bg-primary-hover transition-colors"
         >
           Sign Up
         </Link>
@@ -130,7 +130,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-neutral-200 dark:border-neutral-800 bg-card/85 dark:bg-card/85 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-primary-200/70 dark:border-neutral-800 bg-card/85 dark:bg-card/85 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link
@@ -187,7 +187,7 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-neutral-200 dark:border-neutral-800 bg-card px-4 py-3 space-y-3">
+        <div className="md:hidden border-t border-primary-200/70 dark:border-neutral-800 bg-card px-4 py-3 space-y-3">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -213,7 +213,7 @@ export default function Navbar() {
               Profile
             </Link>
           )}
-          <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-3">
+          <div className="pt-3 border-t border-primary-200/70 dark:border-neutral-800 flex items-center gap-3">
             {renderAuth()}
           </div>
         </div>

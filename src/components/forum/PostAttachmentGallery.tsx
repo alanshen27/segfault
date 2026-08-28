@@ -21,7 +21,7 @@ export default function PostAttachmentGallery({ attachments }: PostAttachmentGal
               href={attachment.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 hover:opacity-90 transition-opacity"
+              className="block rounded-xl overflow-hidden bg-primary-50 dark:bg-neutral-900 hover:opacity-90 transition-opacity"
             >
               <img
                 src={attachment.url}

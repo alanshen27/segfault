@@ -92,9 +92,9 @@ export default function NewForumPostPage() {
           <span className="font-medium text-neutral-900 dark:text-neutral-100">New post</span>
         </nav>
 
-        <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
-            <h1 className="text-xl font-bold tracking-tight">Create a post</h1>
+        <div className="rounded-xl border border-primary-200/70 dark:border-neutral-800 bg-card shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-primary-200/70 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
+            <h1 className="text-xl font-display font-semibold tracking-tight">Create a post</h1>
             <p className="text-sm text-neutral-500 mt-0.5">
               Share a question, editorial, or start a discussion.
             </p>
@@ -115,7 +115,7 @@ export default function NewForumPostPage() {
                   setSubredditId(e.target.value);
                   setTag("GENERAL");
                 }}
-                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
               >
                 <option value="">No specific community</option>
                 {subreddits.map((s) => (
@@ -140,7 +140,7 @@ export default function NewForumPostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
                 placeholder="An interesting title..."
               />
             </div>
@@ -152,7 +152,7 @@ export default function NewForumPostPage() {
                 onChange={(e) => setContent(e.target.value)}
                 required
                 rows={10}
-                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm font-mono leading-relaxed resize-y"
+                className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-card focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm font-mono leading-relaxed resize-y"
                 placeholder="Write your post here..."
               />
             </div>

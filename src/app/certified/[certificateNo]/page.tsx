@@ -76,7 +76,7 @@ export default async function CertifiedPage({ params }: PageProps) {
 
   return (
     <PageContainer width="narrow" className="py-12">
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+      <div className="relative overflow-hidden rounded-2xl border border-primary-200/70 dark:border-neutral-800 bg-card">
         <div
           className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-amber-50/30 dark:from-primary/10 dark:to-neutral-900"
           aria-hidden
@@ -99,7 +99,7 @@ export default async function CertifiedPage({ params }: PageProps) {
               </svg>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+              <p className="font-mono text-[11px] lowercase tracking-[0.14em] text-primary">
                 segfault certified
               </p>
               <p className="text-xs text-neutral-400 font-mono">
@@ -108,7 +108,7 @@ export default async function CertifiedPage({ params }: PageProps) {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-semibold tracking-tight">
             {award.prize.name}
           </h1>
           <p className="text-neutral-500 mt-2 leading-relaxed">
@@ -128,7 +128,7 @@ export default async function CertifiedPage({ params }: PageProps) {
             </span>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="mt-8 pt-6 border-t border-primary-200/70 dark:border-neutral-800">
             <p className="text-sm font-medium text-neutral-500 mb-3">
               Awarded to
             </p>
@@ -158,7 +158,7 @@ export default async function CertifiedPage({ params }: PageProps) {
         <a
           href={`/certified/${certificateNo}/og`}
           download={`segfault-${certificateNo}.png`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
         >
           <svg
             className="w-4 h-4"
