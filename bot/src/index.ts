@@ -10,7 +10,8 @@ import {
   type Interaction,
   type Message,
 } from "discord.js";
-import { mentorReply } from "./mentor.js";
+import { mentorReply, type HistoryEntry } from "./mentor.js";
+import { scheduleDailyPost } from "./daily.js";
 
 const DISCORD_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -39,6 +40,35 @@ function chunkReply(text: string): string[] {
   }
   chunks.push(rest);
   return chunks;
+}
+
+const CONTEXT_MESSAGES = 20;
+
+async function fetchChannelContext(
+  message: Message,
+  botUserId: string,
+): Promise<HistoryEntry[]> {
+  try {
+    const fetched = await message.channel.messages.fetch({
+      limit: CONTEXT_MESSAGES,
+      before: message.id,
+    });
+    return [...fetched.values()]
+      .sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+      .filter((m) => m.content.trim().length > 0)
+      .map((m) =>
+        m.author.id === botUserId
+          ? { role: "assistant" as const, content: m.content }
+          : {
+              role: "user" as const,
+              name: m.author.displayName,
+              content: m.content,
+            },
+      );
+  } catch (error) {
+    console.error("Failed to fetch channel context:", error);
+    return [];
+  }
 }
 
 const client = new Client({
@@ -77,6 +107,7 @@ client.once(Events.ClientReady, async (readyClient) => {
   } catch (error) {
     console.error("Failed to register slash commands:", error);
   }
+  scheduleDailyPost(client);
 });
 
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
@@ -109,7 +140,16 @@ client.on(Events.MessageCreate, async (message: Message) => {
 
   const isDM = message.channel.type === ChannelType.DM;
   const isMentioned = message.mentions.users.has(client.user.id);
-  if (!isDM && !isMentioned) return;
+  let isReplyToBot = false;
+  if (!isDM && !isMentioned && message.reference?.messageId) {
+    try {
+      const referenced = await message.fetchReference();
+      isReplyToBot = referenced.author.id === client.user.id;
+    } catch {
+      isReplyToBot = false;
+    }
+  }
+  if (!isDM && !isMentioned && !isReplyToBot) return;
   if (onCooldown(message.author.id)) return;
 
   const content = message.content
@@ -121,10 +161,12 @@ client.on(Events.MessageCreate, async (message: Message) => {
     if ("sendTyping" in message.channel) {
       await message.channel.sendTyping();
     }
+    const context = await fetchChannelContext(message, client.user.id);
     const reply = await mentorReply(
       message.channelId,
       message.author.displayName,
       content,
+      context.length > 0 ? context : undefined,
     );
     for (const chunk of chunkReply(reply)) {
       await message.reply(chunk);
