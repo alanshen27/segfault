@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 const MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-const MAX_HISTORY = 12;
+const MAX_HISTORY = 20;
 
 const SYSTEM_PROMPT = `You are the segfault mentor — the always-on AI mentor in the segfault Discord, a community where ambitious young builders learn vibe coding: shipping real software with AI as a collaborator.
 
@@ -40,8 +40,9 @@ export async function mentorReply(
   channelId: string,
   authorName: string,
   message: string,
+  context?: HistoryEntry[],
 ): Promise<string> {
-  const history = channelHistory.get(channelId) ?? [];
+  const history = context ?? channelHistory.get(channelId) ?? [];
 
   const completion = await getClient().chat.completions.create({
     model: MODEL,
@@ -63,8 +64,10 @@ export async function mentorReply(
     completion.choices[0]?.message?.content?.trim() ??
     "I blanked on that one — try rephrasing?";
 
-  remember(channelId, { role: "user", name: authorName, content: message });
-  remember(channelId, { role: "assistant", content: reply });
+  if (!context) {
+    remember(channelId, { role: "user", name: authorName, content: message });
+    remember(channelId, { role: "assistant", content: reply });
+  }
 
   return reply;
 }
