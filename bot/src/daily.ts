@@ -1,8 +1,13 @@
 import OpenAI from "openai";
 import type { Client, TextChannel } from "discord.js";
-import { ChannelType } from "discord.js";
+import { ChannelType, EmbedBuilder } from "discord.js";
 
 const MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+
+const NEWS_CHANNEL_ID = process.env.DAILY_NEWS_CHANNEL_ID ?? "1542808944227909684";
+const RESOURCES_CHANNEL_ID = process.env.RESOURCES_CHANNEL_ID ?? "1542792389926588489";
+
+export const ESPRESSO = 0x2b2019;
 
 interface MemeApiResponse {
   title?: string;
@@ -19,113 +24,158 @@ interface HnHit {
   points: number;
 }
 
-async function fetchMeme(): Promise<string | null> {
+export async function buildMemeEmbed(): Promise<EmbedBuilder | null> {
   const response = await fetch("https://meme-api.com/gimme/ProgrammerHumor");
   if (!response.ok) return null;
   const meme = (await response.json()) as MemeApiResponse;
   if (!meme.url || meme.nsfw || meme.spoiler) return null;
-  return `☕ gm builders — today's meme:\n**${meme.title ?? "untitled"}**\n${meme.url}`;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle(meme.title ?? "today's meme")
+    .setURL(meme.postLink ?? meme.url)
+    .setImage(meme.url)
+    .setFooter({ text: "☕ daily meme · r/ProgrammerHumor" })
+    .setTimestamp();
 }
 
-async function fetchNews(): Promise<string | null> {
-  const since = Math.floor(Date.now() / 1000) - 24 * 60 * 60;
-  const query = new URLSearchParams({
-    query: "AI coding",
-    tags: "story",
-    numericFilters: `created_at_i>${since},points>20`,
+async function searchHn(
+  query: string,
+  extraTags: string,
+  sinceSeconds: number,
+  minPoints: number,
+): Promise<{ title: string; url: string }[]> {
+  const since = Math.floor(Date.now() / 1000) - sinceSeconds;
+  const params = new URLSearchParams({
+    query,
+    tags: extraTags,
+    numericFilters: `created_at_i>${since},points>${minPoints}`,
     hitsPerPage: "8",
   });
-  const response = await fetch(
-    `https://hn.algolia.com/api/v1/search?${query}`,
-  );
-  if (!response.ok) return null;
+  const response = await fetch(`https://hn.algolia.com/api/v1/search?${params}`);
+  if (!response.ok) return [];
   const data = (await response.json()) as { hits: HnHit[] };
-  const hits = data.hits
+  return data.hits
     .filter((hit) => hit.title)
     .slice(0, 5)
     .map((hit) => ({
       title: hit.title,
       url: hit.url ?? `https://news.ycombinator.com/item?id=${hit.objectID}`,
     }));
-  if (hits.length === 0) return null;
+}
 
+async function summarize(
+  systemPrompt: string,
+  hits: { title: string; url: string }[],
+): Promise<string | null> {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
     model: MODEL,
-    max_tokens: 500,
+    max_tokens: 600,
     messages: [
-      {
-        role: "system",
-        content:
-          "You write a short, casual morning digest for a Discord of young builders learning to ship software with AI. One line of intro, then each story as a bullet: a one-sentence plain-language takeaway followed by its link on the same bullet. Keep the links exactly as given. No hype, no invented facts, under 1500 characters total.",
-      },
+      { role: "system", content: systemPrompt },
       {
         role: "user",
-        content: hits
-          .map((hit) => `- ${hit.title}\n  ${hit.url}`)
-          .join("\n"),
+        content: hits.map((hit) => `- ${hit.title}\n  ${hit.url}`).join("\n"),
       },
     ],
   });
   return completion.choices[0]?.message?.content?.trim() ?? null;
 }
 
-export async function buildDailyPost(): Promise<string | null> {
-  const memeDay = new Date().getUTCDate() % 2 === 0;
-  const primary = memeDay ? fetchMeme : fetchNews;
-  const fallback = memeDay ? fetchNews : fetchMeme;
-  try {
-    const post = await primary();
-    if (post) return post;
-  } catch (error) {
-    console.error("Daily post primary source failed:", error);
-  }
-  try {
-    return await fallback();
-  } catch (error) {
-    console.error("Daily post fallback source failed:", error);
-    return null;
-  }
-}
-
-function msUntilNextRun(hourUtc: number): number {
-  const now = new Date();
-  const next = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hourUtc),
+export async function buildNewsEmbed(): Promise<EmbedBuilder | null> {
+  const hits = await searchHn("AI coding", "story", 24 * 60 * 60, 20);
+  if (hits.length === 0) return null;
+  const digest = await summarize(
+    "You write a short, casual news digest for a Discord of young builders learning to ship software with AI. Format each story as a markdown bullet: '- [story title](url) — one-sentence plain-language takeaway.' Use the exact titles and links given. No intro line, no hype, no invented facts, under 1800 characters total.",
+    hits,
   );
-  if (next.getTime() <= now.getTime()) {
-    next.setUTCDate(next.getUTCDate() + 1);
-  }
-  return next.getTime() - now.getTime();
+  if (!digest) return null;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle("☕ daily brew — ai & coding news")
+    .setDescription(digest)
+    .setFooter({ text: "compiled from hacker news · last 24h" })
+    .setTimestamp();
 }
 
-export function scheduleDailyPost(client: Client): void {
-  const channelId = process.env.DAILY_CHANNEL_ID;
-  if (!channelId) {
-    console.log("DAILY_CHANNEL_ID not set — daily morning post disabled");
-    return;
-  }
-  const hourUtc = Number(process.env.DAILY_POST_HOUR_UTC ?? "13");
+export async function buildResourceEmbed(): Promise<EmbedBuilder | null> {
+  const hits = await searchHn(
+    "AI tool OR tutorial OR guide",
+    "(story,show_hn)",
+    7 * 24 * 60 * 60,
+    30,
+  );
+  if (hits.length === 0) return buildMemeEmbed();
+  const pick = hits[Math.floor(Math.random() * hits.length)];
+  const pitch = await summarize(
+    "You write a one-or-two sentence, casual pitch for a resource shared with a Discord of young builders learning to ship software with AI. Explain plainly why it's worth a look. Do not include any links — just the pitch text. No hype, no invented facts.",
+    [pick],
+  );
+  if (!pitch) return null;
+  return new EmbedBuilder()
+    .setColor(ESPRESSO)
+    .setTitle(`📚 ${pick.title}`)
+    .setURL(pick.url)
+    .setDescription(pitch)
+    .setFooter({ text: "resource of the day" })
+    .setTimestamp();
+}
 
+const RANDOM_WINDOW_START_UTC = 12;
+const RANDOM_WINDOW_END_UTC = 23;
+
+function msUntilNextRandomRun(): number {
+  const now = new Date();
+  const windowMs =
+    (RANDOM_WINDOW_END_UTC - RANDOM_WINDOW_START_UTC) * 60 * 60 * 1000;
+  const candidate = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      RANDOM_WINDOW_START_UTC,
+    ),
+  );
+  candidate.setTime(candidate.getTime() + Math.floor(Math.random() * windowMs));
+  if (candidate.getTime() <= now.getTime()) {
+    candidate.setUTCDate(candidate.getUTCDate() + 1);
+  }
+  return candidate.getTime() - now.getTime();
+}
+
+function scheduleChannelPost(
+  client: Client,
+  label: string,
+  channelId: string,
+  buildPost: () => Promise<EmbedBuilder | null>,
+): void {
   const run = async () => {
     try {
       const channel = await client.channels.fetch(channelId);
       if (!channel || channel.type !== ChannelType.GuildText) {
-        console.error(`Daily post channel ${channelId} is not a text channel`);
+        console.error(`${label}: channel ${channelId} is not a text channel`);
       } else {
-        const post = await buildDailyPost();
-        if (post) await (channel as TextChannel).send(post);
-        else console.error("Daily post: no content from any source");
+        const embed = await buildPost();
+        if (embed) await (channel as TextChannel).send({ embeds: [embed] });
+        else console.error(`${label}: no content from any source`);
       }
     } catch (error) {
-      console.error("Daily post failed:", error);
+      console.error(`${label} post failed:`, error);
     }
-    setTimeout(run, msUntilNextRun(hourUtc));
+    setTimeout(run, msUntilNextRandomRun());
   };
 
-  const delay = msUntilNextRun(hourUtc);
-  console.log(
-    `Daily post scheduled in ${Math.round(delay / 60000)} min (hour ${hourUtc} UTC)`,
-  );
+  const delay = msUntilNextRandomRun();
+  console.log(`${label} post scheduled in ${Math.round(delay / 60000)} min`);
   setTimeout(run, delay);
+}
+
+export function scheduleDailyPost(client: Client): void {
+  scheduleChannelPost(client, "daily-news", NEWS_CHANNEL_ID, buildNewsEmbed);
+  scheduleChannelPost(
+    client,
+    "resources",
+    RESOURCES_CHANNEL_ID,
+    buildResourceEmbed,
+  );
 }

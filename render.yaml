@@ -34,7 +34,7 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-4o-mini
-      - key: DAILY_CHANNEL_ID
+      - key: DAILY_NEWS_CHANNEL_ID
         sync: false
-      - key: DAILY_POST_HOUR_UTC
-        value: "13"
+      - key: RESOURCES_CHANNEL_ID
+        sync: false
