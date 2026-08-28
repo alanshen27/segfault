@@ -36,7 +36,7 @@ export default function PostCommunitySidebar({ community }: PostCommunitySidebar
           />
           <Link
             href={`/forum/communities/${community.slug}`}
-            className="text-lg font-bold text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors"
+            className="text-lg font-display font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 hover:text-primary transition-colors"
           >
             s/{community.name}
           </Link>

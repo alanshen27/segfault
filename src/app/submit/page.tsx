@@ -73,7 +73,7 @@ export default function SubmitPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <div className="text-2xl font-bold mb-2">Submitted!</div>
+        <div className="text-2xl font-display font-semibold tracking-tight mb-2">Submitted!</div>
         <p className="text-neutral-500">
           Your question has been submitted for review. Redirecting...
         </p>
@@ -84,7 +84,7 @@ export default function SubmitPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Submit a Problem</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Submit a Problem</h1>
         <p className="text-sm text-neutral-500 mt-1">
           Create a new problem for the community. It will be reviewed by a moderator before appearing publicly.
         </p>

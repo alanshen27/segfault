@@ -9,7 +9,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const DISCORD_URL = "https://discord.gg/segfault";
+const DISCORD_URL = "https://discord.gg/RpnJVrzPTj";
 
 const CHANNELS = [
   { emoji: "🔨", label: "now-building", href: "/projects" },
