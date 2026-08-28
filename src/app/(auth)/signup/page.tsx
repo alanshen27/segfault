@@ -7,7 +7,7 @@ export default function SignupPage() {
       <div className="text-center mb-8">
         <Logo size={32} className="mx-auto mb-2" />
         <h1 className="text-2xl font-bold">Create an account</h1>
-        <p className="text-sm text-neutral-500 mt-1">Get started with segfault</p>
+        <p className="text-sm text-neutral-500 mt-1">Get started with oat.cafe</p>
       </div>
       <SignupForm />
     </div>

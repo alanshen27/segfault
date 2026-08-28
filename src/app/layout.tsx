@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,9 +14,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "segfault.zip",
-  description: "Find builders. Share projects. Ship weird software. A student developer network for project showcases, hackathon teammates, and build logs.",
+  title: "oat.cafe — learn to build real things with AI",
+  description:
+    "oat.cafe is a community where ambitious young builders learn vibe coding: shipping real software with AI. Projects, build logs, weekly sessions, and a Discord that actually builds.",
 };
 
 export default function RootLayout({
@@ -27,9 +33,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+      <body className="min-h-full flex flex-col bg-paper text-neutral-900 dark:text-neutral-100">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
