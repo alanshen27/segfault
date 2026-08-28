@@ -20,9 +20,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "segfault.zip — learn to build real things with AI",
+  title: "oat.cafe — learn to build real things with AI",
   description:
-    "Segfault is a community where ambitious young builders learn vibe coding: shipping real software with AI. Projects, build logs, weekly sessions, and a Discord that actually builds.",
+    "oat.cafe is a community where ambitious young builders learn vibe coding: shipping real software with AI. Projects, build logs, weekly sessions, and a Discord that actually builds.",
 };
 
 export default function RootLayout({
