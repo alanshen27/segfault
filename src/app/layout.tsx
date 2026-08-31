@@ -37,11 +37,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-neutral-900 dark:text-neutral-100">
-        <GoogleAdsTag />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
+      <GoogleAdsTag />
     </html>
   );
 }
