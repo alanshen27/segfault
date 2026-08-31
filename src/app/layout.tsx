@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GoogleAdsTag from "@/components/GoogleAdsTag";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-neutral-900 dark:text-neutral-100">
+        <GoogleAdsTag />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
