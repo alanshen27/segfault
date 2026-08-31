@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import DiscordInviteLink from "@/components/DiscordInviteLink";
+import { DISCORD_URL } from "@/lib/site";
 
 const FOOTER_LINKS = [
   { href: "/projects", label: "Projects" },
@@ -29,14 +31,12 @@ export default function Footer() {
                 {link.label}
               </Link>
             ))}
-            <a
-              href="https://discord.gg/RpnJVrzPTj"
-              target="_blank"
-              rel="noopener noreferrer"
+            <DiscordInviteLink
+              href={DISCORD_URL}
               className="font-medium text-primary hover:underline underline-offset-4"
             >
               Discord
-            </a>
+            </DiscordInviteLink>
           </div>
         </div>
       </div>

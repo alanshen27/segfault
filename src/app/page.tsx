@@ -8,6 +8,7 @@ import {
 } from "@/lib/types";
 
 import { CHANNELS, DISCORD_URL } from "@/lib/site";
+import DiscordInviteLink from "@/components/DiscordInviteLink";
 
 export const dynamic = "force-dynamic";
 
@@ -137,14 +138,9 @@ function ChannelLink({
   );
   if ("external" in channel && channel.external) {
     return (
-      <a
-        href={channel.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
+      <DiscordInviteLink href={channel.href} className={className}>
         {inner}
-      </a>
+      </DiscordInviteLink>
     );
   }
   return (
@@ -181,14 +177,12 @@ export default async function HomePage() {
               <ChannelLink key={channel.label} channel={channel} />
             ))}
           </nav>
-          <a
+          <DiscordInviteLink
             href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
             className="block text-center rounded-xl bg-ink text-paper text-sm font-medium px-4 py-2.5 hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             join the discord
-          </a>
+          </DiscordInviteLink>
         </aside>
 
         {/* Feed */}
@@ -197,15 +191,13 @@ export default async function HomePage() {
           <div className="lg:hidden -mx-4 px-4 flex gap-2 overflow-x-auto pb-1">
             {CHANNELS.map((channel) =>
               "external" in channel && channel.external ? (
-                <a
+                <DiscordInviteLink
                   key={channel.label}
                   href={channel.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-card px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
                 >
                   {channel.emoji} # {channel.label}
-                </a>
+                </DiscordInviteLink>
               ) : (
                 <Link
                   key={channel.label}
@@ -237,14 +229,12 @@ export default async function HomePage() {
                 people doing the same.
               </p>
               <div className="rise-in rise-in-3 mt-8 flex flex-wrap items-center gap-3">
-                <a
+                <DiscordInviteLink
                   href={DISCORD_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="px-6 py-3 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   join the discord
-                </a>
+                </DiscordInviteLink>
                 <Link
                   href="/projects"
                   className="px-6 py-3 rounded-full border border-primary-200 dark:border-neutral-700 text-sm font-medium hover:border-primary hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
@@ -473,14 +463,12 @@ export default async function HomePage() {
               demos get cheered. Start there — ship from anywhere.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <a
+              <DiscordInviteLink
                 href={DISCORD_URL}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="px-7 py-3.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 join the discord
-              </a>
+              </DiscordInviteLink>
               <Link
                 href="/signup"
                 className="px-7 py-3.5 rounded-full border border-primary-200 dark:border-neutral-700 text-sm font-medium hover:border-primary hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"

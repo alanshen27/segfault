@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { CHANNELS, DISCORD_URL, type Channel } from "@/lib/site";
+import DiscordInviteLink from "@/components/DiscordInviteLink";
 
 function ChannelLink({ channel, active }: { channel: Channel; active?: boolean }) {
   const className = `flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
@@ -16,9 +17,9 @@ function ChannelLink({ channel, active }: { channel: Channel; active?: boolean }
   );
   if ("external" in channel && channel.external) {
     return (
-      <a href={channel.href} target="_blank" rel="noopener noreferrer" className={className}>
+      <DiscordInviteLink href={channel.href} className={className}>
         {inner}
-      </a>
+      </DiscordInviteLink>
     );
   }
   return (
@@ -61,29 +62,25 @@ export default function CafeShell({ active, children }: CafeShellProps) {
               />
             ))}
           </nav>
-          <a
+          <DiscordInviteLink
             href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
             className="block text-center rounded-xl bg-ink text-paper text-sm font-medium px-4 py-2.5 hover:bg-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             join the discord
-          </a>
+          </DiscordInviteLink>
         </aside>
 
         <div className="min-w-0 space-y-5">
           <div className="lg:hidden -mx-4 px-4 flex gap-2 overflow-x-auto pb-1">
             {CHANNELS.map((channel) =>
               "external" in channel && channel.external ? (
-                <a
+                <DiscordInviteLink
                   key={channel.label}
                   href={channel.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="shrink-0 rounded-full border border-primary-200/70 dark:border-neutral-800 bg-card px-3.5 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400"
                 >
                   {channel.emoji} # {channel.label}
-                </a>
+                </DiscordInviteLink>
               ) : (
                 <Link
                   key={channel.label}
